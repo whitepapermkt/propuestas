@@ -30,34 +30,19 @@
   document.title = `Propuesta Estratégica · ${P.cliente} · ${P.proyecto} · 4S Real Estate`;
 
   /* ---------------- Secciones ---------------- */
+  const TABS = [
+    { id: "propuesta", nombre: "Propuesta", desc: "Proyecto, servicios e inversión" },
+    { id: "tiempos", nombre: "Tiempos y pagos", desc: "Ruta crítica, orden de trabajo y siguientes pasos" },
+    { id: "nosotros", nombre: "Por qué 4S", desc: "Quiénes somos, expertise, clientes, premios y oficinas" }
+  ];
   const nav = `
   <header class="nav" id="nav">
-    <a href="#inicio" class="nav__logo"><img src="assets/brand/logo-4s-trim-white.png" alt="4S Real Estate"></a>
-    <nav class="nav__links">
-      <a href="#proyecto">Proyecto</a>
-      <a href="#servicios">Servicios</a>
-      <a href="#inversion">Inversión</a>
-      <a href="#cronograma">Tiempos</a>
-      <a href="#nosotros">Por qué 4S</a>
+    <a href="#propuesta" class="nav__logo"><img src="assets/brand/logo-4s-trim-white.png" alt="4S Real Estate"></a>
+    <nav class="tabs" role="tablist">
+      ${list(TABS, (t) => `<a href="#${t.id}" class="tab" role="tab" data-tab="${t.id}">${esc(t.nombre)}</a>`)}
     </nav>
     <a href="#siguientes-pasos" class="btn btn--red btn--sm nav__cta">Aceptar propuesta</a>
-    <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span></button>
   </header>
-  <div class="mmenu" id="mmenu" aria-hidden="true">
-    <nav>
-      <a href="#proyecto"><small>01</small>Proyecto</a>
-      <a href="#cadena"><small>02</small>Dónde entramos</a>
-      <a href="#servicios"><small>03</small>Servicios</a>
-      <a href="#inversion"><small>04</small>Inversión</a>
-      <a href="#cronograma"><small>05</small>Tiempos y pagos</a>
-      <a href="#nosotros"><small>06</small>Por qué 4S</a>
-      <a href="#siguientes-pasos"><small>07</small>Siguientes pasos</a>
-    </nav>
-    <div class="mmenu__foot">
-      <a class="btn btn--red" href="${waLink(msgAceptar)}" target="_blank" rel="noopener">Aceptar propuesta</a>
-      <button class="btn btn--ghost" onclick="window.print()">Descargar PDF</button>
-    </div>
-  </div>
   <div class="mbar" id="mbar">
     <div class="mbar__info"><small>Inversión total</small><b>${mxnCorto(total)} <span>MXN</span></b></div>
     <a class="mbar__wa" href="${waLink(msgDudas)}" target="_blank" rel="noopener" aria-label="Preguntas por WhatsApp">
@@ -238,7 +223,7 @@
   <section class="sec sec--light" id="cronograma">
     <div class="wrap">
       <div class="sec__head">
-        <p class="eyebrow eyebrow--red">05 · Tiempos estimados</p>
+        <p class="eyebrow eyebrow--red">Tiempos estimados</p>
         <h2 class="h2"><span class="outline">Ruta</span> crítica</h2>
       </div>
       <div class="gantt" style="--cols:${totalSemanas}">
@@ -285,7 +270,7 @@
   <section class="sec sec--dark" id="nosotros">
     <div class="wrap">
       <div class="sec__head">
-        <p class="eyebrow eyebrow--red">06 · Por qué 4S</p>
+        <p class="eyebrow eyebrow--red">Por qué 4S</p>
         <h2 class="h2"><span class="outline">Real Estate</span> Foresight</h2>
       </div>
       <div class="grid-2">
@@ -334,11 +319,26 @@
     </div>
   </section>`;
 
+  const siguiente = (actual) => `
+  <section class="sec sec--cream siguiente">
+    <div class="wrap">
+      <p class="eyebrow eyebrow--red">Sigue revisando</p>
+      <div class="siguiente__grid">
+        ${list(TABS.filter((t) => t.id !== actual), (t) => `
+          <a href="#${t.id}" class="siguiente__card">
+            <span class="siguiente__nombre">${esc(t.nombre)}</span>
+            <span class="siguiente__desc">${esc(t.desc)}</span>
+            <span class="siguiente__arrow">→</span>
+          </a>`)}
+      </div>
+    </div>
+  </section>`;
+
   const cierre = `
   <section class="sec cierre" id="siguientes-pasos">
     <div class="cierre__bg"><img src="assets/deck/s26-cierre-bandera-foresight-for-the-future.jpg" alt=""></div>
     <div class="wrap cierre__inner">
-      <p class="eyebrow eyebrow--red">07 · Siguientes pasos</p>
+      <p class="eyebrow eyebrow--red">Siguientes pasos</p>
       <h2 class="h2"><span class="outline">Empecemos</span> ${esc(P.proyecto)}</h2>
       <ol class="pasos">
         <li><b>Confirma la propuesta</b><span>Responde por WhatsApp o correo para aceptar.</span></li>
@@ -358,8 +358,9 @@
         </div>` : ""}
       <p class="fine fine--light">Propuesta confidencial preparada para ${esc(P.cliente)}. Vigencia: ${esc(P.vigencia)}.</p>
     </div>
-  </section>
+  </section>`;
 
+  const footer = `
   <footer class="footer">
     <img src="assets/brand/logo-4s-trim-white.png" alt="4S Real Estate">
     <p>${esc(B.contactoGeneral.direccion)}<br>${esc(B.contactoGeneral.telefono)} · <a href="https://${B.marca.web}" target="_blank" rel="noopener">${B.marca.web.toUpperCase()}</a></p>
@@ -368,29 +369,26 @@
 
   <div class="lightbox" id="lightbox"><img alt=""></div>`;
 
-  app.innerHTML = nav + hero + proyecto + cadena + serviciosSec + inversion + cronograma + nosotros + cierre;
+  app.innerHTML =
+    nav +
+    `<main>
+      <div class="view" id="propuesta" data-view="propuesta">${hero + proyecto + cadena + serviciosSec + inversion + siguiente("propuesta")}</div>
+      <div class="view view--sub" id="tiempos" data-view="tiempos" hidden>${cronograma + cierre + siguiente("tiempos")}</div>
+      <div class="view view--sub" id="nosotros-tab" data-view="nosotros" hidden>${nosotros + siguiente("nosotros")}</div>
+    </main>` +
+    footer;
 
   /* ---------------- Interacciones ---------------- */
   const navEl = document.getElementById("nav");
+  let vistaActual = "propuesta";
   const prog = document.getElementById("progress");
   const onScroll = () => {
-    navEl.classList.toggle("nav--solid", scrollY > 40);
+    navEl.classList.toggle("nav--solid", scrollY > 40 || vistaActual !== "propuesta");
     const h = document.documentElement.scrollHeight - innerHeight;
     prog.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + "%";
   };
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();
-
-  // Menú móvil
-  const burger = document.getElementById("burger");
-  const mmenu = document.getElementById("mmenu");
-  const toggleMenu = (open) => {
-    document.body.classList.toggle("menu-open", open);
-    burger.setAttribute("aria-expanded", open);
-    mmenu.setAttribute("aria-hidden", !open);
-  };
-  burger.addEventListener("click", () => toggleMenu(!document.body.classList.contains("menu-open")));
-  mmenu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => toggleMenu(false)));
 
   // Barra inferior: visible después del hero y oculta en el cierre
   const mbar = document.getElementById("mbar");
@@ -398,7 +396,7 @@
   const cierreEl = document.getElementById("siguientes-pasos");
   const updBar = () => {
     const pasado = heroEl.getBoundingClientRect().bottom < 90;
-    const enCierre = cierreEl.getBoundingClientRect().top < innerHeight * 0.8;
+    const enCierre = vistaActual === "tiempos" && cierreEl.getBoundingClientRect().top < innerHeight * 0.8 && cierreEl.getBoundingClientRect().bottom > 0;
     mbar.classList.toggle("show", pasado && !enCierre);
   };
   addEventListener("scroll", updBar, { passive: true });
@@ -434,12 +432,42 @@
   lb.addEventListener("click", () => lb.classList.remove("open"));
   addEventListener("keydown", (e) => e.key === "Escape" && lb.classList.remove("open"));
 
-  // Links con #sección: el contenido se genera después de cargar, así que saltamos manualmente
-  if (location.hash) {
-    const t = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    if (t) requestAnimationFrame(() => t.scrollIntoView({ behavior: "instant", block: "start" }));
-  }
+  // Pestañas: cada #hash abre la pestaña que contiene ese elemento
+  const vistas = [...document.querySelectorAll(".view")];
+  const ir = (hash, suave) => {
+    const id = decodeURIComponent((hash || "").replace(/^#/, "")) || "propuesta";
+    const destino = TABS.some((t) => t.id === id)
+      ? document.querySelector(`.view[data-view="${id}"]`)
+      : document.getElementById(id);
+    if (!destino) return;
+    const vista = destino.closest(".view");
+    const cambia = vista.dataset.view !== vistaActual;
+    vistas.forEach((v) => (v.hidden = v !== vista));
+    vistaActual = vista.dataset.view;
+    document.querySelectorAll(".tab").forEach((t) => {
+      const on = t.dataset.tab === vistaActual;
+      t.classList.toggle("tab--on", on);
+      t.setAttribute("aria-selected", on);
+    });
+    if (destino === vista) scrollTo({ top: 0, behavior: cambia ? "instant" : suave ? "smooth" : "instant" });
+    else destino.scrollIntoView({ behavior: cambia || !suave ? "instant" : "smooth", block: "start" });
+    onScroll();
+    updBar();
+  };
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    e.preventDefault();
+    history.pushState(null, "", a.getAttribute("href"));
+    ir(a.getAttribute("href"), true);
+  });
+  addEventListener("popstate", () => ir(location.hash, false));
+  ir(location.hash, false);
 
   // Al imprimir: abrir todos los acordeones
-  addEventListener("beforeprint", () => document.querySelectorAll("details").forEach((d) => (d.open = true)));
+  addEventListener("beforeprint", () => {
+    document.querySelectorAll("details").forEach((d) => (d.open = true));
+    vistas.forEach((v) => (v.hidden = false));
+  });
+  addEventListener("afterprint", () => ir(location.hash, false));
 })();
