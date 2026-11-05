@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Nueva propuesta · 4S Real Estate</title>
+  <link rel="icon" href="assets/brand/isotipo-4s-trim-black.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    @font-face { font-family: "Bebas Neue"; src: url("assets/fonts/BebasNeue-Regular.otf"); font-display: swap; }
+    :root { --ink: #0f1011; --ink-2: #1c1e20; --ink-3: #2c2e30; --cream: #f4f3ef; --cream-2: #fbfaf7; --line: #e2e1dc; --gray: #55585c; --gray-l: #b7b7b7; --red: #e5383b; --ok: #1f9d55; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Jost", system-ui, sans-serif; background: var(--cream); color: var(--ink); font-size: 15px; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+
+    .top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 16px; padding: 12px 20px; background: var(--ink); color: #fff; }
+    .top img { height: 30px; }
+    .top h1 { font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 28px; letter-spacing: .03em; flex: 1; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 11px 18px; border-radius: 999px; border: 1.5px solid transparent; font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; text-decoration: none; white-space: nowrap; }
+    .btn--red { background: var(--red); color: #fff; }
+    .btn--ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.4); }
+    .btn--line { background: #fff; border-color: var(--ink); color: var(--ink); }
+    .btn--sm { padding: 7px 12px; font-size: 11px; }
+    .btn:disabled { opacity: .5; cursor: wait; }
+
+    .layout { display: grid; grid-template-columns: minmax(420px, 560px) 1fr; min-height: calc(100vh - 54px); }
+    form { padding: 24px 22px 120px; overflow-y: auto; height: calc(100vh - 54px); }
+    fieldset { border: 0; background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 6px 24px rgba(0,0,0,.04); }
+    .leg { font-weight: 400; font-family: "Bebas Neue", sans-serif; font-size: 26px; letter-spacing: .03em; margin-bottom: 12px; }
+    .leg span { color: var(--red); margin-right: 8px; }
+    .hint { clear: both; color: var(--gray); font-size: 13px; margin: -4px 0 12px; }
+    label { display: block; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--gray); margin: 12px 0 6px; clear: both; }
+    label small { text-transform: none; letter-spacing: 0; font-weight: 400; }
+    input[type=text], input[type=number], input[type=email], input[type=tel], input[type=password], select, textarea { width: 100%; border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 12px; background: var(--cream-2); outline: none; transition: border-color .2s; }
+    input:focus, select:focus, textarea:focus { border-color: var(--ink); background: #fff; }
+    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 12px; }
+    .slug { display: flex; align-items: center; border: 1.5px solid var(--line); border-radius: 10px; background: var(--cream-2); overflow: hidden; }
+    .slug span { padding: 0 4px 0 12px; color: var(--gray); font-size: 13px; white-space: nowrap; }
+    .slug input { border: 0 !important; padding-left: 0; background: transparent !important; }
+
+    .srv { border: 1.5px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 12px; }
+    .srv--on { border-color: var(--ink); }
+    .srv__head { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; }
+    .srv__head input { width: 20px; height: 20px; accent-color: var(--red); }
+    .srv__body { display: none; }
+    .srv--on .srv__body { display: block; }
+
+    .mapa { display: grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items: start; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; margin-top: 12px; }
+    .mapa__img { width: 96px; height: 72px; border-radius: 8px; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); text-align: center; cursor: pointer; }
+    .mapa input[type=text] { padding: 8px 10px; margin-bottom: 6px; }
+    .x { background: none; border: 0; font-size: 20px; color: var(--gray); cursor: pointer; padding: 0 4px; }
+
+    .resumen { background: var(--ink); color: #fff; border-radius: 12px; padding: 14px 16px; margin-top: 14px; font-size: 14px; line-height: 1.7; }
+    .resumen b { font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 22px; letter-spacing: .02em; }
+    .resumen .r { color: var(--red); }
+
+    .preview { position: sticky; top: 54px; height: calc(100vh - 54px); background: #2a2b2d; display: flex; flex-direction: column; }
+    .preview__bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; color: #fff; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+    .preview__bar span { flex: 1; }
+    .seg { display: flex; background: var(--ink-3); border-radius: 999px; padding: 3px; }
+    .seg button { background: none; border: 0; color: #fff; padding: 6px 12px; border-radius: 999px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; opacity: .7; }
+    .seg button.on { background: #fff; color: var(--ink); opacity: 1; }
+    .preview__frame { flex: 1; display: flex; justify-content: center; padding: 0 14px 14px; overflow: hidden; }
+    .preview iframe { width: 100%; height: 100%; border: 0; border-radius: 10px; background: #fff; transition: width .3s; }
+    .preview.mobile iframe { width: 390px; }
+
+    dialog { margin: auto; border: 0; border-radius: 16px; padding: 26px; width: min(460px, calc(100vw - 32px)); box-shadow: 0 30px 80px rgba(0,0,0,.4); }
+    dialog::backdrop { background: rgba(15,16,17,.6); }
+    dialog h2 { font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 34px; margin-bottom: 4px; }
+    dialog .acciones { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    .check { display: flex; gap: 8px; align-items: center; margin-top: 12px; font-size: 14px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink); }
+    .estado { margin-top: 14px; font-size: 14px; line-height: 1.5; }
+    .estado.err { color: var(--red); }
+    .estado.ok { color: var(--ok); }
+    .estado a { color: var(--ink); font-weight: 600; word-break: break-all; }
+
+    .solo-movil { display: none; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      form { height: auto; overflow: visible; padding: 16px 14px 120px; }
+      .preview { position: fixed; inset: 54px 0 0 0; z-index: 15; display: none; }
+      body.ver-preview .preview { display: flex; }
+      .preview .seg { display: none; }
+      .preview iframe { width: 100% !important; }
+      .top { gap: 8px; padding: 10px 12px; }
+      .top h1 { font-size: 22px; }
+      .top .btn { padding: 9px 12px; font-size: 10px; letter-spacing: .08em; }
+      .solo-escritorio { display: none !important; }
+      .solo-movil { display: inline-flex; }
+      .row3 { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+  <script src="core/4s-base.js"></script>
+</head>
+<body>
+  <header class="top">
+    <img src="assets/brand/logo-4s-trim-white.png" alt="4S">
+    <h1>Nueva propuesta</h1>
+    <button type="button" class="btn btn--ghost solo-escritorio" id="b-cargar">Cargar existente</button>
+    <button type="button" class="btn btn--ghost solo-escritorio" id="b-descargar">Descargar HTML</button>
+    <button type="button" class="btn btn--ghost solo-movil" id="b-preview">Vista previa</button>
+    <button type="button" class="btn btn--red" id="b-publicar">Publicar</button>
+  </header>
+
+  <div class="layout">
+    <form id="f" autocomplete="off" onsubmit="return false">
+      <fieldset>
+        <h2 class="leg"><span>01</span>Cliente y proyecto</h2>
+        <div class="row">
+          <div><label>Cliente</label><input type="text" name="cliente" placeholder="Grupo México" required></div>
+          <div><label>Proyecto</label><input type="text" name="proyecto" placeholder="Comercial La Minera" required></div>
+        </div>
+        <div class="row">
+          <div><label>Ciudad</label><input type="text" name="ciudad" placeholder="San Luis Potosí"></div>
+          <div><label>Fecha</label><input type="text" name="fecha" placeholder="Noviembre 2026"></div>
+        </div>
+        <label>Vigencia</label><input type="text" name="vigencia" value="30 días naturales a partir de su envío">
+        <label>Link de la propuesta <small>(se genera solo; puedes editarlo)</small></label>
+        <div class="slug"><span id="dominio">/</span><input type="text" name="slug" placeholder="cliente-proyecto"></div>
+      </fieldset>
+
+      <fieldset>
+        <h2 class="leg"><span>02</span>Contexto</h2>
+        <label>Resumen <small>— qué busca el cliente y cómo lo resolvemos</small></label>
+        <textarea name="resumen" rows="5" placeholder="El cliente busca definir el producto óptimo para…"></textarea>
+        <label>Objetivos <small>— uno por línea</small></label>
+        <textarea name="objetivos" rows="4" placeholder="Dimensionar la capacidad comercial de la zona&#10;Conocer al consumidor del área de influencia"></textarea>
+        <label>Giros / usos <small>— separados por coma</small></label>
+        <input type="text" name="giros" placeholder="Comercial, Equipamiento y Servicios">
+      </fieldset>
+
+      <fieldset>
+        <h2 class="leg"><span>03</span>Mapas e imágenes</h2>
+        <p class="hint">Zona, terreno, render… Se comprimen solas antes de subir. La primera se usa de fondo en la portada.</p>
+        <div id="mapas"></div>
+        <button type="button" class="btn btn--line btn--sm" id="b-mapa" style="margin-top:12px">+ Agregar imagen</button>
+        <input type="file" id="file" accept="image/*" hidden>
+      </fieldset>
+
+      <fieldset>
+        <h2 class="leg"><span>04</span>Servicios</h2>
+        <p class="hint">Marca los servicios incluidos. La metodología y los alcances salen del catálogo de 4S.</p>
+        <div id="servicios"></div>
+      </fieldset>
+
+      <fieldset>
+        <h2 class="leg"><span>05</span>Calendario y pagos</h2>
+        <div class="row3">
+          <div><label>Mes de inicio</label><select name="mesInicio"></select></div>
+          <div><label>Año</label><input type="number" name="anio" min="2024" max="2040"></div>
+          <div><label>Semana</label><select name="semanaInicio"><option value="1">S1</option><option value="2">S2</option><option value="3">S3</option><option value="4">S4</option></select></div>
+        </div>
+        <label>Esquema de pago</label>
+        <select name="esquemaPago">
+          <option value="50-50">50% anticipo / 50% al entregar</option>
+          <option value="100">100% anticipo</option>
+        </select>
+        <label>Nota de costos</label>
+        <input type="text" name="notaPagos" value="Todos los costos están en MXN. No incluyen impuestos en caso de aplicar.">
+        <div class="resumen" id="resumen"></div>
+      </fieldset>
+
+      <fieldset>
+        <h2 class="leg"><span>06</span>Asesor responsable</h2>
+        <p class="hint">Si lo dejas vacío, el botón de WhatsApp va al número general de 4S.</p>
+        <div class="row">
+          <div><label>Nombre</label><input type="text" name="asesorNombre"></div>
+          <div><label>Puesto</label><input type="text" name="asesorPuesto" placeholder="Socio · Monterrey-Noreste"></div>
+        </div>
+        <div class="row">
+          <div><label>Email</label><input type="email" name="asesorEmail" placeholder="nombre.apellido@4srealestate.com"></div>
+          <div><label>Teléfono</label><input type="tel" name="asesorTelefono"></div>
+        </div>
+        <label>WhatsApp <small>— solo dígitos con lada, ej. 5218112345678</small></label>
+        <input type="tel" name="asesorWhatsapp" inputmode="numeric">
+      </fieldset>
+    </form>
+
+    <aside class="preview" id="preview">
+      <div class="preview__bar">
+        <span>Vista previa en vivo</span>
+        <div class="seg"><button type="button" class="on" data-dev="desktop">Escritorio</button><button type="button" data-dev="mobile">Celular</button></div>
+      </div>
+      <div class="preview__frame"><iframe id="pv" title="Vista previa"></iframe></div>
+    </aside>
+  </div>
+
+  <dialog id="dlg-publicar">
+    <h2>Publicar propuesta</h2>
+    <p class="hint" id="pub-link"></p>
+    <label>Contraseña</label>
+    <input type="password" id="pub-pass" autocomplete="current-password">
+    <label class="check"><input type="checkbox" id="pub-sobre"> Sobrescribir si ya existe una propuesta con este link</label>
+    <div class="estado" id="pub-estado"></div>
+    <div class="acciones">
+      <button type="button" class="btn btn--line" id="pub-cancelar">Cerrar</button>
+      <button type="button" class="btn btn--red" id="pub-ok">Publicar</button>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-cargar">
+    <h2>Cargar propuesta</h2>
+    <p class="hint">Escribe el link de una propuesta publicada para editarla o usarla como base.</p>
+    <label>Link</label>
+    <div class="slug"><span>/</span><input type="text" id="cargar-slug" placeholder="grupo-mexico-la-minera"></div>
+    <label class="check"><input type="checkbox" id="cargar-dup"> Usar como base para un cliente nuevo (no edita la original)</label>
+    <div class="estado" id="cargar-estado"></div>
+    <div class="acciones">
+      <button type="button" class="btn btn--line" id="cargar-cancelar">Cerrar</button>
+      <button type="button" class="btn btn--red" id="cargar-ok">Cargar</button>
+    </div>
+  </dialog>
+
+<script>
+(function () {
+  const B = window.BASE_4S;
+  const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const f = document.getElementById("f");
+  const $ = (n) => f.elements[n];
+  const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const mxn = (n) => "$" + Number(n || 0).toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  const lineas = (s) => String(s || "").split("\n").map((x) => x.trim()).filter(Boolean);
+  const slugify = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 70);
+
+  let mapas = [];            // { titulo, pie, src, nuevo }
+  let slugManual = false;
+  let plantilla = "";
+
+  /* ---------- Inicializar campos ---------- */
+  const hoy = new Date();
+  $("mesInicio").innerHTML = MESES.map((m, i) => `<option value="${i}">${m}</option>`).join("");
+  $("mesInicio").value = hoy.getMonth();
+  $("anio").value = hoy.getFullYear();
+  $("fecha").value = `${MESES[hoy.getMonth()]} ${hoy.getFullYear()}`;
+  document.getElementById("dominio").textContent = location.host + "/";
+
+  // Servicios del catálogo
+  const cont = document.getElementById("servicios");
+  cont.innerHTML = Object.entries(B.servicios).map(([id, s]) => `
+    <div class="srv" data-id="${id}">
+      <label class="srv__head"><input type="checkbox" name="on-${id}"> ${esc(s.nombreLargo)}</label>
+      <div class="srv__body">
+        <div class="row3">
+          <div><label>Semanas</label><input type="number" name="semanas-${id}" min="1" max="52" value="5"></div>
+          <div><label>Inicia en semana</label><input type="number" name="inicio-${id}" min="1" max="52" value="1"></div>
+          <div><label>Inversión MXN</label><input type="number" name="inversion-${id}" min="0" step="1000" placeholder="0"></div>
+        </div>
+        <label>Alcance <small>(variante del catálogo)</small></label>
+        <select name="variante-${id}">${Object.keys(s.alcances || {}).map((v) => `<option value="${v}">${v[0].toUpperCase() + v.slice(1)}</option>`).join("")}</select>
+        <label>Especificaciones para este cliente <small>— una por línea</small></label>
+        <textarea name="espec-${id}" rows="3"></textarea>
+      </div>
+    </div>`).join("");
+  const ids = Object.keys(B.servicios);
+  const srvOn = (id) => $(`on-${id}`).checked;
+  const syncSrv = () => cont.querySelectorAll(".srv").forEach((el) => el.classList.toggle("srv--on", srvOn(el.dataset.id)));
+
+  // Al marcar un servicio, que empiece cuando acaba el anterior
+  ids.forEach((id) => $(`on-${id}`).addEventListener("change", () => {
+    if (!srvOn(id)) return;
+    let fin = 0;
+    ids.forEach((o) => { if (o !== id && srvOn(o)) fin = Math.max(fin, +$(`inicio-${o}`).value + +$(`semanas-${o}`).value - 1); });
+    $(`inicio-${id}`).value = fin ? fin + 1 : 1;
+  }));
+
+  /* ---------- Mapas ---------- */
+  const listaMapas = document.getElementById("mapas");
+  const pintarMapas = () => {
+    listaMapas.innerHTML = mapas.map((m, i) => `
+      <div class="mapa" data-i="${i}">
+        <div class="mapa__img" data-pick="${i}" style="${m.src ? `background-image:url('${m.src}')` : ""}">${m.src ? "" : "Subir<br>imagen"}</div>
+        <div>
+          <input type="text" data-k="titulo" value="${esc(m.titulo)}" placeholder="Título (Zona, Terreno…)">
+          <input type="text" data-k="pie" value="${esc(m.pie)}" placeholder="Descripción corta">
+        </div>
+        <button type="button" class="x" data-del="${i}" aria-label="Quitar">×</button>
+      </div>`).join("");
+  };
+  let pickIndex = -1;
+  const fileInput = document.getElementById("file");
+  document.getElementById("b-mapa").onclick = () => { mapas.push({ titulo: mapas.length ? "Terreno" : "Zona", pie: "", src: "", nuevo: false }); pintarMapas(); pickIndex = mapas.length - 1; fileInput.click(); };
+  listaMapas.addEventListener("click", (e) => {
+    const d = e.target.closest("[data-del]"); if (d) { mapas.splice(+d.dataset.del, 1); pintarMapas(); actualizar(); return; }
+    const p = e.target.closest("[data-pick]"); if (p) { pickIndex = +p.dataset.pick; fileInput.click(); }
+  });
+  listaMapas.addEventListener("input", (e) => {
+    const k = e.target.dataset.k; if (!k) return;
+    mapas[+e.target.closest(".mapa").dataset.i][k] = e.target.value; actualizar();
+  });
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0]; fileInput.value = "";
+    if (!file || pickIndex < 0) return;
+    mapas[pickIndex].src = await comprimir(file, 1600, 0.8);
+    mapas[pickIndex].nuevo = true;
+    pintarMapas(); actualizar();
+  });
+  function comprimir(file, max, q) {
+    return new Promise((ok, mal) => {
+      const img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(img.src);
+        ok(c.toDataURL("image/jpeg", q));
+      };
+      img.onerror = mal;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  /* ---------- Construir los datos de la propuesta ---------- */
+  function construir() {
+    const off = +$("semanaInicio").value - 1;
+    const mes0 = +$("mesInicio").value;
+    const sel = ids.filter(srvOn).map((id) => ({
+      id, cat: B.servicios[id],
+      semanas: Math.max(1, +$(`semanas-${id}`).value || 1),
+      inicio: Math.max(1, +$(`inicio-${id}`).value || 1),
+      inversion: Math.max(0, +$(`inversion-${id}`).value || 0),
+      variante: $(`variante-${id}`).value,
+      especificaciones: lineas($(`espec-${id}`).value)
+    }));
+
+    // Cronograma: trabajo + presentación una semana después
+    const filas = []; let ult = off;
+    sel.forEach((s, i) => {
+      const d = off + s.inicio - 1, h = d + s.semanas - 1;
+      filas.push({ n: i + 1, nombre: s.cat.nombre, desde: d, hasta: h, tipo: "trabajo" });
+      filas.push({ n: i + 1, nombre: `Presentación ${s.cat.nombre}`, desde: h + 1, hasta: h + 1, tipo: "hito" });
+      ult = Math.max(ult, h + 1);
+    });
+    const totalSem = ult + 1, nMeses = Math.max(1, Math.ceil(totalSem / 4));
+    const meses = Array.from({ length: nMeses }, (_, i) => ({ nombre: MESES[(mes0 + i) % 12], semanas: i < nMeses - 1 ? 4 : totalSem - 4 * (nMeses - 1) }));
+    const mesDe = (idx) => MESES[(mes0 + Math.floor(idx / 4)) % 12];
+
+    // Pagos
+    const pagos = [];
+    if ($("esquemaPago").value === "100") {
+      sel.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Pago 100%", fecha: mesDe(off), monto: s.inversion }));
+    } else {
+      sel.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Anticipo 50%", fecha: mesDe(off), monto: s.inversion / 2 }));
+      sel.forEach((s, i) => pagos.push({ servicio: s.cat.nombre, concepto: "Finiquito 50%", fecha: mesDe(filas[i * 2 + 1].desde), monto: s.inversion / 2 }));
+    }
+
+    return {
+      cliente: $("cliente").value.trim() || "Cliente",
+      proyecto: $("proyecto").value.trim() || "Proyecto",
+      ciudad: $("ciudad").value.trim(),
+      fecha: $("fecha").value.trim(),
+      vigencia: $("vigencia").value.trim(),
+      tipo: sel[0]?.variante || "comercial",
+      resumen: $("resumen").value.trim(),
+      objetivos: lineas($("objetivos").value),
+      giros: $("giros").value.split(",").map((x) => x.trim()).filter(Boolean),
+      mapas: mapas.filter((m) => m.src).map((m) => ({ titulo: m.titulo, img: m.src, pie: m.pie })),
+      servicios: sel.map((s) => ({ id: s.id, variante: s.variante, semanas: s.semanas, inversion: s.inversion, especificaciones: s.especificaciones })),
+      cronograma: { meses, filas, nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables." },
+      pagos,
+      notaPagos: $("notaPagos").value.trim(),
+      asesor: { nombre: $("asesorNombre").value.trim(), puesto: $("asesorPuesto").value.trim(), email: $("asesorEmail").value.trim(), telefono: $("asesorTelefono").value.trim(), whatsapp: $("asesorWhatsapp").value.replace(/\D/g, "") },
+      _form: { mesInicio: mes0, anio: +$("anio").value, semanaInicio: off + 1, esquemaPago: $("esquemaPago").value, inicios: Object.fromEntries(sel.map((s) => [s.id, s.inicio])) }
+    };
+  }
+
+  function armarHTML(data) {
+    const json = JSON.stringify(data, null, 2).replace(/</g, "\\u003c").replace(/\n/g, "\n  ");
+    return plantilla
+      .replace(/<script id="datos-propuesta">[\s\S]*?<\/script>/, () => `<script id="datos-propuesta">\n  window.PROPUESTA = ${json};\n  <\/script>`)
+      .replace(/<title>[\s\S]*?<\/title>/, () => `<title>Propuesta Estratégica · ${esc(data.cliente)} · 4S Real Estate</title>`);
+  }
+
+  /* ---------- Vista previa + resumen ---------- */
+  const pv = document.getElementById("pv");
+  let t = null;
+  function actualizar() {
+    syncSrv();
+    if (!slugManual) $("slug").value = slugify(`${$("cliente").value} ${$("proyecto").value}`);
+    const d = construir();
+    const total = d.servicios.reduce((a, s) => a + s.inversion, 0);
+    const off = +$("semanaInicio").value - 1, mes0 = +$("mesInicio").value, anio = +$("anio").value;
+    const semanas = d.cronograma.meses.reduce((a, m) => a + m.semanas, 0) - off;
+    const anioFin = anio + Math.floor((mes0 + d.cronograma.meses.length - 1) / 12);
+    const periodo = `${d.cronograma.meses[0].nombre} ${anio} → ${d.cronograma.meses.at(-1).nombre} ${anioFin}`;
+    document.getElementById("resumen").innerHTML = d.servicios.length
+      ? `<b>${d.servicios.length} servicio${d.servicios.length > 1 ? "s" : ""} · <span class="r">${mxn(total)} MXN</span></b><br>
+         ${periodo} · ${semanas} semanas<br>
+         ${d.pagos.map((p) => `${p.concepto} ${esc(p.servicio)}: ${mxn(p.monto)} (${p.fecha})`).join("<br>")}`
+      : "Marca al menos un servicio para calcular calendario y pagos.";
+    clearTimeout(t);
+    t = setTimeout(() => {
+      if (!plantilla) return;
+      const y = pv.contentWindow?.scrollY || 0;
+      pv.onload = () => { try { pv.contentWindow.scrollTo(0, y); } catch (_) {} };
+      pv.srcdoc = armarHTML(d);
+    }, 500);
+    try { localStorage.setItem("propuesta-borrador", JSON.stringify({ d, mapas, slug: $("slug").value, slugManual })); } catch (_) {}
+  }
+  f.addEventListener("input", (e) => { if (e.target.name === "slug") { slugManual = true; e.target.value = slugify(e.target.value); } actualizar(); });
+  f.addEventListener("change", actualizar);
+
+  document.querySelectorAll(".seg button").forEach((b) => b.onclick = () => {
+    document.querySelectorAll(".seg button").forEach((x) => x.classList.toggle("on", x === b));
+    document.getElementById("preview").classList.toggle("mobile", b.dataset.dev === "mobile");
+  });
+  document.getElementById("b-preview").onclick = (e) => {
+    const on = document.body.classList.toggle("ver-preview");
+    e.target.textContent = on ? "Editar" : "Vista previa";
+  };
+
+  /* ---------- Llenar el formulario desde datos existentes ---------- */
+  function llenar(d) {
+    const F = d._form || {};
+    const set = (n, v) => { if ($(n) && v != null) $(n).value = v; };
+    ["cliente", "proyecto", "ciudad", "fecha", "vigencia", "resumen", "notaPagos"].forEach((k) => set(k, d[k]));
+    set("objetivos", (d.objetivos || []).join("\n"));
+    set("giros", (d.giros || []).join(", "));
+    const a = d.asesor || {};
+    set("asesorNombre", a.nombre); set("asesorPuesto", a.puesto); set("asesorEmail", a.email); set("asesorTelefono", a.telefono); set("asesorWhatsapp", a.whatsapp);
+
+    const trabajo = (d.cronograma?.filas || []).filter((x) => x.tipo === "trabajo");
+    const off = F.semanaInicio ? F.semanaInicio - 1 : Math.min(3, trabajo.length ? Math.min(...trabajo.map((x) => x.desde)) : 0);
+    const mesIdx = F.mesInicio ?? MESES.indexOf(d.cronograma?.meses?.[0]?.nombre);
+    set("mesInicio", mesIdx >= 0 ? mesIdx : hoy.getMonth());
+    set("anio", F.anio || (String(d.fecha || "").match(/\d{4}/) || [hoy.getFullYear()])[0]);
+    set("semanaInicio", off + 1);
+    set("esquemaPago", F.esquemaPago || ((d.pagos || []).some((p) => /100/.test(p.concepto)) ? "100" : "50-50"));
+
+    ids.forEach((id) => { $(`on-${id}`).checked = false; });
+    (d.servicios || []).forEach((s, i) => {
+      if (!B.servicios[s.id]) return;
+      $(`on-${s.id}`).checked = true;
+      set(`semanas-${s.id}`, s.semanas); set(`inversion-${s.id}`, s.inversion); set(`variante-${s.id}`, s.variante);
+      set(`espec-${s.id}`, (s.especificaciones || []).join("\n"));
+      const ini = F.inicios?.[s.id] ?? (trabajo.find((x) => x.n === i + 1)?.desde ?? off) - off + 1;
+      set(`inicio-${s.id}`, Math.max(1, ini));
+    });
+    mapas = (d.mapas || []).map((m) => ({ titulo: m.titulo || "", pie: m.pie || "", src: m.img, nuevo: /^data:/.test(m.img) }));
+    pintarMapas();
+  }
+
+  /* ---------- Cargar existente ---------- */
+  const dlgC = document.getElementById("dlg-cargar");
+  const estC = document.getElementById("cargar-estado");
+  document.getElementById("b-cargar").onclick = () => { estC.textContent = ""; dlgC.showModal(); };
+  document.getElementById("cargar-cancelar").onclick = () => dlgC.close();
+  document.getElementById("cargar-ok").onclick = async () => {
+    const slug = slugify(document.getElementById("cargar-slug").value);
+    estC.className = "estado"; estC.textContent = "Cargando…";
+    try {
+      const r = await fetch(`${slug}.html`, { cache: "no-store" });
+      if (!r.ok) throw new Error("No encontré esa propuesta.");
+      const html = await r.text();
+      const m = html.match(/<script id="datos-propuesta">([\s\S]*?)<\/script>/);
+      if (!m) throw new Error("Esa página no tiene datos de propuesta.");
+      const w = {}; new Function("window", m[1])(w);
+      llenar(w.PROPUESTA);
+      const dup = document.getElementById("cargar-dup").checked;
+      slugManual = !dup;
+      if (dup) { $("cliente").value = ""; $("proyecto").value = ""; mapas = []; pintarMapas(); }
+      else { $("slug").value = slug; document.getElementById("pub-sobre").checked = true; }
+      actualizar();
+      dlgC.close();
+    } catch (e) { estC.className = "estado err"; estC.textContent = e.message; }
+  };
+
+  /* ---------- Descargar HTML (sin publicar) ---------- */
+  document.getElementById("b-descargar").onclick = () => {
+    const d = construir();
+    const blob = new Blob([armarHTML(d)], { type: "text/html" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = `${$("slug").value || "propuesta"}.html`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  };
+
+  /* ---------- Publicar ---------- */
+  const dlgP = document.getElementById("dlg-publicar");
+  const estP = document.getElementById("pub-estado");
+  const bOk = document.getElementById("pub-ok");
+  document.getElementById("b-publicar").onclick = () => {
+    const faltan = [];
+    if (!$("cliente").value.trim()) faltan.push("cliente");
+    if (!$("proyecto").value.trim()) faltan.push("proyecto");
+    if (!ids.some(srvOn)) faltan.push("al menos un servicio");
+    estP.className = faltan.length ? "estado err" : "estado";
+    estP.textContent = faltan.length ? "Falta: " + faltan.join(", ") + "." : "";
+    bOk.disabled = !!faltan.length;
+    document.getElementById("pub-link").innerHTML = `Se publicará en <b>${esc(location.host)}/${esc($("slug").value)}</b>`;
+    dlgP.showModal();
+  };
+  document.getElementById("pub-cancelar").onclick = () => dlgP.close();
+  bOk.onclick = async () => {
+    const slug = $("slug").value;
+    if (!slug) { estP.className = "estado err"; estP.textContent = "Escribe el link de la propuesta."; return; }
+    const d = construir();
+    const archivos = [];
+    const sello = Date.now().toString(36);
+    let k = 0;
+    d.mapas = d.mapas.map((m) => {
+      if (!/^data:image\/jpeg;base64,/.test(m.img)) return m;
+      const ruta = `assets/clientes/${slug}/imagen-${++k}-${sello}.jpg`;
+      archivos.push({ ruta, base64: m.img.split(",")[1] });
+      return { ...m, img: ruta };
+    });
+    bOk.disabled = true;
+    estP.className = "estado"; estP.textContent = "Publicando…";
+    try {
+      const r = await fetch("api/publicar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: document.getElementById("pub-pass").value, slug, sobrescribir: document.getElementById("pub-sobre").checked, data: d, archivos })
+      });
+      const j = await r.json().catch(() => ({ error: `Error ${r.status}` }));
+      if (!r.ok) throw new Error(j.error || `Error ${r.status}`);
+      const url = `${location.origin}${j.ruta}`;
+      estP.className = "estado ok";
+      estP.innerHTML = `✓ ${j.actualizada ? "Actualizada" : "Publicada"}. Estará en línea en ~1 minuto:<br><a href="${url}" target="_blank" rel="noopener">${url}</a>
+        <br><button type="button" class="btn btn--line btn--sm" style="margin-top:10px" id="copiar">Copiar link</button>`;
+      document.getElementById("copiar").onclick = (e) => { navigator.clipboard.writeText(url); e.target.textContent = "¡Copiado!"; };
+      // Las imágenes ya quedaron en el repo: usar sus rutas de aquí en adelante
+      mapas.filter((m) => m.src).forEach((m, i) => { m.src = d.mapas[i].img; m.nuevo = false; });
+      document.getElementById("pub-sobre").checked = true;
+      slugManual = true;
+    } catch (e) {
+      estP.className = "estado err"; estP.textContent = e.message;
+    } finally { bOk.disabled = false; }
+  };
+
+  /* ---------- Arranque ---------- */
+  fetch("_plantilla.html", { cache: "no-store" }).then((r) => r.text()).then((txt) => {
+    plantilla = txt;
+    try {
+      const b = JSON.parse(localStorage.getItem("propuesta-borrador") || "null");
+      if (b && b.d) { llenar(b.d); mapas = b.mapas || mapas; pintarMapas(); slugManual = !!b.slugManual; if (b.slug) $("slug").value = b.slug; }
+    } catch (_) {}
+    actualizar();
+  });
+})();
+</script>
+</body>
+</html>

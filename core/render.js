@@ -458,7 +458,7 @@
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
     e.preventDefault();
-    history.pushState(null, "", a.getAttribute("href"));
+    try { history.pushState(null, "", a.getAttribute("href")); } catch (_) { /* vista previa (srcdoc) */ }
     ir(a.getAttribute("href"), true);
   });
   addEventListener("popstate", () => ir(location.hash, false));

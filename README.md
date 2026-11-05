@@ -19,14 +19,31 @@ propuestas/
     └── web/                      ← fotos de 4srealestate.com (sin usar todavía)
 ```
 
-## Nueva propuesta
+## Nueva propuesta (formulario online)
 
-1. Copia `_plantilla.html` → `nombre-cliente-proyecto.html`.
-2. Llena el bloque `window.PROPUESTA` (cliente, proyecto, ciudad, resumen, servicios, precios, cronograma, pagos, asesor).
-3. Pon los mapas en `assets/clientes/<slug>/`.
-4. Haz commit y push a `main`: Vercel publica solo en `tu-dominio/nombre-cliente-proyecto`.
+Entra a **`tu-dominio/nueva`**:
 
-Con Claude basta con pedir: *“Haz la propuesta para X, proyecto Y en Z, con estudio de mercado (6 semanas, $N) y definición de producto…”*.
+1. Llena cliente, proyecto, contexto, mapas, servicios (semanas, inicio, inversión), calendario y asesor.
+   A la derecha ves la propuesta en vivo (escritorio / celular).
+2. **Publicar** → pide la contraseña, hace un commit en GitHub con la propuesta y sus imágenes,
+   y Vercel la publica en ~1 minuto en `tu-dominio/<link>`.
+3. **Cargar existente** → abre una propuesta publicada para editarla, o como base para otro cliente.
+4. **Descargar HTML** → bájala sin publicar.
+
+El borrador se guarda solo en el navegador mientras escribes.
+
+### Configuración única en Vercel (Settings → Environment Variables)
+
+| Variable | Valor |
+|---|---|
+| `GITHUB_TOKEN` | Token *fine-grained* de GitHub con acceso solo a `whitepapermkt/propuestas` y permiso **Contents: Read and write** |
+| `ADMIN_PASSWORD` | La contraseña que pedirá el formulario para publicar |
+
+Después de agregarlas, haz *Redeploy* una vez.
+
+### Manual (sin formulario)
+
+Copia `_plantilla.html` → `cliente-proyecto.html`, llena el bloque `datos-propuesta`, pon imágenes en `assets/clientes/<slug>/`, commit y push.
 
 ## Qué se calcula solo
 
