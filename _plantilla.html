@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Propuesta Estratégica · 4S Real Estate</title>
+  <link rel="icon" href="assets/brand/isotipo-4s-trim-black.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="core/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- =====================================================================
+       DATOS DE LA PROPUESTA · lo único que cambia por cliente
+       ===================================================================== -->
+  <script>
+  window.PROPUESTA = {
+    cliente: "NOMBRE DEL CLIENTE",
+    proyecto: "Nombre del Proyecto",
+    ciudad: "Ciudad",
+    fecha: "Mes Año",
+    vigencia: "30 días naturales a partir de su envío",
+    tipo: "comercial",
+
+    resumen: "Uno o dos párrafos: qué busca el cliente y cómo lo vamos a resolver.",
+    objetivos: ["Objetivo 1", "Objetivo 2", "Objetivo 3"],
+    giros: ["Comercial", "Equipamiento y Servicios"],
+
+    // Imágenes en assets/clientes/<slug-del-cliente>/
+    mapas: [
+      { titulo: "Zona", img: "assets/clientes/SLUG/mapa-zona.jpg", pie: "Descripción de la zona" },
+      { titulo: "Terreno", img: "assets/clientes/SLUG/mapa-terreno.jpg", pie: "Ubicación del predio" }
+    ],
+
+    // id = clave del catálogo en core/4s-base.js · variante = juego de alcances
+    servicios: [
+      { id: "estudio-mercado", variante: "comercial", semanas: 6, inversion: 0, especificaciones: ["..."] },
+      { id: "definicion-producto", variante: "comercial", semanas: 5, inversion: 0, especificaciones: ["..."] }
+    ],
+
+    cronograma: {
+      meses: [ { nombre: "Mes 1", semanas: 4 }, { nombre: "Mes 2", semanas: 4 }, { nombre: "Mes 3", semanas: 4 } ],
+      // desde / hasta = índice de semana empezando en 0
+      filas: [
+        { n: 1, nombre: "Estudio de Mercado", desde: 0, hasta: 5, tipo: "trabajo" },
+        { n: 1, nombre: "Presentación Estudio de Mercado", desde: 6, hasta: 6, tipo: "hito" }
+      ],
+      nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables."
+    },
+
+    pagos: [
+      { servicio: "Estudio de Mercado", concepto: "Anticipo 50%", fecha: "Mes 1", monto: 0 },
+      { servicio: "Estudio de Mercado", concepto: "Finiquito 50%", fecha: "Mes 3", monto: 0 }
+    ],
+    notaPagos: "Todos los costos están en MXN. No incluyen impuestos en caso de aplicar.",
+
+    asesor: { nombre: "", puesto: "", email: "", telefono: "", whatsapp: "" }
+  };
+  </script>
+
+  <script src="core/4s-base.js"></script>
+  <script src="core/render.js"></script>
+</body>
+</html>

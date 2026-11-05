@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Propuesta Estratégica · Grupo México · 4S Real Estate</title>
+  <link rel="icon" href="assets/brand/isotipo-4s-trim-black.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="core/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- =====================================================================
+       DATOS DE LA PROPUESTA · lo único que cambia por cliente
+       ===================================================================== -->
+  <script>
+  window.PROPUESTA = {
+    cliente: "Grupo México",
+    proyecto: "Comercial La Minera",
+    ciudad: "San Luis Potosí",
+    fecha: "Noviembre 2026",
+    vigencia: "30 días naturales a partir de su envío",
+    tipo: "comercial",
+
+    resumen:
+      "Grupo México busca definir el producto óptimo para un desarrollo comercial en su terreno de San Luis Potosí. Proponemos un proceso de dos etapas: primero entender a fondo la oferta y la demanda de la zona y después convertir esos hallazgos en una mezcla de producto, concepto y anclajes que maximicen el valor del proyecto.",
+    objetivos: [
+      "Dimensionar la capacidad comercial de la zona y los giros con mayor oportunidad.",
+      "Conocer a fondo al consumidor del área de influencia: hábitos, preferencias y gasto.",
+      "Definir la mezcla óptima de giros, áreas y anclajes para el proyecto.",
+      "Entregar un concepto y esquemático que sirva de base para el despacho de arquitectura."
+    ],
+    giros: ["Comercial", "Equipamiento y Servicios"],
+
+    mapas: [
+      { titulo: "Zona", img: "assets/clientes/grupo-mexico-la-minera/mapa-zona.jpg", pie: "Poniente de San Luis Potosí · Tangamanga, Lomas, Villa Magna" },
+      { titulo: "Terreno", img: "assets/clientes/grupo-mexico-la-minera/mapa-terreno.jpg", pie: "Ubicación del predio" }
+    ],
+
+    servicios: [
+      {
+        id: "estudio-mercado", variante: "comercial", semanas: 6, inversion: 180000,
+        especificaciones: ["Oferta y demanda para los giros: Comercial; Equipamiento y Servicios."]
+      },
+      {
+        id: "definicion-producto", variante: "comercial", semanas: 5, inversion: 100000,
+        especificaciones: [
+          "Mezcla óptima para el desarrollo tomando en cuenta áreas, precios, dimensiones y funcionalidad.",
+          "Equipamiento, amenidades y diferenciadores enfocados en el usuario final.",
+          "Concepto del proyecto enfocado en los gustos y necesidades del mercado meta.",
+          "Esquemático arquitectónico del proyecto."
+        ]
+      }
+    ],
+
+    cronograma: {
+      meses: [ { nombre: "Noviembre", semanas: 4 }, { nombre: "Diciembre", semanas: 4 }, { nombre: "Enero", semanas: 3 } ],
+      // desde / hasta = índice de semana empezando en 0 (Nov S1 = 0, Dic S1 = 4, Ene S1 = 8)
+      filas: [
+        { n: 1, nombre: "Estudio de Mercado", desde: 1, hasta: 6, tipo: "trabajo" },
+        { n: 1, nombre: "Presentación Estudio de Mercado", desde: 7, hasta: 7, tipo: "hito" },
+        { n: 2, nombre: "Definición de Producto", desde: 5, hasta: 8, tipo: "trabajo" },
+        { n: 2, nombre: "Presentación Definición de Producto", desde: 9, hasta: 9, tipo: "hito" }
+      ],
+      nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables."
+    },
+
+    pagos: [
+      { servicio: "Estudio de Mercado", concepto: "Anticipo 50%", fecha: "Noviembre", monto: 90000 },
+      { servicio: "Definición de Producto", concepto: "Anticipo 50%", fecha: "Noviembre", monto: 50000 },
+      { servicio: "Estudio de Mercado", concepto: "Finiquito 50%", fecha: "Enero", monto: 90000 },
+      { servicio: "Definición de Producto", concepto: "Finiquito 50%", fecha: "Enero", monto: 50000 }
+    ],
+    notaPagos: "Todos los costos están en MXN. No incluyen impuestos en caso de aplicar.",
+
+    // Asesor responsable. PENDIENTE: completar con el socio/ejecutivo que lleva la cuenta.
+    asesor: {
+      nombre: "",
+      puesto: "",
+      email: "",
+      telefono: "",
+      whatsapp: "" // solo dígitos, ej. 5218132447078. Si va vacío se usa el WhatsApp general de 4S.
+    }
+  };
+  </script>
+
+  <script src="core/4s-base.js"></script>
+  <script src="core/render.js"></script>
+</body>
+</html>
