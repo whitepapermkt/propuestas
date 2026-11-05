@@ -16,7 +16,7 @@
   // Servicios de la propuesta enriquecidos con el catálogo
   const servicios = P.servicios.map((s, i) => ({ ...B.servicios[s.id], ...s, num: i + 1 }));
   const total = servicios.reduce((a, s) => a + s.inversion, 0);
-  const semanasTotales = P.cronograma
+  const semanasTotales = P.cronograma?.filas?.length
     ? Math.max(...P.cronograma.filas.map((f) => f.hasta)) - Math.min(...P.cronograma.filas.map((f) => f.desde)) + 1
     : servicios.reduce((a, s) => a + s.semanas, 0);
   const idsIncluidos = new Set(servicios.map((s) => s.id));

@@ -53,6 +53,7 @@
     .mapa { display: grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items: start; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; margin-top: 12px; }
     .mapa__img { width: 96px; height: 72px; border-radius: 8px; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); text-align: center; cursor: pointer; }
     .mapa input[type=text] { padding: 8px 10px; margin-bottom: 6px; }
+    .mapas-acc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .x { background: none; border: 0; font-size: 20px; color: var(--gray); cursor: pointer; padding: 0 4px; }
 
     .resumen { background: var(--ink); color: #fff; border-radius: 12px; padding: 14px 16px; margin-top: 14px; font-size: 14px; line-height: 1.7; }
@@ -138,8 +139,14 @@
         <h2 class="leg"><span>03</span>Mapas e imágenes</h2>
         <p class="hint">Zona, terreno, render… Se comprimen solas antes de subir. La primera se usa de fondo en la portada.</p>
         <div id="mapas"></div>
-        <button type="button" class="btn btn--line btn--sm" id="b-mapa" style="margin-top:12px">+ Agregar imagen</button>
+        <div class="mapas-acc">
+          <button type="button" class="btn btn--line btn--sm" id="b-mapa">+ Agregar imagen</button>
+          <button type="button" class="btn btn--line btn--sm" id="b-kmz">Generar desde KMZ</button>
+        </div>
+        <p class="hint" style="margin:8px 0 0">Con el KMZ/KML del predio (Google Earth) se arman solas las imágenes de Zona y Terreno con vista satelital.</p>
+        <div class="estado" id="kmz-estado"></div>
         <input type="file" id="file" accept="image/*" hidden>
+        <input type="file" id="file-kmz" hidden>
       </fieldset>
 
       <fieldset>
@@ -314,6 +321,216 @@
       img.src = URL.createObjectURL(file);
     });
   }
+
+  /* ---------- Mapas desde KMZ / KML (Google Earth) ---------- */
+  // Teselas de Esri: sin API key y con CORS (el canvas no queda "contaminado" y se puede exportar a JPG)
+  const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/";
+  const CAPAS = {
+    sat: { url: (z, x, y) => `${ESRI}World_Imagery/MapServer/tile/${z}/${y}/${x}?blankTile=false`, respaldo: 4 },
+    calles: { url: (z, x, y) => `${ESRI}Reference/World_Transportation/MapServer/tile/${z}/${y}/${x}` },
+    lugares: { url: (z, x, y) => `${ESRI}Reference/World_Boundaries_and_Places/MapServer/tile/${z}/${y}/${x}` }
+  };
+  const CREDITO_SAT = "Powered by Esri · Esri, Vantor, Earthstar Geographics y la comunidad de usuarios GIS";
+  const CREDITO_REF = "Powered by Esri · Esri, Vantor, Earthstar Geographics, HERE, Garmin, © colaboradores de OpenStreetMap";
+  const fmtArea = (m2) => m2 >= 10000 ? `${(m2 / 10000).toLocaleString("es-MX", { maximumFractionDigits: 2 })} ha` : `${Math.round(m2).toLocaleString("es-MX")} m²`;
+  const merc = ([lon, lat]) => { const s = Math.sin(Math.max(-85, Math.min(85, lat)) * Math.PI / 180); return [(lon + 180) / 360, 0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)]; };
+
+  // ZIP mínimo: lee el directorio central y saca el .kml (doc.kml de preferencia)
+  async function leerKMZ(buf) {
+    const u8 = new Uint8Array(buf), dv = new DataView(buf), dec = new TextDecoder();
+    let e = u8.length - 22;
+    while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+    if (e < 0) throw new Error("El KMZ está dañado (no es un ZIP válido).");
+    const arch = [];
+    for (let i = 0, n = dv.getUint16(e + 10, true), p = dv.getUint32(e + 16, true); i < n && dv.getUint32(p, true) === 0x02014b50; i++) {
+      const lNom = dv.getUint16(p + 28, true);
+      arch.push({ nombre: dec.decode(u8.subarray(p + 46, p + 46 + lNom)), metodo: dv.getUint16(p + 10, true), tam: dv.getUint32(p + 20, true), off: dv.getUint32(p + 42, true) });
+      p += 46 + lNom + dv.getUint16(p + 30, true) + dv.getUint16(p + 32, true);
+    }
+    const kmls = arch.filter((a) => /\.kml$/i.test(a.nombre)).sort((a, b) => a.nombre.split("/").length - b.nombre.split("/").length);
+    const a = kmls.find((a) => /^doc\.kml$/i.test(a.nombre)) || kmls[0];
+    if (!a) throw new Error("El KMZ no trae ningún archivo .kml adentro.");
+    const ini = a.off + 30 + dv.getUint16(a.off + 26, true) + dv.getUint16(a.off + 28, true);
+    const datos = u8.subarray(ini, ini + a.tam);
+    if (a.metodo === 0) return dec.decode(datos);
+    if (a.metodo !== 8) throw new Error("El KMZ usa una compresión que no reconozco; expórtalo como .kml.");
+    if (!window.DecompressionStream) throw new Error("Este navegador no puede abrir KMZ; actualízalo o usa el .kml.");
+    return new Response(new Blob([datos]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).text();
+  }
+
+  // KML → { pol: [[exterior, ...huecos]], lin: [[lon,lat]…], pun: [lon,lat] }
+  function leerKML(txt) {
+    const doc = new DOMParser().parseFromString(txt, "application/xml");
+    if (doc.getElementsByTagName("parsererror").length) throw new Error("No pude leer el archivo; ¿es un KMZ o KML?");
+    const tags = (el, t) => [...el.getElementsByTagNameNS("*", t)];
+    const coords = (el) => {
+      const c = el && tags(el, "coordinates")[0];
+      return c ? c.textContent.trim().replace(/\s*,\s*/g, ",").split(/\s+/).map((t) => t.split(",").map(Number))
+        .filter((p) => p.length >= 2 && isFinite(p[0]) && isFinite(p[1]) && Math.abs(p[1]) <= 90).map((p) => [p[0], p[1]]) : [];
+    };
+    const geo = { pol: [], lin: [], pun: [] };
+    tags(doc, "Polygon").forEach((pg) => {
+      const ext = coords(tags(pg, "outerBoundaryIs")[0] || pg);
+      if (ext.length > 2) geo.pol.push([ext, ...tags(pg, "innerBoundaryIs").map(coords).filter((r) => r.length > 2)]);
+      else geo.pun.push(...ext);
+    });
+    tags(doc, "LineString").forEach((l) => { const c = coords(l); if (c.length > 1) geo.lin.push(c); else geo.pun.push(...c); });
+    tags(doc, "Point").forEach((p) => geo.pun.push(...coords(p).slice(0, 1)));
+    return geo;
+  }
+
+  // Área esférica (misma fórmula que Google Maps computeArea)
+  const areaAnillo = (r) => {
+    const k = Math.PI / 180; let s = 0;
+    r.forEach(([l1, p1], i) => { const [l2, p2] = r[(i + 1) % r.length]; s += (l2 - l1) * k * (2 + Math.sin(p1 * k) + Math.sin(p2 * k)); });
+    return Math.abs(s * 6378137 * 6378137 / 2);
+  };
+
+  const cargarImg = (src) => new Promise((ok) => {
+    const i = new Image(), t = setTimeout(() => { i.onload = i.onerror = null; ok(null); }, 20000);
+    i.crossOrigin = "anonymous";
+    i.onload = () => { clearTimeout(t); ok(i); };
+    i.onerror = () => { clearTimeout(t); ok(null); };
+    i.src = src;
+  });
+  // Una tesela; si no hay imagen a ese zoom, recorta la del zoom anterior
+  async function tesela(capa, z, x, y) {
+    for (let k = 0; k <= (capa.respaldo || 0) && k <= z; k++) {
+      const img = await cargarImg(capa.url(z - k, x >> k, y >> k));
+      if (img) { const s = 256 >> k; return { img, sx: (x % (1 << k)) * s, sy: (y % (1 << k)) * s, s }; }
+    }
+    return null;
+  }
+
+  // Dibuja un mapa W×H centrado en c (Mercator 0–1) con zoom zl; la salida va a 2x (retina)
+  async function pintarMapa({ W, H, c, zl, capas, geo, zona, credito }) {
+    const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const g = cv.getContext("2d");
+    g.fillStyle = "#1c1e20"; g.fillRect(0, 0, W, H); g.imageSmoothingQuality = "high";
+    const S = 256 * 2 ** (zl + 1);
+    const px = (p) => { const [mx, my] = merc(p); return [(mx - c[0]) * S + W / 2, (my - c[1]) * S + H / 2]; };
+    let pedidas = 0, fallas = 0;
+    const listas = await Promise.all(capas.map(([capa, zt, alfa]) => {
+      const n = 2 ** zt, t = S / n, lista = [];
+      const y0 = Math.max(0, Math.floor((c[1] - H / 2 / S) * n)), y1 = Math.min(n - 1, Math.floor((c[1] + H / 2 / S) * n));
+      for (let y = y0; y <= y1; y++) for (let x = Math.floor((c[0] - W / 2 / S) * n); x <= Math.floor((c[0] + W / 2 / S) * n); x++) {
+        lista.push(tesela(capa, zt, ((x % n) + n) % n, y).then((r) => {
+          if (capa === CAPAS.sat) { pedidas++; if (!r) fallas++; }
+          const X = (x / n - c[0]) * S + W / 2, Y = (y / n - c[1]) * S + H / 2;
+          return r && { ...r, alfa, X: Math.floor(X), Y: Math.floor(Y), w: Math.ceil(X + t) - Math.floor(X), h: Math.ceil(Y + t) - Math.floor(Y) };
+        }));
+      }
+      return Promise.all(lista);
+    }));
+    if (fallas > pedidas / 2) throw new Error("No pude descargar las imágenes satelitales. Revisa tu conexión e intenta de nuevo.");
+    const pintarCapa = (l) => { l.forEach((r) => { if (r) { g.globalAlpha = r.alfa || 1; g.drawImage(r.img, r.sx, r.sy, r.s, r.s, r.X, r.Y, r.w, r.h); } }); g.globalAlpha = 1; };
+    pintarCapa(listas[0]);
+
+    // Predio: polígonos, líneas y puntos (las etiquetas van encima)
+    const sombra = (b) => { g.shadowColor = "rgba(0,0,0,.55)"; g.shadowBlur = b; };
+    g.lineJoin = g.lineCap = "round";
+    geo.pol.forEach((anillos) => {
+      g.beginPath();
+      anillos.forEach((r) => { r.forEach((p, i) => g[i ? "lineTo" : "moveTo"](...px(p))); g.closePath(); });
+      g.fillStyle = zona ? "rgba(229,56,59,.4)" : "rgba(229,56,59,.16)"; g.fill("evenodd");
+      sombra(zona ? 6 : 12); g.strokeStyle = "#fff"; g.lineWidth = zona ? 3 : 5; g.stroke(); sombra(0);
+    });
+    geo.lin.forEach((r) => {
+      g.beginPath(); r.forEach((p, i) => g[i ? "lineTo" : "moveTo"](...px(p)));
+      sombra(8); g.strokeStyle = "#fff"; g.lineWidth = zona ? 5 : 8; g.stroke(); sombra(0);
+      g.strokeStyle = "#e5383b"; g.lineWidth = zona ? 2 : 4; g.stroke();
+    });
+    geo.pun.forEach((p) => {
+      const [x, y] = px(p);
+      g.beginPath(); g.arc(x, y, zona ? 9 : 14, 0, 7); g.fillStyle = "#e5383b"; sombra(8); g.fill(); sombra(0);
+      g.strokeStyle = "#fff"; g.lineWidth = zona ? 3 : 4; g.stroke();
+    });
+    listas.slice(1).forEach(pintarCapa);
+    // Zona: aro blanco alrededor del predio
+    if (zona) {
+      const [x0, y0, x1, y1] = [...geo.pol.flatMap((a) => a[0]), ...geo.lin.flat(), ...geo.pun].map(px)
+        .reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], [Infinity, Infinity, -Infinity, -Infinity]);
+      g.beginPath(); g.arc((x0 + x1) / 2, (y0 + y1) / 2, Math.min(H * 0.45, Math.max(48, Math.hypot(x1 - x0, y1 - y0) / 2 + 28)), 0, 7);
+      sombra(14); g.strokeStyle = "#fff"; g.lineWidth = 6; g.stroke(); sombra(0);
+    }
+
+    // Escala, norte y créditos
+    g.font = '600 22px Jost, system-ui, sans-serif'; g.textBaseline = "middle";
+    const lat = Math.atan(Math.sinh(Math.PI * (1 - 2 * c[1]))) * 180 / Math.PI;
+    const mpx = 40075016.686 * Math.cos(lat * Math.PI / 180) / S;
+    const e10 = 10 ** Math.floor(Math.log10(mpx * 220)), m = [5, 2, 1].map((k) => k * e10).find((k) => k <= mpx * 220);
+    const bw = m / mpx, txt = m >= 1000 ? `${m / 1000} km` : `${m} m`;
+    g.fillStyle = "rgba(15,16,17,.72)"; g.fillRect(24, H - 70, bw + 32 + g.measureText(txt).width + 16, 46);
+    g.fillStyle = "#fff"; g.fillRect(40, H - 49, bw, 6); g.fillRect(40, H - 57, 3, 18); g.fillRect(40 + bw - 3, H - 57, 3, 18);
+    g.fillText(txt, 40 + bw + 14, H - 46);
+    g.save(); g.translate(W - 50, 54);
+    g.fillStyle = "rgba(15,16,17,.72)"; g.beginPath(); g.arc(0, 0, 30, 0, 7); g.fill();
+    g.fillStyle = "#fff"; g.beginPath(); g.moveTo(0, -20); g.lineTo(9, 4); g.lineTo(0, -1); g.lineTo(-9, 4); g.closePath(); g.fill();
+    g.font = '600 15px Jost, system-ui, sans-serif'; g.textAlign = "center"; g.fillText("N", 0, 16); g.restore();
+    let fs = 17; do g.font = `500 ${fs}px Jost, system-ui, sans-serif`; while (g.measureText(credito).width > W * 0.62 && --fs > 11);
+    const cw = g.measureText(credito).width;
+    g.fillStyle = "rgba(15,16,17,.72)"; g.fillRect(W - cw - 28, H - 36, cw + 28, 36);
+    g.fillStyle = "rgba(255,255,255,.92)"; g.fillText(credito, W - cw - 14, H - 18);
+
+    try { return cv.toDataURL("image/jpeg", 0.82); }
+    catch (_) { throw new Error("El navegador bloqueó las imágenes satelitales (CORS); intenta de nuevo."); }
+  }
+
+  // Archivo .kmz/.kml → { zona, terreno, area } (data URLs JPEG)
+  async function mapasDesdeKMZ(file, avance = () => {}) {
+    avance("Leyendo KMZ…");
+    const buf = await file.arrayBuffer(), b0 = new Uint8Array(buf, 0, Math.min(2, buf.byteLength));
+    const geo = leerKML(b0[0] === 0x50 && b0[1] === 0x4b ? await leerKMZ(buf) : new TextDecoder().decode(buf));
+    const todos = [...geo.pol.flatMap((a) => a[0]), ...geo.lin.flat(), ...geo.pun].map(merc);
+    if (!todos.length) throw new Error("No encontré coordenadas en el archivo.");
+    const bb = todos.reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], [1, 1, 0, 0]);
+    const c = [(bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2], dw = bb[2] - bb[0], dh = bb[3] - bb[1];
+    const area = geo.pol.reduce((s, [ext, ...huecos]) => s + areaAnillo(ext) - huecos.reduce((h, r) => h + areaAnillo(r), 0), 0);
+    try { await document.fonts.load('600 22px Jost'); } catch (_) {}
+
+    // Zona: zoom entero (máx. 15 ≈ 3.5 km de ancho) en el que el predio ocupe ≤ 25%; entero para que las etiquetas queden nítidas a 2x
+    let zz = 15;
+    while (zz > 9 && (dw * 256 * 2 ** (zz + 1) > 1600 * 0.25 || dh * 256 * 2 ** (zz + 1) > 900 * 0.25)) zz--;
+    // Terreno: ajustado al predio con margen (máx. 18)
+    const zt = dw || dh ? Math.max(3, Math.min(18, Math.log2(Math.min(1600 * 0.6 / (dw || 1e-9), 1200 * 0.6 / (dh || 1e-9)) / 256) - 1)) : 17;
+
+    avance("Descargando imágenes satelitales…");
+    const [zona, terreno] = await Promise.all([
+      pintarMapa({ W: 1600, H: 900, c, zl: zz, geo, zona: true, credito: CREDITO_REF,
+        capas: [[CAPAS.sat, zz + 1], [CAPAS.calles, zz, 0.9], [CAPAS.lugares, zz]] }),
+      pintarMapa({ W: 1600, H: 1200, c, zl: zt, geo, zona: false, credito: CREDITO_SAT,
+        capas: [[CAPAS.sat, Math.min(19, Math.round(zt + 1))]] })
+    ]);
+    return { zona, terreno, area };
+  }
+
+  const kmzInput = document.getElementById("file-kmz"), bKmz = document.getElementById("b-kmz"), estK = document.getElementById("kmz-estado");
+  if (!matchMedia("(pointer: coarse)").matches) kmzInput.accept = ".kmz,.kml"; // en iOS el filtro deja los .kmz en gris
+  async function generarDesdeKMZ(file) {
+    bKmz.disabled = true; estK.className = "estado";
+    try {
+      const r = await mapasDesdeKMZ(file, (t) => { estK.textContent = t; });
+      const sup = r.area ? fmtArea(r.area) : "";
+      // Reemplaza las de un KMZ anterior; conserva las que subió el usuario
+      mapas = [
+        { titulo: "Zona", pie: "Contexto de la zona", src: r.zona, nuevo: true, kmz: true },
+        { titulo: "Terreno", pie: sup ? `Ubicación del predio · ${sup}` : "Ubicación del predio", src: r.terreno, nuevo: true, kmz: true },
+        ...mapas.filter((m) => !m.kmz)
+      ];
+      pintarMapas(); actualizar();
+      estK.className = "estado ok"; estK.textContent = `✓ Listo: se agregaron Zona y Terreno${sup ? ` (${sup})` : ""}. Puedes editar los textos.`;
+      return r;
+    } catch (e) {
+      estK.className = "estado err"; estK.textContent = e.message || "No pude generar las imágenes.";
+      throw e;
+    } finally { bKmz.disabled = false; }
+  }
+  window.generarDesdeKMZ = generarDesdeKMZ;
+  bKmz.onclick = () => kmzInput.click();
+  kmzInput.addEventListener("change", () => {
+    const file = kmzInput.files[0]; kmzInput.value = "";
+    if (file) generarDesdeKMZ(file).catch(() => {});
+  });
 
   /* ---------- Construir los datos de la propuesta ---------- */
   function construir() {
