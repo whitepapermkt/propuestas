@@ -24,7 +24,7 @@ propuestas/
 1. Copia `_plantilla.html` → `nombre-cliente-proyecto.html`.
 2. Llena el bloque `window.PROPUESTA` (cliente, proyecto, ciudad, resumen, servicios, precios, cronograma, pagos, asesor).
 3. Pon los mapas en `assets/clientes/<slug>/`.
-4. Publica: queda en `tu-dominio/propuestas/nombre-cliente-proyecto.html`.
+4. Haz commit y push a `main`: Vercel publica solo en `tu-dominio/nombre-cliente-proyecto`.
 
 Con Claude basta con pedir: *“Haz la propuesta para X, proyecto Y en Z, con estudio de mercado (6 semanas, $N) y definición de producto…”*.
 
