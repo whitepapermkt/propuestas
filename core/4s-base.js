@@ -132,6 +132,25 @@ window.BASE_4S = {
         }
       ],
       requerimientos: [],
+      // Versión PDF: textos tal cual del deck original de 4S
+      pdf: {
+        titulo: "Estudio de Mercado: Oferta y Demanda",
+        especIntro: "Oferta y Demanda para los siguientes giros:",
+        especGiros: true,
+        alcances: {
+          comercial: [
+            { titulo: "1.1 Estudio de Oferta · Alcance comercial", entregable: "Reporte PDF", grupos: [
+              { titulo: "Análisis de la zona", items: ["Identificar el nivel socioeconómico de la zona bajo análisis y el total de los hogares de influencia.", "Identificación de los corredores comerciales y sus principales características.", "Ubicación de los proyectos activos en la zona de influencia primaria."] },
+              { titulo: "Big Data", items: ["Mapa de la zona de influencia primaria publicadas online.", "Análisis de rango de metraje y precio.", "Comparativa de oferta formal y oferta informal."] },
+              { titulo: "Estructura", items: ["Mapa de ocupación de la oferta comercial por corredor.", "Análisis de las principales características de la oferta comercial activa en la zona de influencia primaria.", "Composición de las plazas comerciales por giro de los proyectos por distancia al predio.", "Composición del área neta rentable/vendible por plaza comercial.", "Análisis por tipo de plaza (Fashion Mall, Stripmall, Community center, etc) rango de precio y rango de metraje.", "Composición detallada por giros de las plazas comerciales bajo análisis."] },
+              { titulo: "Estimación", items: ["Determinación de la capacidad comercial de la zona.", "Determinación de giros generales y enfoque comercial.", "Determinación general de metros cuadrados por enfoque."] }
+            ]},
+            { titulo: "1.2 Estudio de Demanda · Alcance comercio/equipamiento", entregable: "Reporte PDF",
+              nota: "En términos generales se exploran los siguientes objetivos, pero se presenta una propuesta adhoc a las necesidades y requerimientos del cliente o terreno de interés.",
+              lista: ["Identificar dónde realiza sus compras de ropa, calzado y supermercado.", "Conocer qué actividades realiza con más frecuencia cuando visita una plaza comercial.", "Conocer qué plazas comerciales suele visitar y con qué frecuencia va, y qué plazas comerciales considera que son las mejores y por qué.", "Identificar qué giros comerciales visita, qué marcas, cuál es el gasto promedio por persona y el número de visitas.", "Conocer las ventajas y desventajas de la zona.", "Conocer cómo evalúa la zona en cuanto a la accesibilidad, ubicación y plusvalía, etc.", "Conocer qué oferta inmobiliaria le hace falta a la zona y si la considera una zona segura.", "Conocer si considera que la zona es una buena opción para el desarrollo de una plaza comercial.", "Conocer qué características debe de tener para que la visite y qué enfoque debe de tener.", "Identificar qué tipo de negocios le gustarían en la plaza comercial y cuáles no.", "Conocer qué tiendas ha visitado que le gustaría que hubiera en el proyecto.", "Identificar qué tan atractivos son ciertos locales comerciales.", "Conocer qué áreas o amenidades incluiría para que el centro comercial sea innovador.", "Identificar qué le gustaría encontrar en la plaza para que la visite con frecuencia.", "Conocer cuál es su principal interés, zona de mayor importancia y las actividades que disfruta hacer en el fin de semana."] }
+          ]
+        }
+      },
       alcances: {
         comercial: [
           { titulo: "1.1 Estudio de Oferta · Alcance comercial", entregable: "Reporte PDF", grupos: [
@@ -176,6 +195,24 @@ window.BASE_4S = {
         { icono: "assets/deck/icons/s19-producto-ampliado.png", titulo: "Producto ampliado", texto: "Amenidades acordes al estilo de vida de las tribus meta." }
       ],
       requerimientos: ["Estudio de mercado cerrado y pagado.", "Anticipo de Definición de Producto pagado.", "Ubicación en KMZ (delimitación en polígono).", "Lineamientos: CUS, COS, CAS, densidad, altura y uso de suelo."],
+      pdf: {
+        titulo: "Definición e Innovación de Producto",
+        especIntro: "Se determina:",
+        requerimientos: "Estudio de mercado cerrado y pagado. Anticipo Definición de Producto pagado. Ubicación en kmz (delimitación en polígono). Lineamientos (CUS, COS, CAS, Densidad, Altura, Uso de Suelo).",
+        alcances: {
+          comercial: [
+            { titulo: "2.1 Análisis y mercado meta", entregable: "Documento PDF", grupos: [
+              { titulo: "Análisis estratégico", items: ["Selección de variables a considerar", "Análisis de dimensiones", "Análisis de precio", "Análisis de precio por m2", "Análisis de saturación o falta de giros (COMERCIAL, EQUIPAMIENTO Y SERVICIOS)"] },
+              { titulo: "Mercado meta", items: ["Variables de segmentación", "Etapas de vida", "Análisis de clusters", "Perfil de tribus de consumo"] }
+            ]},
+            { titulo: "2.2 Producto y concepto", entregable: "Documento PDF", grupos: [
+              { titulo: "Producto nuclear", items: ["Tabla de mezcla de productos (POR GIRO)", "Resumen de tabla de áreas"] },
+              { titulo: "Concepto", items: ["Propuesta de valor", "Look and Feel (concepto arquitectónico)", "Guías de diseño", "Benchmark"] },
+              { titulo: "Producto ampliado (anclajes)", items: ["Propuesta de anclajes (COMERCIO, EQUIPAMIENTO Y SERVICIOS) de acuerdo al perfil del comprador", "Tabla de áreas de anclajes", "Look and Feel de anclajes"] }
+            ]}
+          ]
+        }
+      },
       alcances: {
         comercial: [
           { titulo: "2.1 Análisis y mercado meta", entregable: "Documento PDF", grupos: [

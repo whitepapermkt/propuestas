@@ -8,6 +8,14 @@
   const P = window.PROPUESTA;
   const app = document.getElementById("app");
 
+  // Versión PDF (deck 16:9): core/pdf.css + core/pdf.js, junto a este archivo
+  const core = (document.currentScript && document.currentScript.src.replace(/render\.js(\?.*)?$/, "")) || "core/";
+  document.head.insertAdjacentHTML("beforeend", `<link rel="stylesheet" href="${core}pdf.css">`);
+  const pdfJs = document.createElement("script");
+  pdfJs.src = core + "pdf.js";
+  document.head.appendChild(pdfJs);
+  window.descargarPDF = window.descargarPDF || (() => window.print());
+
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const mxn = (n) => "$" + Number(n).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const mxnCorto = (n) => "$" + Number(n).toLocaleString("es-MX");
@@ -66,7 +74,7 @@
       </div>
       <div class="hero__cta">
         <a href="#proyecto" class="btn btn--light">Ver propuesta</a>
-        <button class="btn btn--ghost" onclick="window.print()">Descargar PDF</button>
+        <button class="btn btn--ghost" onclick="descargarPDF(this)">Descargar PDF</button>
       </div>
     </div>
     <a href="#proyecto" class="hero__scroll" aria-label="Bajar">↓</a>
@@ -348,7 +356,7 @@
       <div class="hero__cta">
         <a class="btn btn--red" href="${waLink(msgAceptar)}" target="_blank" rel="noopener">Aceptar propuesta</a>
         <a class="btn btn--ghost" href="${waLink(msgDudas)}" target="_blank" rel="noopener">Tengo preguntas</a>
-        <button class="btn btn--ghost" onclick="window.print()">Descargar PDF</button>
+        <button class="btn btn--ghost" onclick="descargarPDF(this)">Descargar PDF</button>
       </div>
       <p class="fine fine--light">Propuesta confidencial preparada para ${esc(P.cliente)}. Vigencia: ${esc(P.vigencia)}.</p>
     </div>
