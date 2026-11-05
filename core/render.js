@@ -350,13 +350,41 @@
         <a class="btn btn--ghost" href="${waLink(msgDudas)}" target="_blank" rel="noopener">Tengo preguntas</a>
         <button class="btn btn--ghost" onclick="window.print()">Descargar PDF</button>
       </div>
-      ${socio.nombre ? `
-        <div class="socio">
-          <img src="assets/brand/isotipo-4s-trim-white.png" alt="">
-          <div><b>${esc(socio.nombre)}</b><small>${esc(socio.puesto)}</small>
-          <p>${socio.email ? `<a href="mailto:${esc(socio.email)}">${esc(socio.email)}</a>` : ""}${socio.telefono ? ` · ${esc(socio.telefono)}` : ""}</p></div>
-        </div>` : ""}
       <p class="fine fine--light">Propuesta confidencial preparada para ${esc(P.cliente)}. Vigencia: ${esc(P.vigencia)}.</p>
+    </div>
+  </section>`;
+
+  const C = B.contactoGeneral;
+  const tel = (t) => "tel:+" + String(t).replace(/\D/g, "");
+  const icoWa = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>`;
+  const contacto = `
+  <section class="contacto" id="contacto">
+    <div class="wrap contacto__inner">
+      <div class="contacto__foto">
+        <img src="${esc(socio.foto || "assets/brand/isotipo-4s-trim-white.png")}" alt="${esc(socio.nombre || "4S Real Estate")}" class="${socio.foto ? "" : "contacto__iso"}" loading="lazy">
+      </div>
+      <div class="contacto__datos">
+        <p class="eyebrow eyebrow--red">${socio.nombre ? "Tu socio en 4S" : "Contacto 4S Real Estate"}</p>
+        <h2 class="contacto__nombre">${esc(socio.nombre || "4S Real Estate")}</h2>
+        ${socio.puesto ? `<p class="contacto__puesto">${esc(socio.puesto)}</p>` : ""}
+        <ul class="contacto__lista">
+          ${socio.email ? `<li><span>Correo</span><a href="mailto:${esc(socio.email)}">${esc(socio.email)}</a></li>` : ""}
+          ${socio.telefono ? `<li><span>Teléfono</span><a href="${tel(socio.telefono)}">${esc(socio.telefono)}</a></li>` : ""}
+          ${socio.whatsapp ? `<li><span>WhatsApp</span><a href="${waLink(msgDudas)}" target="_blank" rel="noopener">+${esc(socio.whatsapp)}</a></li>` : ""}
+          ${!socio.email && !socio.telefono ? `<li><span>Oficina</span><a href="${tel(C.telefono)}">${esc(C.telefono)}</a></li>` : ""}
+        </ul>
+        <div class="contacto__btns">
+          <a class="btn btn--red" href="${waLink(msgDudas)}" target="_blank" rel="noopener">${icoWa} WhatsApp</a>
+          <a class="btn btn--line" href="${tel(socio.telefono || C.telefono)}">Llamar</a>
+          ${socio.email ? `<a class="btn btn--line" href="mailto:${esc(socio.email)}?subject=${encodeURIComponent(`Propuesta ${P.proyecto}`)}">Correo</a>` : ""}
+        </div>
+      </div>
+      <div class="contacto__oficina">
+        <h5>Oficina central</h5>
+        <p>${esc(C.direccion)}</p>
+        <p><a href="${tel(C.telefono)}">${esc(C.telefono)}</a></p>
+        <p><a href="https://${B.marca.web}" target="_blank" rel="noopener">${B.marca.web}</a></p>
+      </div>
     </div>
   </section>`;
 
@@ -376,6 +404,7 @@
       <div class="view view--sub" id="tiempos" data-view="tiempos" hidden>${cronograma + cierre + siguiente("tiempos")}</div>
       <div class="view view--sub" id="nosotros-tab" data-view="nosotros" hidden>${nosotros + siguiente("nosotros")}</div>
     </main>` +
+    contacto +
     footer;
 
   /* ---------------- Interacciones ---------------- */

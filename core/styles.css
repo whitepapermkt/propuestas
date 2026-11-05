@@ -285,11 +285,27 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
 .pasos li::before { content: "0" counter(s); font-family: var(--display); font-size: 34px; color: var(--red); display: block; }
 .pasos b { display: block; font-weight: 500; }
 .pasos span { color: var(--gray-l); font-size: 14px; }
-.socio { display: flex; gap: 16px; align-items: center; margin-top: 40px; }
-.socio img { width: 52px; }
-.socio b { display: block; font-family: var(--display); font-weight: 400; font-size: 26px; }
-.socio small { color: var(--gray-l); letter-spacing: .14em; text-transform: uppercase; font-size: 11px; }
-.socio p { font-size: 14px; }
+/* Contacto del socio (visible en todas las pestañas) */
+.contacto { background: var(--white); border-top: 1px solid var(--line); padding: 72px 0; }
+.contacto__inner { display: grid; grid-template-columns: 220px 1fr 260px; gap: 48px; align-items: center; }
+.contacto__foto { width: 220px; aspect-ratio: 1; border-radius: 20px; overflow: hidden; background: var(--ink); position: relative; }
+.contacto__foto::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: var(--red); }
+.contacto__foto img { width: 100%; height: 100%; object-fit: cover; }
+.contacto__foto .contacto__iso { object-fit: contain; padding: 50px; }
+.contacto__nombre { font-family: var(--display); font-weight: 400; font-size: clamp(40px, 5vw, 64px); line-height: .95; text-transform: uppercase; }
+.contacto__puesto { font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--gray); margin-top: 6px; }
+.contacto__lista { margin: 20px 0 22px; display: grid; gap: 6px; }
+.contacto__lista li { display: flex; gap: 14px; align-items: baseline; font-size: 18px; }
+.contacto__lista span { min-width: 84px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--gray); }
+.contacto__lista a { text-decoration: none; font-weight: 500; word-break: break-word; }
+.contacto__lista a:hover { color: var(--red); }
+.contacto__btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn--line { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn--line:hover { background: var(--ink); color: var(--white); }
+.contacto__oficina { border-left: 1px solid var(--line); padding-left: 32px; font-size: 14px; color: var(--gray); }
+.contacto__oficina h5 { color: var(--ink); }
+.contacto__oficina p { margin-top: 6px; }
+.contacto__oficina a { color: var(--ink); text-decoration: none; }
 
 .footer { background: var(--ink); color: var(--gray-l); text-align: center; padding: 60px 24px; font-size: 13px; }
 .footer img { height: 46px; margin: 0 auto 20px; }
@@ -322,8 +338,20 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
   .oficinas__img img { min-height: 280px; }
 }
 
+@media (max-width: 980px) {
+  .contacto__inner { grid-template-columns: 180px 1fr; gap: 32px; }
+  .contacto__foto { width: 180px; }
+  .contacto__oficina { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); padding: 20px 0 0; }
+}
+
 /* ---------- Responsive · Móvil ---------- */
 @media (max-width: 700px) {
+  .contacto { padding: 48px 0; }
+  .contacto__inner { grid-template-columns: 1fr; gap: 22px; }
+  .contacto__foto { width: 140px; border-radius: 16px; }
+  .contacto__nombre { font-size: 44px; }
+  .contacto__lista li { flex-direction: column; gap: 0; font-size: 17px; }
+  .contacto__btns .btn { flex: 1 1 auto; }
   html { scroll-padding-top: 110px; }
   body { font-size: 16px; }
   .wrap { padding: 0 20px; }

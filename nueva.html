@@ -54,6 +54,9 @@
     .mapa__img { width: 96px; height: 72px; border-radius: 8px; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); text-align: center; cursor: pointer; }
     .mapa input[type=text] { padding: 8px 10px; margin-bottom: 6px; }
     .mapas-acc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .foto-socio { display: flex; gap: 14px; align-items: center; }
+    .foto-socio > div:nth-child(2) { display: flex; gap: 8px; flex-wrap: wrap; }
+    .foto-socio__img { width: 84px; height: 84px; border-radius: 14px; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); }
     .x { background: none; border: 0; font-size: 20px; color: var(--gray); cursor: pointer; padding: 0 4px; }
 
     .resumen { background: var(--ink); color: #fff; border-radius: 12px; padding: 14px 16px; margin-top: 14px; font-size: 14px; line-height: 1.7; }
@@ -185,6 +188,15 @@
         </div>
         <label>WhatsApp <small>— solo dígitos con lada, ej. 5218112345678</small></label>
         <input type="tel" name="socioWhatsapp" inputmode="numeric">
+        <label>Foto <small>— cuadrada de preferencia; se recorta y comprime sola</small></label>
+        <div class="foto-socio">
+          <div class="foto-socio__img" id="socio-foto-prev">Sin foto</div>
+          <div>
+            <button type="button" class="btn btn--line btn--sm" id="b-socio-foto">Subir foto</button>
+            <button type="button" class="btn btn--line btn--sm" id="b-socio-quitar">Quitar</button>
+          </div>
+          <input type="file" id="socio-file" accept="image/*" hidden>
+        </div>
       </fieldset>
     </form>
 
@@ -234,7 +246,8 @@
   const lineas = (s) => String(s || "").split("\n").map((x) => x.trim()).filter(Boolean);
   const slugify = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 70);
 
-  let mapas = [];            // { titulo, pie, src, nuevo }
+  let mapas = [];
+  let socioFoto = "";        // data URL (nueva) o ruta (existente)            // { titulo, pie, src, nuevo }
   let slugManual = false;
   let plantilla = "";
 
@@ -532,6 +545,36 @@
     if (file) generarDesdeKMZ(file).catch(() => {});
   });
 
+  /* ---------- Foto del socio ---------- */
+  const fotoPrev = document.getElementById("socio-foto-prev");
+  const fotoFile = document.getElementById("socio-file");
+  function pintarFoto() {
+    fotoPrev.style.backgroundImage = socioFoto ? `url('${socioFoto}')` : "";
+    fotoPrev.textContent = socioFoto ? "" : "Sin foto";
+  }
+  document.getElementById("b-socio-foto").onclick = () => fotoFile.click();
+  document.getElementById("b-socio-quitar").onclick = () => { socioFoto = ""; pintarFoto(); actualizar(); };
+  fotoFile.addEventListener("change", async () => {
+    const file = fotoFile.files[0]; fotoFile.value = "";
+    if (!file) return;
+    socioFoto = await recortarCuadrada(file, 600, 0.82);
+    pintarFoto(); actualizar();
+  });
+  function recortarCuadrada(file, lado, q) {
+    return new Promise((ok, mal) => {
+      const img = new Image();
+      img.onload = () => {
+        const s = Math.min(img.width, img.height);
+        const c = document.createElement("canvas"); c.width = c.height = Math.min(lado, s);
+        c.getContext("2d").drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(img.src);
+        ok(c.toDataURL("image/jpeg", q));
+      };
+      img.onerror = mal;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
   /* ---------- Construir los datos de la propuesta ---------- */
   function construir() {
     const off = +$("semanaInicio").value - 1;
@@ -581,7 +624,7 @@
       cronograma: { meses, filas, nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables." },
       pagos,
       notaPagos: $("notaPagos").value.trim(),
-      socio: { nombre: $("socioNombre").value.trim(), puesto: $("socioPuesto").value.trim(), email: $("socioEmail").value.trim(), telefono: $("socioTelefono").value.trim(), whatsapp: $("socioWhatsapp").value.replace(/\D/g, "") },
+      socio: { nombre: $("socioNombre").value.trim(), puesto: $("socioPuesto").value.trim(), foto: socioFoto, email: $("socioEmail").value.trim(), telefono: $("socioTelefono").value.trim(), whatsapp: $("socioWhatsapp").value.replace(/\D/g, "") },
       _form: { mesInicio: mes0, anio: +$("anio").value, semanaInicio: off + 1, esquemaPago: $("esquemaPago").value, inicios: Object.fromEntries(sel.map((s) => [s.id, s.inicio])) }
     };
   }
@@ -640,6 +683,7 @@
     set("giros", (d.giros || []).join(", "));
     const a = d.socio || d.asesor || {};
     set("socioNombre", a.nombre); set("socioPuesto", a.puesto); set("socioEmail", a.email); set("socioTelefono", a.telefono); set("socioWhatsapp", a.whatsapp);
+    socioFoto = a.foto || ""; pintarFoto();
 
     const trabajo = (d.cronograma?.filas || []).filter((x) => x.tipo === "trabajo");
     const off = F.semanaInicio ? F.semanaInicio - 1 : Math.min(3, trabajo.length ? Math.min(...trabajo.map((x) => x.desde)) : 0);
@@ -725,6 +769,11 @@
       archivos.push({ ruta, base64: m.img.split(",")[1] });
       return { ...m, img: ruta };
     });
+    if (/^data:image\/jpeg;base64,/.test(d.socio.foto || "")) {
+      const ruta = `assets/clientes/${slug}/socio-${sello}.jpg`;
+      archivos.push({ ruta, base64: d.socio.foto.split(",")[1] });
+      d.socio.foto = ruta;
+    }
     bOk.disabled = true;
     estP.className = "estado"; estP.textContent = "Publicando…";
     try {
@@ -742,6 +791,7 @@
       document.getElementById("copiar").onclick = (e) => { navigator.clipboard.writeText(url); e.target.textContent = "¡Copiado!"; };
       // Las imágenes ya quedaron en el repo: usar sus rutas de aquí en adelante
       mapas.filter((m) => m.src).forEach((m, i) => { m.src = d.mapas[i].img; m.nuevo = false; });
+      socioFoto = d.socio.foto || ""; pintarFoto();
       document.getElementById("pub-sobre").checked = true;
       slugManual = true;
     } catch (e) {
