@@ -364,7 +364,7 @@
         <img src="${esc(socio.foto || "assets/brand/isotipo-4s-trim-white.png")}" alt="${esc(socio.nombre || "4S Real Estate")}" class="${socio.foto ? "" : "contacto__iso"}" loading="lazy">
       </div>
       <div class="contacto__datos">
-        <p class="eyebrow eyebrow--red">${socio.nombre ? "Tu socio en 4S" : "Contacto 4S Real Estate"}</p>
+        ${socio.nombre ? "" : `<p class="eyebrow eyebrow--red">Contacto 4S Real Estate</p>`}
         <h2 class="contacto__nombre">${esc(socio.nombre || "4S Real Estate")}</h2>
         ${socio.puesto ? `<p class="contacto__puesto">${esc(socio.puesto)}</p>` : ""}
         <ul class="contacto__lista">
