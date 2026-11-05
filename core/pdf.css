@@ -2,6 +2,11 @@
    4S REAL ESTATE · Deck PDF (16:9, 13.333 × 7.5 in = 1280 × 720 px)
    Mismo formato que la propuesta en Keynote/PDF. Solo se ve al imprimir.
    ========================================================================== */
+/* Texto: Futura instalada en el equipo (la del deck) → si no hay, Jost reducida para igualar su tamaño */
+@font-face { font-family: "Futura 4S"; font-weight: 300 450; src: local("Futura Book BT"), local("FuturaBT-Book"), local("Futura Std Book"), local("FuturaStd-Book"), local("Futura PT Book"), local("FuturaPT-Book"), local("Futura Book"), local("Futura-Book"), local("Futura Medium"), local("Futura-Medium"); }
+@font-face { font-family: "Futura 4S"; font-weight: 451 900; src: local("Futura Bold BT"), local("FuturaBT-Bold"), local("Futura PT Demi"), local("FuturaPT-Demi"), local("Futura Std Heavy"), local("FuturaStd-Heavy"), local("Futura Bold"), local("Futura-Bold"); }
+@font-face { font-family: "Jost 4S"; font-weight: 300 700; src: url("../assets/fonts/Jost-latin.woff2") format("woff2"); size-adjust: 95%; }
+
 #deck { display: none; }
 
 @media print {
@@ -15,7 +20,7 @@
   --ink: #0f1011; --cream: #f4f3ef; --card: #faf9f6; --card-2: #e8e6e1; --red: #e5383b; --gray: #55575a;
   position: relative; width: 1280px; height: 720px; overflow: hidden;
   padding: 44px 64px 0; background: var(--cream); color: var(--ink);
-  font-family: "Jost", "Futura", system-ui, sans-serif; font-size: 16px; line-height: 1.32;
+  font-family: "Futura 4S", "Jost 4S", sans-serif; font-size: 16px; line-height: 1.32;
   break-after: page; page-break-after: always; box-sizing: border-box;
   -webkit-print-color-adjust: exact; print-color-adjust: exact;
 }

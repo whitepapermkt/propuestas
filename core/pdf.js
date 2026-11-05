@@ -189,7 +189,11 @@
     Promise.all(
       [...deck.querySelectorAll("img")].map((im) =>
         im.complete ? null : new Promise((r) => { im.onload = im.onerror = r; })
-      ).concat(document.fonts ? [document.fonts.ready] : [])
+      ).concat(document.fonts
+        ? ['400 16px "Futura 4S"', '700 16px "Futura 4S"', '400 16px "Jost 4S"', '600 16px "Jost 4S"', '700 16px "Bebas Neue"']
+            .map((f) => document.fonts.load(f).catch(() => null))
+            .concat(document.fonts.ready)
+        : [])
     );
 
   // Nombre del archivo al "Guardar como PDF" (igual que el deck original)
