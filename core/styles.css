@@ -288,8 +288,7 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
 /* Contacto del socio (visible en todas las pestañas) */
 .contacto { background: var(--white); border-top: 1px solid var(--line); padding: 72px 0; }
 .contacto__inner { display: grid; grid-template-columns: 220px 1fr 260px; gap: 48px; align-items: center; }
-.contacto__foto { width: 220px; aspect-ratio: 1; border-radius: 20px; overflow: hidden; background: var(--ink); position: relative; }
-.contacto__foto::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: var(--red); }
+.contacto__foto { width: 220px; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--ink); box-shadow: 0 0 0 4px var(--white), 0 0 0 6px var(--red); }
 .contacto__foto img { width: 100%; height: 100%; object-fit: cover; }
 .contacto__foto .contacto__iso { object-fit: contain; padding: 50px; }
 .contacto__nombre { font-family: var(--display); font-weight: 400; font-size: clamp(40px, 5vw, 64px); line-height: .95; text-transform: uppercase; }
@@ -348,7 +347,7 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
 @media (max-width: 700px) {
   .contacto { padding: 48px 0; }
   .contacto__inner { grid-template-columns: 1fr; gap: 22px; }
-  .contacto__foto { width: 140px; border-radius: 16px; }
+  .contacto__foto { width: 140px; }
   .contacto__nombre { font-size: 44px; }
   .contacto__lista li { flex-direction: column; gap: 0; font-size: 17px; }
   .contacto__btns .btn { flex: 1 1 auto; }
