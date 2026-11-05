@@ -40,8 +40,31 @@
       <a href="#cronograma">Tiempos</a>
       <a href="#nosotros">Por qué 4S</a>
     </nav>
-    <a href="#siguientes-pasos" class="btn btn--red btn--sm">Aceptar propuesta</a>
+    <a href="#siguientes-pasos" class="btn btn--red btn--sm nav__cta">Aceptar propuesta</a>
+    <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span></button>
   </header>
+  <div class="mmenu" id="mmenu" aria-hidden="true">
+    <nav>
+      <a href="#proyecto"><small>01</small>Proyecto</a>
+      <a href="#cadena"><small>02</small>Dónde entramos</a>
+      <a href="#servicios"><small>03</small>Servicios</a>
+      <a href="#inversion"><small>04</small>Inversión</a>
+      <a href="#cronograma"><small>05</small>Tiempos y pagos</a>
+      <a href="#nosotros"><small>06</small>Por qué 4S</a>
+      <a href="#siguientes-pasos"><small>07</small>Siguientes pasos</a>
+    </nav>
+    <div class="mmenu__foot">
+      <a class="btn btn--red" href="${waLink(msgAceptar)}" target="_blank" rel="noopener">Aceptar propuesta</a>
+      <button class="btn btn--ghost" onclick="window.print()">Descargar PDF</button>
+    </div>
+  </div>
+  <div class="mbar" id="mbar">
+    <div class="mbar__info"><small>Inversión total</small><b>${mxnCorto(total)} <span>MXN</span></b></div>
+    <a class="mbar__wa" href="${waLink(msgDudas)}" target="_blank" rel="noopener" aria-label="Preguntas por WhatsApp">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+    </a>
+    <a class="btn btn--red mbar__cta" href="#siguientes-pasos">Aceptar</a>
+  </div>
   <div class="progress" id="progress"></div>`;
 
   const hero = `
@@ -146,19 +169,19 @@
         <div class="srv__img ${s.imgContain ? "srv__img--contain" : ""}"><img src="${esc(s.img)}" alt="" loading="lazy"></div>
       </div>
 
-      ${s.pilares ? `<div class="pilares">${list(s.pilares, (p, i) => `<div class="pilar"><span>0${i + 1}</span><h4>${esc(p.titulo)}</h4><p>${esc(p.texto)}</p></div>`)}</div>` : ""}
+      ${s.pilares ? `<div class="pilares swipe">${list(s.pilares, (p, i) => `<div class="pilar"><span>0${i + 1}</span><h4>${esc(p.titulo)}</h4><p>${esc(p.texto)}</p></div>`)}</div>` : ""}
 
       ${list(s.bloques, (b) => `
         <div class="bloque">
           <h4 class="h4">${esc(b.titulo)}</h4>
           <p>${esc(b.texto)}</p>
-          <div class="iconos">${list(b.items, (it) => `<div class="icono"><img src="${esc(it.icono)}" alt=""><h5>${esc(it.titulo)}</h5><p>${esc(it.texto)}</p></div>`)}</div>
+          <div class="iconos swipe">${list(b.items, (it) => `<div class="icono"><img src="${esc(it.icono)}" alt=""><h5>${esc(it.titulo)}</h5><p>${esc(it.texto)}</p></div>`)}</div>
         </div>`)}
 
       ${s.proceso ? `
         <div class="bloque">
           <h4 class="h4">Proceso · el camino hacia proyectos únicos</h4>
-          <ol class="proceso">${list(s.proceso, (p) => `<li><img src="${esc(p.icono)}" alt=""><h5>${esc(p.titulo)}</h5><p>${esc(p.texto)}</p></li>`)}</ol>
+          <ol class="proceso swipe">${list(s.proceso, (p) => `<li><img src="${esc(p.icono)}" alt=""><h5>${esc(p.titulo)}</h5><p>${esc(p.texto)}</p></li>`)}</ol>
         </div>` : ""}
 
       <div class="bloque">
@@ -207,6 +230,10 @@
 
   const crono = P.cronograma;
   const totalSemanas = crono.meses.reduce((a, m) => a + m.semanas, 0);
+  const semLabel = (idx) => {
+    for (const m of crono.meses) { if (idx < m.semanas) return `${m.nombre.slice(0, 3)} S${idx + 1}`; idx -= m.semanas; }
+    return "";
+  };
   const cronograma = `
   <section class="sec sec--light" id="cronograma">
     <div class="wrap">
@@ -225,6 +252,15 @@
             <div class="gantt__bar gantt__bar--${f.tipo}" style="grid-column:${f.desde + 1} / ${f.hasta + 2}">${f.tipo === "hito" ? "★" : ""}</div>
           </div>`)}
       </div>
+      <ol class="crono-m">
+        ${list(crono.filas, (f) => `
+          <li class="crono-m__item crono-m__item--${f.tipo}">
+            <div class="crono-m__head"><b>${f.n}</b><span>${esc(f.nombre)}</span></div>
+            <p>${f.desde === f.hasta ? semLabel(f.desde) : `${semLabel(f.desde)} → ${semLabel(f.hasta)} · ${f.hasta - f.desde + 1} sem`}</p>
+            <div class="crono-m__bar"><i style="left:${(f.desde / totalSemanas) * 100}%;width:${((f.hasta - f.desde + 1) / totalSemanas) * 100}%"></i></div>
+          </li>`)}
+        <li class="crono-m__meses">${list(crono.meses, (m) => `<span style="flex:${m.semanas}">${esc(m.nombre.slice(0, 3))}</span>`)}</li>
+      </ol>
       <div class="gantt__legend"><span><i class="lg lg--trabajo"></i>Trabajo</span><span><i class="lg lg--hito"></i>Presentación de resultados</span></div>
       <p class="fine">${esc(crono.nota)}</p>
 
@@ -284,7 +320,7 @@
       </details>
 
       <div class="sec__head sec__head--sub"><h2 class="h2"><span class="outline">Real Estate</span> Awards</h2></div>
-      <div class="premios">
+      <div class="premios swipe">
         ${list(B.premios, (p) => `<div class="premio"><img src="${esc(p.logo)}" alt="" loading="lazy"><b>${esc(p.titulo)}</b><small>${esc(p.detalle)}</small></div>`)}
       </div>
     </div>
@@ -345,6 +381,28 @@
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  // Menú móvil
+  const burger = document.getElementById("burger");
+  const mmenu = document.getElementById("mmenu");
+  const toggleMenu = (open) => {
+    document.body.classList.toggle("menu-open", open);
+    burger.setAttribute("aria-expanded", open);
+    mmenu.setAttribute("aria-hidden", !open);
+  };
+  burger.addEventListener("click", () => toggleMenu(!document.body.classList.contains("menu-open")));
+  mmenu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => toggleMenu(false)));
+
+  // Barra inferior: visible después del hero y oculta en el cierre
+  const mbar = document.getElementById("mbar");
+  const heroEl = document.getElementById("inicio");
+  const cierreEl = document.getElementById("siguientes-pasos");
+  const updBar = () => {
+    const pasado = heroEl.getBoundingClientRect().bottom < 90;
+    const enCierre = cierreEl.getBoundingClientRect().top < innerHeight * 0.8;
+    mbar.classList.toggle("show", pasado && !enCierre);
+  };
+  addEventListener("scroll", updBar, { passive: true });
+
   // Aparición al hacer scroll + contadores
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
@@ -352,6 +410,7 @@
       e.target.classList.add("in");
       e.target.querySelectorAll("[data-count]").forEach((el) => {
         const end = +el.dataset.count, pre = el.dataset.prefix || "", t0 = performance.now();
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         const tick = (t) => {
           const k = Math.min(1, (t - t0) / 1400);
           el.textContent = pre + Math.round(end * (1 - Math.pow(1 - k, 3))).toLocaleString("es-MX");
@@ -374,6 +433,12 @@
   );
   lb.addEventListener("click", () => lb.classList.remove("open"));
   addEventListener("keydown", (e) => e.key === "Escape" && lb.classList.remove("open"));
+
+  // Links con #sección: el contenido se genera después de cargar, así que saltamos manualmente
+  if (location.hash) {
+    const t = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (t) requestAnimationFrame(() => t.scrollIntoView({ behavior: "instant", block: "start" }));
+  }
 
   // Al imprimir: abrir todos los acordeones
   addEventListener("beforeprint", () => document.querySelectorAll("details").forEach((d) => (d.open = true)));
