@@ -469,7 +469,8 @@
       ? document.querySelector(`.view[data-view="${id}"]`)
       : document.getElementById(id);
     if (!destino) return;
-    const vista = destino.closest(".view");
+    // Elementos fuera de las pestañas (contacto, footer): quedarse en la pestaña actual
+    const vista = destino.closest(".view") || document.querySelector(`.view[data-view="${vistaActual}"]`);
     const cambia = vista.dataset.view !== vistaActual;
     vistas.forEach((v) => (v.hidden = v !== vista));
     vistaActual = vista.dataset.view;
