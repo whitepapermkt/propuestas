@@ -23,7 +23,7 @@ propuestas/
 
 Entra a **`tu-dominio/nueva`**:
 
-1. Llena cliente, proyecto, contexto, mapas, servicios (semanas, inicio, inversión), calendario y asesor.
+1. Llena cliente, proyecto, contexto, mapas, servicios (semanas, inicio, inversión), calendario y socio.
    A la derecha ves la propuesta en vivo (escritorio / celular).
 2. **Publicar** → pide la contraseña, hace un commit en GitHub con la propuesta y sus imágenes,
    y Vercel la publica en ~1 minuto en `tu-dominio/<link>`.

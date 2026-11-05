@@ -285,11 +285,11 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
 .pasos li::before { content: "0" counter(s); font-family: var(--display); font-size: 34px; color: var(--red); display: block; }
 .pasos b { display: block; font-weight: 500; }
 .pasos span { color: var(--gray-l); font-size: 14px; }
-.asesor { display: flex; gap: 16px; align-items: center; margin-top: 40px; }
-.asesor img { width: 52px; }
-.asesor b { display: block; font-family: var(--display); font-weight: 400; font-size: 26px; }
-.asesor small { color: var(--gray-l); letter-spacing: .14em; text-transform: uppercase; font-size: 11px; }
-.asesor p { font-size: 14px; }
+.socio { display: flex; gap: 16px; align-items: center; margin-top: 40px; }
+.socio img { width: 52px; }
+.socio b { display: block; font-family: var(--display); font-weight: 400; font-size: 26px; }
+.socio small { color: var(--gray-l); letter-spacing: .14em; text-transform: uppercase; font-size: 11px; }
+.socio p { font-size: 14px; }
 
 .footer { background: var(--ink); color: var(--gray-l); text-align: center; padding: 60px 24px; font-size: 13px; }
 .footer img { height: 46px; margin: 0 auto 20px; }

@@ -21,8 +21,8 @@
     : servicios.reduce((a, s) => a + s.semanas, 0);
   const idsIncluidos = new Set(servicios.map((s) => s.id));
 
-  const asesor = P.asesor || {};
-  const wa = asesor.whatsapp || B.contactoGeneral.whatsapp;
+  const socio = P.socio || P.asesor || {};
+  const wa = socio.whatsapp || B.contactoGeneral.whatsapp;
   const waLink = (msg) => `https://wa.me/${wa}?text=${encodeURIComponent(msg)}`;
   const msgAceptar = `Hola, somos ${P.cliente}. Queremos avanzar con la propuesta "${P.proyecto}" (${mxnCorto(total)} MXN + IVA).`;
   const msgDudas = `Hola, somos ${P.cliente}. Tenemos algunas preguntas sobre la propuesta "${P.proyecto}".`;
@@ -350,11 +350,11 @@
         <a class="btn btn--ghost" href="${waLink(msgDudas)}" target="_blank" rel="noopener">Tengo preguntas</a>
         <button class="btn btn--ghost" onclick="window.print()">Descargar PDF</button>
       </div>
-      ${asesor.nombre ? `
-        <div class="asesor">
+      ${socio.nombre ? `
+        <div class="socio">
           <img src="assets/brand/isotipo-4s-trim-white.png" alt="">
-          <div><b>${esc(asesor.nombre)}</b><small>${esc(asesor.puesto)}</small>
-          <p>${asesor.email ? `<a href="mailto:${esc(asesor.email)}">${esc(asesor.email)}</a>` : ""}${asesor.telefono ? ` · ${esc(asesor.telefono)}` : ""}</p></div>
+          <div><b>${esc(socio.nombre)}</b><small>${esc(socio.puesto)}</small>
+          <p>${socio.email ? `<a href="mailto:${esc(socio.email)}">${esc(socio.email)}</a>` : ""}${socio.telefono ? ` · ${esc(socio.telefono)}` : ""}</p></div>
         </div>` : ""}
       <p class="fine fine--light">Propuesta confidencial preparada para ${esc(P.cliente)}. Vigencia: ${esc(P.vigencia)}.</p>
     </div>

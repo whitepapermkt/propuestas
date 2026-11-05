@@ -166,18 +166,18 @@
       </fieldset>
 
       <fieldset>
-        <h2 class="leg"><span>06</span>Asesor responsable</h2>
+        <h2 class="leg"><span>06</span>Socio responsable</h2>
         <p class="hint">Si lo dejas vacío, el botón de WhatsApp va al número general de 4S.</p>
         <div class="row">
-          <div><label>Nombre</label><input type="text" name="asesorNombre"></div>
-          <div><label>Puesto</label><input type="text" name="asesorPuesto" placeholder="Socio · Monterrey-Noreste"></div>
+          <div><label>Nombre</label><input type="text" name="socioNombre"></div>
+          <div><label>Puesto</label><input type="text" name="socioPuesto" placeholder="Monterrey-Noreste"></div>
         </div>
         <div class="row">
-          <div><label>Email</label><input type="email" name="asesorEmail" placeholder="nombre.apellido@4srealestate.com"></div>
-          <div><label>Teléfono</label><input type="tel" name="asesorTelefono"></div>
+          <div><label>Email</label><input type="email" name="socioEmail" placeholder="nombre.apellido@4srealestate.com"></div>
+          <div><label>Teléfono</label><input type="tel" name="socioTelefono"></div>
         </div>
         <label>WhatsApp <small>— solo dígitos con lada, ej. 5218112345678</small></label>
-        <input type="tel" name="asesorWhatsapp" inputmode="numeric">
+        <input type="tel" name="socioWhatsapp" inputmode="numeric">
       </fieldset>
     </form>
 
@@ -364,7 +364,7 @@
       cronograma: { meses, filas, nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables." },
       pagos,
       notaPagos: $("notaPagos").value.trim(),
-      asesor: { nombre: $("asesorNombre").value.trim(), puesto: $("asesorPuesto").value.trim(), email: $("asesorEmail").value.trim(), telefono: $("asesorTelefono").value.trim(), whatsapp: $("asesorWhatsapp").value.replace(/\D/g, "") },
+      socio: { nombre: $("socioNombre").value.trim(), puesto: $("socioPuesto").value.trim(), email: $("socioEmail").value.trim(), telefono: $("socioTelefono").value.trim(), whatsapp: $("socioWhatsapp").value.replace(/\D/g, "") },
       _form: { mesInicio: mes0, anio: +$("anio").value, semanaInicio: off + 1, esquemaPago: $("esquemaPago").value, inicios: Object.fromEntries(sel.map((s) => [s.id, s.inicio])) }
     };
   }
@@ -421,8 +421,8 @@
     ["cliente", "proyecto", "ciudad", "fecha", "vigencia", "resumen", "notaPagos"].forEach((k) => set(k, d[k]));
     set("objetivos", (d.objetivos || []).join("\n"));
     set("giros", (d.giros || []).join(", "));
-    const a = d.asesor || {};
-    set("asesorNombre", a.nombre); set("asesorPuesto", a.puesto); set("asesorEmail", a.email); set("asesorTelefono", a.telefono); set("asesorWhatsapp", a.whatsapp);
+    const a = d.socio || d.asesor || {};
+    set("socioNombre", a.nombre); set("socioPuesto", a.puesto); set("socioEmail", a.email); set("socioTelefono", a.telefono); set("socioWhatsapp", a.whatsapp);
 
     const trabajo = (d.cronograma?.filas || []).filter((x) => x.tipo === "trabajo");
     const off = F.semanaInicio ? F.semanaInicio - 1 : Math.min(3, trabajo.length ? Math.min(...trabajo.map((x) => x.desde)) : 0);
