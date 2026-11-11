@@ -100,7 +100,7 @@ window.BASE_4S = {
   servicios: {
     "estudio-mercado": {
       nombre: "Estudio de Mercado",
-      nombreLargo: "Estudio de Mercado: Oferta y Demanda",
+      nombreLargo: "Estudio de Mercado: {estudios}",
       area: "Investigación de Mercado",
       img: "assets/deck/s12-estudio-mercado-ciudad-aerea-bn.jpg",
       lead: "Metodologías probadas y avaladas por nuestros clientes en más de 4,500 proyectos en 20 países.",
@@ -113,6 +113,7 @@ window.BASE_4S = {
       ],
       bloques: [
         {
+          alcance: "oferta",
           titulo: "Competencia · Estudio de Oferta",
           texto: "Análisis de oferta formal e informal de la zona, con el fin de identificar los principales indicadores del mercado: precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros.",
           items: [
@@ -122,6 +123,7 @@ window.BASE_4S = {
           ]
         },
         {
+          alcance: "demanda",
           titulo: "Mercado Meta · Estudio de Demanda",
           texto: "Análisis cuantitativo de respuestas de compradores y/o inversionistas de la zona para conocer sus preferencias y disposición de compra del producto en el terreno. Se diseña una encuesta y una entrevista a la medida del proyecto, aplicadas en puntos estratégicos del área nuclear del predio.",
           items: [
@@ -132,39 +134,27 @@ window.BASE_4S = {
         }
       ],
       requerimientos: [],
-      // Versión PDF: textos tal cual del deck original de 4S
+      // Textos de la versión PDF. {estudios} = "Oferta y Demanda", "Oferta" o "Demanda" según lo elegido
       pdf: {
-        titulo: "Estudio de Mercado: Oferta y Demanda",
-        especIntro: "Oferta y Demanda para los siguientes giros:",
-        especGiros: true,
-        alcances: {
-          comercial: [
-            { titulo: "1.1 Estudio de Oferta · Alcance comercial", entregable: "Reporte PDF", grupos: [
-              { titulo: "Análisis de la zona", items: ["Identificar el nivel socioeconómico de la zona bajo análisis y el total de los hogares de influencia.", "Identificación de los corredores comerciales y sus principales características.", "Ubicación de los proyectos activos en la zona de influencia primaria."] },
-              { titulo: "Big Data", items: ["Mapa de la zona de influencia primaria publicadas online.", "Análisis de rango de metraje y precio.", "Comparativa de oferta formal y oferta informal."] },
-              { titulo: "Estructura", items: ["Mapa de ocupación de la oferta comercial por corredor.", "Análisis de las principales características de la oferta comercial activa en la zona de influencia primaria.", "Composición de las plazas comerciales por giro de los proyectos por distancia al predio.", "Composición del área neta rentable/vendible por plaza comercial.", "Análisis por tipo de plaza (Fashion Mall, Stripmall, Community center, etc) rango de precio y rango de metraje.", "Composición detallada por giros de las plazas comerciales bajo análisis."] },
-              { titulo: "Estimación", items: ["Determinación de la capacidad comercial de la zona.", "Determinación de giros generales y enfoque comercial.", "Determinación general de metros cuadrados por enfoque."] }
-            ]},
-            { titulo: "1.2 Estudio de Demanda · Alcance comercio/equipamiento", entregable: "Reporte PDF",
-              nota: "En términos generales se exploran los siguientes objetivos, pero se presenta una propuesta adhoc a las necesidades y requerimientos del cliente o terreno de interés.",
-              lista: ["Identificar dónde realiza sus compras de ropa, calzado y supermercado.", "Conocer qué actividades realiza con más frecuencia cuando visita una plaza comercial.", "Conocer qué plazas comerciales suele visitar y con qué frecuencia va, y qué plazas comerciales considera que son las mejores y por qué.", "Identificar qué giros comerciales visita, qué marcas, cuál es el gasto promedio por persona y el número de visitas.", "Conocer las ventajas y desventajas de la zona.", "Conocer cómo evalúa la zona en cuanto a la accesibilidad, ubicación y plusvalía, etc.", "Conocer qué oferta inmobiliaria le hace falta a la zona y si la considera una zona segura.", "Conocer si considera que la zona es una buena opción para el desarrollo de una plaza comercial.", "Conocer qué características debe de tener para que la visite y qué enfoque debe de tener.", "Identificar qué tipo de negocios le gustarían en la plaza comercial y cuáles no.", "Conocer qué tiendas ha visitado que le gustaría que hubiera en el proyecto.", "Identificar qué tan atractivos son ciertos locales comerciales.", "Conocer qué áreas o amenidades incluiría para que el centro comercial sea innovador.", "Identificar qué le gustaría encontrar en la plaza para que la visite con frecuencia.", "Conocer cuál es su principal interés, zona de mayor importancia y las actividades que disfruta hacer en el fin de semana."] }
-          ]
-        }
+        titulo: "Estudio de Mercado: {estudios}",
+        especIntro: "{estudios} para los siguientes giros:",
+        especGiros: true
       },
+      // Alcances (texto del deck de 4S). En el formulario se elige cada bloque y cada punto.
       alcances: {
         comercial: [
-          { titulo: "1.1 Estudio de Oferta · Alcance comercial", entregable: "Reporte PDF", grupos: [
-            { titulo: "Análisis de la zona", items: ["Nivel socioeconómico de la zona y total de hogares de influencia.", "Identificación de los corredores comerciales y sus principales características.", "Ubicación de los proyectos activos en la zona de influencia primaria."] },
-            { titulo: "Big Data", items: ["Mapa de la oferta de la zona de influencia primaria publicada online.", "Análisis de rango de metraje y precio.", "Comparativa de oferta formal e informal."] },
-            { titulo: "Estructura", items: ["Mapa de ocupación de la oferta comercial por corredor.", "Principales características de la oferta comercial activa.", "Composición de las plazas comerciales por giro y distancia al predio.", "Composición del área neta rentable/vendible por plaza.", "Análisis por tipo de plaza (Fashion Mall, Stripmall, Community Center, etc.), rango de precio y metraje.", "Composición detallada por giros de las plazas bajo análisis."] },
-            { titulo: "Estimación", items: ["Capacidad comercial de la zona.", "Giros generales y enfoque comercial.", "Metros cuadrados por enfoque."] }
+          { id: "oferta", corto: "Oferta", titulo: "1.1 Estudio de Oferta · Alcance comercial", entregable: "Reporte PDF", grupos: [
+            { titulo: "Análisis de la zona", items: ["Identificar el nivel socioeconómico de la zona bajo análisis y el total de los hogares de influencia.", "Identificación de los corredores comerciales y sus principales características.", "Ubicación de los proyectos activos en la zona de influencia primaria."] },
+            { titulo: "Big Data", items: ["Mapa de la zona de influencia primaria publicadas online.", "Análisis de rango de metraje y precio.", "Comparativa de oferta formal y oferta informal."] },
+            { titulo: "Estructura", items: ["Mapa de ocupación de la oferta comercial por corredor.", "Análisis de las principales características de la oferta comercial activa en la zona de influencia primaria.", "Composición de las plazas comerciales por giro de los proyectos por distancia al predio.", "Composición del área neta rentable/vendible por plaza comercial.", "Análisis por tipo de plaza (Fashion Mall, Stripmall, Community center, etc) rango de precio y rango de metraje.", "Composición detallada por giros de las plazas comerciales bajo análisis."] },
+            { titulo: "Estimación", items: ["Determinación de la capacidad comercial de la zona.", "Determinación de giros generales y enfoque comercial.", "Determinación general de metros cuadrados por enfoque."] }
           ]},
-          { titulo: "1.2 Estudio de Demanda · Comercio / Equipamiento", entregable: "Reporte PDF",
-            nota: "Objetivos generales; se presenta una propuesta ad hoc a las necesidades del cliente y del terreno.",
+          { id: "demanda", corto: "Demanda", titulo: "1.2 Estudio de Demanda · Alcance comercio/equipamiento", entregable: "Reporte PDF", plano: true,
+            nota: "En términos generales se exploran los siguientes objetivos, pero se presenta una propuesta adhoc a las necesidades y requerimientos del cliente o terreno de interés.",
             grupos: [
-            { titulo: "Hábitos de consumo", items: ["Dónde realiza sus compras de ropa, calzado y supermercado.", "Actividades más frecuentes al visitar una plaza comercial.", "Plazas que visita, con qué frecuencia y cuáles considera las mejores.", "Giros y marcas que visita, gasto promedio por persona y número de visitas.", "Principal interés y actividades de fin de semana."] },
-            { titulo: "Percepción de la zona", items: ["Ventajas y desventajas de la zona.", "Evaluación de accesibilidad, ubicación y plusvalía.", "Oferta inmobiliaria que hace falta y percepción de seguridad.", "Si la zona es buena opción para una plaza comercial."] },
-            { titulo: "Producto deseado", items: ["Características y enfoque que debe tener para visitarla.", "Negocios que le gustaría encontrar y cuáles no.", "Tiendas que le gustaría que hubiera en el proyecto.", "Atractivo de distintos locales comerciales.", "Áreas o amenidades que harían innovador al centro comercial.", "Qué haría que la visite con frecuencia."] }
+            { titulo: "Hábitos de consumo", items: ["Identificar dónde realiza sus compras de ropa, calzado y supermercado.", "Conocer qué actividades realiza con más frecuencia cuando visita una plaza comercial.", "Conocer qué plazas comerciales suele visitar y con qué frecuencia va, y qué plazas comerciales considera que son las mejores y por qué.", "Identificar qué giros comerciales visita, qué marcas, cuál es el gasto promedio por persona y el número de visitas."] },
+            { titulo: "Percepción de la zona", items: ["Conocer las ventajas y desventajas de la zona.", "Conocer cómo evalúa la zona en cuanto a la accesibilidad, ubicación y plusvalía, etc.", "Conocer qué oferta inmobiliaria le hace falta a la zona y si la considera una zona segura.", "Conocer si considera que la zona es una buena opción para el desarrollo de una plaza comercial."] },
+            { titulo: "Producto deseado", items: ["Conocer qué características debe de tener para que la visite y qué enfoque debe de tener.", "Identificar qué tipo de negocios le gustarían en la plaza comercial y cuáles no.", "Conocer qué tiendas ha visitado que le gustaría que hubiera en el proyecto.", "Identificar qué tan atractivos son ciertos locales comerciales.", "Conocer qué áreas o amenidades incluiría para que el centro comercial sea innovador.", "Identificar qué le gustaría encontrar en la plaza para que la visite con frecuencia.", "Conocer cuál es su principal interés, zona de mayor importancia y las actividades que disfruta hacer en el fin de semana."] }
           ]}
         ]
       }
@@ -198,31 +188,18 @@ window.BASE_4S = {
       pdf: {
         titulo: "Definición e Innovación de Producto",
         especIntro: "Se determina:",
-        requerimientos: "Estudio de mercado cerrado y pagado. Anticipo Definición de Producto pagado. Ubicación en kmz (delimitación en polígono). Lineamientos (CUS, COS, CAS, Densidad, Altura, Uso de Suelo).",
-        alcances: {
-          comercial: [
-            { titulo: "2.1 Análisis y mercado meta", entregable: "Documento PDF", grupos: [
-              { titulo: "Análisis estratégico", items: ["Selección de variables a considerar", "Análisis de dimensiones", "Análisis de precio", "Análisis de precio por m2", "Análisis de saturación o falta de giros (COMERCIAL, EQUIPAMIENTO Y SERVICIOS)"] },
-              { titulo: "Mercado meta", items: ["Variables de segmentación", "Etapas de vida", "Análisis de clusters", "Perfil de tribus de consumo"] }
-            ]},
-            { titulo: "2.2 Producto y concepto", entregable: "Documento PDF", grupos: [
-              { titulo: "Producto nuclear", items: ["Tabla de mezcla de productos (POR GIRO)", "Resumen de tabla de áreas"] },
-              { titulo: "Concepto", items: ["Propuesta de valor", "Look and Feel (concepto arquitectónico)", "Guías de diseño", "Benchmark"] },
-              { titulo: "Producto ampliado (anclajes)", items: ["Propuesta de anclajes (COMERCIO, EQUIPAMIENTO Y SERVICIOS) de acuerdo al perfil del comprador", "Tabla de áreas de anclajes", "Look and Feel de anclajes"] }
-            ]}
-          ]
-        }
+        requerimientos: "Estudio de mercado cerrado y pagado. Anticipo Definición de Producto pagado. Ubicación en kmz (delimitación en polígono). Lineamientos (CUS, COS, CAS, Densidad, Altura, Uso de Suelo)."
       },
       alcances: {
         comercial: [
-          { titulo: "2.1 Análisis y mercado meta", entregable: "Documento PDF", grupos: [
-            { titulo: "Análisis estratégico", items: ["Selección de variables a considerar.", "Análisis de dimensiones.", "Análisis de precio y precio por m².", "Saturación o falta de giros (comercial, equipamiento y servicios)."] },
-            { titulo: "Mercado meta", items: ["Variables de segmentación.", "Etapas de vida.", "Análisis de clusters.", "Perfil de tribus de consumo."] }
+          { id: "analisis", titulo: "2.1 Análisis y mercado meta", entregable: "Documento PDF", grupos: [
+            { titulo: "Análisis estratégico", items: ["Selección de variables a considerar", "Análisis de dimensiones", "Análisis de precio", "Análisis de precio por m2", "Análisis de saturación o falta de giros (COMERCIAL, EQUIPAMIENTO Y SERVICIOS)"] },
+            { titulo: "Mercado meta", items: ["Variables de segmentación", "Etapas de vida", "Análisis de clusters", "Perfil de tribus de consumo"] }
           ]},
-          { titulo: "2.2 Producto y concepto", entregable: "Documento PDF", grupos: [
-            { titulo: "Producto nuclear", items: ["Tabla de mezcla de productos por giro.", "Resumen de tabla de áreas."] },
-            { titulo: "Concepto", items: ["Propuesta de valor.", "Look & Feel (concepto arquitectónico).", "Guías de diseño.", "Benchmark."] },
-            { titulo: "Producto ampliado (anclajes)", items: ["Propuesta de anclajes (comercio, equipamiento y servicios) según el perfil del comprador.", "Tabla de áreas de anclajes.", "Look & Feel de anclajes."] }
+          { id: "producto", titulo: "2.2 Producto y concepto", entregable: "Documento PDF", grupos: [
+            { titulo: "Producto nuclear", items: ["Tabla de mezcla de productos (POR GIRO)", "Resumen de tabla de áreas"] },
+            { titulo: "Concepto", items: ["Propuesta de valor", "Look and Feel (concepto arquitectónico)", "Guías de diseño", "Benchmark"] },
+            { titulo: "Producto ampliado (anclajes)", items: ["Propuesta de anclajes (COMERCIO, EQUIPAMIENTO Y SERVICIOS) de acuerdo al perfil del comprador", "Tabla de áreas de anclajes", "Look and Feel de anclajes"] }
           ]}
         ]
       }
@@ -231,3 +208,23 @@ window.BASE_4S = {
        copia la estructura de arriba con el mismo id que en cadenaValor. */
   }
 };
+
+/* Une un servicio de la propuesta con el catálogo.
+   s.alcances (opcional) = alcances elegidos en el formulario; si no viene, van todos los del catálogo. */
+window.BASE_4S.resolver = function (s, i) {
+  const cat = this.servicios[s.id] || {};
+  const todos = cat.alcances?.[s.variante] || Object.values(cat.alcances || {})[0] || [];
+  const alcances = (Array.isArray(s.alcances) ? s.alcances : todos)
+    .map((a, k) => ({ ...a, titulo: `${i + 1}.${k + 1} ${String(a.titulo || "").replace(/^[\d.]+\s*/, "")}` }));
+  const ids = new Set(alcances.map((a) => a.id).filter(Boolean));
+  const cortos = todos.filter((a) => a.corto && ids.has(a.id)).map((a) => a.corto);
+  const estudios = (cortos.length ? cortos : todos.map((a) => a.corto).filter(Boolean)).join(" y ");
+  const t = (x) => (typeof x === "string" ? x.replace("{estudios}", estudios) : x);
+  return {
+    ...cat, ...s, num: i + 1, alcances, alcanceIds: ids,
+    nombreLargo: t(cat.nombreLargo),
+    bloques: (cat.bloques || []).filter((b) => !b.alcance || ids.has(b.alcance)),
+    pdf: cat.pdf && { ...cat.pdf, titulo: t(cat.pdf.titulo), especIntro: t(cat.pdf.especIntro) }
+  };
+};
+

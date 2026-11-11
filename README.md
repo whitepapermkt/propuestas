@@ -52,6 +52,16 @@ Copia `_plantilla.html` → `cliente-proyecto.html`, llena el bloque `datos-prop
 - Mensajes de WhatsApp de “Aceptar propuesta” / “Tengo preguntas” con cliente, proyecto y monto.
 - Versión PDF: botón “Descargar PDF”. Arma un deck horizontal 16:9 (26 láminas para La Minera) con el mismo formato que la propuesta en Keynote: láminas institucionales fijas (`assets/pdf/`, exportadas del PDF original) + portada con mapas, alcances, propuesta de servicios, tiempos y orden de trabajo generados con los datos de la propuesta (`core/pdf.js`, `core/pdf.css`). Los textos del PDF salen de `servicios.<id>.pdf` en `core/4s-base.js`.
 
+## Alcances en el formulario
+
+En **04 Servicios**, cada servicio muestra sus alcances por bloque (ej. *1.1 Estudio de Oferta* y *1.2 Estudio de Demanda* por separado):
+
+- Activa o quita cada bloque completo; la numeración y el nombre del servicio se ajustan solos (ej. “Estudio de Mercado: Oferta”).
+- Marca o desmarca cada punto del catálogo.
+- **+ Agregar** en cualquier grupo para escribir un punto propio, o en *Alcances adicionales* para algo que no encaje en ningún grupo.
+
+Lo elegido se guarda en la propuesta (`servicios[].alcances`) y se usa en la web y en el PDF. Las propuestas sin `alcances` muestran el catálogo completo.
+
 ## Agregar un servicio al catálogo
 
 En `core/4s-base.js → servicios` copia un servicio existente con el `id` de la cadena de valor

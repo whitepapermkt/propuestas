@@ -50,6 +50,28 @@
     .srv__body { display: none; }
     .srv--on .srv__body { display: block; }
 
+    /* Alcances: cada bloque (Oferta, Demanda…) se activa por separado y se eligen los puntos */
+    .alcs { display: grid; gap: 10px; }
+    .alc { border: 1.5px solid var(--line); border-radius: 10px; background: #fff; }
+    .alc--on { border-color: var(--ink); }
+    label.alc__head { display: flex; align-items: center; gap: 10px; padding: 11px 12px; margin: 0; cursor: pointer; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--ink); }
+    .alc__head input { width: 18px; height: 18px; flex: none; accent-color: var(--red); }
+    .alc__head small { margin-left: auto; font-weight: 400; color: var(--gray); font-size: 12px; text-align: right; }
+    .alc__body { display: none; padding: 0 12px 12px; }
+    .alc--on .alc__body { display: block; }
+    .alc__g { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 8px; }
+    .alc__g h5 { font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 18px; letter-spacing: .03em; margin-bottom: 2px; }
+    .alc__g--otros h5 { color: var(--red); }
+    label.chk { display: flex; gap: 8px; align-items: flex-start; margin: 5px 0; text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 400; color: var(--ink); cursor: pointer; line-height: 1.4; }
+    .chk input { margin-top: 2px; width: 16px; height: 16px; flex: none; accent-color: var(--red); }
+    .chk input:not(:checked) + span { color: var(--gray-l); text-decoration: line-through; }
+    .chk--extra span::after { content: "  · propio"; color: var(--red); font-size: 11px; font-weight: 600; }
+    .chk .x { margin-left: auto; font-size: 18px; line-height: 1; }
+    .alc__add { display: flex; gap: 6px; margin-top: 6px; }
+    .alc__add input[type=text] { padding: 7px 10px; font-size: 13px; border-radius: 8px; }
+    .alc__btn { flex: none; border: 1.5px solid var(--ink); background: none; border-radius: 8px; padding: 0 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .alc__btn:hover { background: var(--ink); color: #fff; }
+
     .mapa { display: grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items: start; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; margin-top: 12px; }
     .mapa__img { width: 96px; height: 72px; border-radius: 8px; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); text-align: center; cursor: pointer; }
     .mapa input[type=text] { padding: 8px 10px; margin-bottom: 6px; }
@@ -263,22 +285,95 @@
   const cont = document.getElementById("servicios");
   cont.innerHTML = Object.entries(B.servicios).map(([id, s]) => `
     <div class="srv" data-id="${id}">
-      <label class="srv__head"><input type="checkbox" name="on-${id}"> ${esc(s.nombreLargo)}</label>
+      <label class="srv__head"><input type="checkbox" name="on-${id}"> ${esc(B.resolver({ id, variante: Object.keys(s.alcances || {})[0] }, 0).nombreLargo)}</label>
       <div class="srv__body">
         <div class="row3">
           <div><label>Semanas</label><input type="number" name="semanas-${id}" min="1" max="52" value="5"></div>
           <div><label>Inicia en semana</label><input type="number" name="inicio-${id}" min="1" max="52" value="1"></div>
           <div><label>Inversión MXN</label><input type="number" name="inversion-${id}" min="0" step="1000" placeholder="0"></div>
         </div>
-        <label>Alcance <small>(variante del catálogo)</small></label>
+        <label>Variante <small>(del catálogo)</small></label>
         <select name="variante-${id}">${Object.keys(s.alcances || {}).map((v) => `<option value="${v}">${v[0].toUpperCase() + v.slice(1)}</option>`).join("")}</select>
+        <label>Alcances <small>— activa cada estudio y elige qué incluye; puedes agregar puntos propios</small></label>
+        <div class="alcs" id="alcs-${id}"></div>
         <label>Especificaciones para este cliente <small>— una por línea</small></label>
         <textarea name="espec-${id}" rows="3"></textarea>
       </div>
     </div>`).join("");
   const ids = Object.keys(B.servicios);
   const srvOn = (id) => $(`on-${id}`).checked;
-  const syncSrv = () => cont.querySelectorAll(".srv").forEach((el) => el.classList.toggle("srv--on", srvOn(el.dataset.id)));
+  const syncSrv = () => {
+    cont.querySelectorAll(".srv").forEach((el) => el.classList.toggle("srv--on", srvOn(el.dataset.id)));
+    cont.querySelectorAll(".alc").forEach((el) => el.classList.toggle("alc--on", el.querySelector(".alc-on").checked));
+  };
+
+  /* ---------- Alcances: bloques separados (Oferta / Demanda…), puntos a elegir y puntos propios ---------- */
+  const OTROS = "Alcances adicionales";
+  const catAlc = (id) => { const c = B.servicios[id].alcances || {}; return c[$(`variante-${id}`).value] || Object.values(c)[0] || []; };
+  const extraHTML = (t) => `<label class="chk chk--extra"><input type="checkbox" value="${esc(t)}" checked><span>${esc(t)}</span><button type="button" class="x" title="Quitar">×</button></label>`;
+  const grupoHTML = (titulo, items, extras, otros) => `
+    <div class="alc__g${otros ? " alc__g--otros" : ""}" data-g="${esc(titulo)}">
+      <h5>${esc(titulo)}</h5>
+      ${items.map((i) => `<label class="chk"><input type="checkbox" value="${esc(i.t)}"${i.on ? " checked" : ""}><span>${esc(i.t)}</span></label>`).join("")}
+      <div class="extras">${extras.map(extraHTML).join("")}</div>
+      <div class="alc__add"><input type="text" placeholder="${otros ? "Escribe un alcance nuevo…" : "Agregar otro punto a este grupo…"}"><button type="button" class="alc__btn">+ Agregar</button></div>
+    </div>`;
+
+  // elegidos = alcances guardados en la propuesta; sin elegidos = todo el catálogo marcado
+  function pintarAlcances(id, elegidos) {
+    const mismo = (a, c) => (a.id ? a.id === c.id : a.titulo === c.titulo);
+    document.getElementById(`alcs-${id}`).innerHTML = catAlc(id).map((c, k) => {
+      const el = Array.isArray(elegidos) ? elegidos.find((a) => mismo(a, c)) : null;
+      const on = !Array.isArray(elegidos) || !!el;
+      const grupos = c.grupos.map((g) => {
+        const eg = el?.grupos?.find((x) => x.titulo === g.titulo);
+        return grupoHTML(g.titulo,
+          g.items.map((t) => ({ t, on: !el || !!eg?.items.includes(t) })),
+          eg ? eg.items.filter((t) => !g.items.includes(t)) : []);
+      }).join("");
+      const otros = el ? (el.grupos || []).filter((x) => !c.grupos.some((g) => g.titulo === x.titulo)).flatMap((x) => x.items) : [];
+      const [nombre, sufijo] = c.titulo.split(" · ");
+      return `
+        <div class="alc${on ? " alc--on" : ""}" data-k="${k}">
+          <label class="alc__head"><input type="checkbox" class="alc-on"${on ? " checked" : ""}><span>${esc(nombre)}</span><small>${esc([sufijo, c.entregable].filter(Boolean).join(" · "))}</small></label>
+          <div class="alc__body">${grupos}${grupoHTML(OTROS, [], otros, true)}</div>
+        </div>`;
+    }).join("");
+  }
+
+  function leerAlcances(id) {
+    const cat = catAlc(id);
+    return [...document.querySelectorAll(`#alcs-${id} .alc`)].map((el) => {
+      if (!el.querySelector(".alc-on").checked) return null;
+      const grupos = [...el.querySelectorAll(".alc__g")]
+        .map((g) => ({ titulo: g.dataset.g, items: [...g.querySelectorAll(".chk input:checked")].map((i) => i.value) }))
+        .filter((g) => g.items.length);
+      if (!grupos.length) return null;
+      const { id: aid, corto, titulo, entregable, nota, plano } = cat[+el.dataset.k];
+      return { id: aid, corto, titulo, entregable, nota, plano, grupos };
+    }).filter(Boolean);
+  }
+
+  ids.forEach((id) => pintarAlcances(id));
+  cont.addEventListener("click", (e) => {
+    const quitar = e.target.closest(".chk--extra .x");
+    if (quitar) { e.preventDefault(); quitar.closest(".chk").remove(); actualizar(); return; }
+    const btn = e.target.closest(".alc__btn");
+    if (!btn) return;
+    const inp = btn.previousElementSibling, t = inp.value.trim();
+    if (!t) { inp.focus(); return; }
+    btn.closest(".alc__g").querySelector(".extras").insertAdjacentHTML("beforeend", extraHTML(t));
+    inp.value = "";
+    inp.focus();
+    actualizar();
+  });
+  cont.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.closest(".alc__add")) { e.preventDefault(); e.target.nextElementSibling.click(); }
+  });
+  cont.addEventListener("change", (e) => {
+    const m = e.target.name && e.target.name.match(/^variante-(.+)$/);
+    if (m) pintarAlcances(m[1]);
+  });
 
   // Al marcar un servicio, que empiece cuando acaba el anterior
   ids.forEach((id) => $(`on-${id}`).addEventListener("change", () => {
@@ -585,6 +680,7 @@
       inicio: Math.max(1, +$(`inicio-${id}`).value || 1),
       inversion: Math.max(0, +$(`inversion-${id}`).value || 0),
       variante: $(`variante-${id}`).value,
+      alcances: leerAlcances(id),
       especificaciones: lineas($(`espec-${id}`).value)
     }));
 
@@ -620,7 +716,7 @@
       objetivos: lineas($("objetivos").value),
       giros: $("giros").value.split(",").map((x) => x.trim()).filter(Boolean),
       mapas: mapas.filter((m) => m.src).map((m) => ({ titulo: m.titulo, img: m.src, pie: m.pie })),
-      servicios: sel.map((s) => ({ id: s.id, variante: s.variante, semanas: s.semanas, inversion: s.inversion, especificaciones: s.especificaciones })),
+      servicios: sel.map((s) => ({ id: s.id, variante: s.variante, semanas: s.semanas, inversion: s.inversion, alcances: s.alcances, especificaciones: s.especificaciones })),
       cronograma: { meses, filas, nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables." },
       pagos,
       notaPagos: $("notaPagos").value.trim(),
@@ -693,12 +789,13 @@
     set("semanaInicio", off + 1);
     set("esquemaPago", F.esquemaPago || ((d.pagos || []).some((p) => /100/.test(p.concepto)) ? "100" : "50-50"));
 
-    ids.forEach((id) => { $(`on-${id}`).checked = false; });
+    ids.forEach((id) => { $(`on-${id}`).checked = false; pintarAlcances(id); });
     (d.servicios || []).forEach((s, i) => {
       if (!B.servicios[s.id]) return;
       $(`on-${s.id}`).checked = true;
       set(`semanas-${s.id}`, s.semanas); set(`inversion-${s.id}`, s.inversion); set(`variante-${s.id}`, s.variante);
       set(`espec-${s.id}`, (s.especificaciones || []).join("\n"));
+      pintarAlcances(s.id, s.alcances);
       const ini = F.inicios?.[s.id] ?? (trabajo.find((x) => x.n === i + 1)?.desde ?? off) - off + 1;
       set(`inicio-${s.id}`, Math.max(1, ini));
     });
@@ -749,6 +846,7 @@
     if (!$("cliente").value.trim()) faltan.push("cliente");
     if (!$("proyecto").value.trim()) faltan.push("proyecto");
     if (!ids.some(srvOn)) faltan.push("al menos un servicio");
+    ids.filter(srvOn).forEach((id) => { if (!leerAlcances(id).length) faltan.push(`al menos un alcance en ${B.servicios[id].nombre}`); });
     estP.className = faltan.length ? "estado err" : "estado";
     estP.textContent = faltan.length ? "Falta: " + faltan.join(", ") + "." : "";
     bOk.disabled = !!faltan.length;

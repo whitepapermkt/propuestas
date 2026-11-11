@@ -18,11 +18,15 @@
   // Láminas fijas del deck (exportadas del PDF original)
   const INSTITUCIONAL = ["01-portada", "02-vision", "03-modelo-negocio", "04-expertise", "05-portafolio", "06-clientes-mexico", "07-clientes-internacional", "08-awards"];
   const INTRO_SERVICIO = {
-    "estudio-mercado": ["11-estudio-mercado-portada", "12-estudio-mercado-pilares", "13-estudio-oferta", "14-estudio-demanda"],
+    "estudio-mercado": ["11-estudio-mercado-portada", "12-estudio-mercado-pilares", { oferta: "13-estudio-oferta" }, { demanda: "14-estudio-demanda" }],
     "definicion-producto": ["17-definicion-producto-portada", "18-definicion-producto-diagrama", "19-definicion-producto-proceso"]
   };
+  // Láminas de intro del servicio; las ligadas a un alcance (oferta/demanda) solo si ese alcance va incluido
+  const intro = (s) => (INTRO_SERVICIO[s.id] || [])
+    .map((x) => (typeof x === "string" ? x : s.alcanceIds.has(Object.keys(x)[0]) ? Object.values(x)[0] : ""))
+    .filter(Boolean);
 
-  const servicios = P.servicios.map((s, i) => ({ ...B.servicios[s.id], ...s, num: i + 1 }));
+  const servicios = P.servicios.map((s, i) => B.resolver(s, i));
   const total = servicios.reduce((a, s) => a + s.inversion, 0);
 
   const pie = `<p class="d-pie">4SREALESTATE.COM · REAL ESTATE FORESIGHT</p>`;
@@ -48,19 +52,18 @@
 
   // Grupos de alcance en tarjetas (con 3+ grupos la última lleva filete rojo, como el deck)
   const tarjetas = (grupos) => `
-    <div class="d-cards${grupos.length > 2 ? " d-cards--rojo" : ""}" style="--cols:${grupos.length === 4 ? 2 : grupos.length}">
+    <div class="d-cards${grupos.length > 2 ? " d-cards--rojo" : ""}" style="--cols:${grupos.length === 4 ? 2 : Math.min(grupos.length, 3)}">
       ${list(grupos, (g) => `<div class="d-card"><h4>${esc(g.titulo)}</h4><ul>${list(g.items, (i) => `<li>${esc(i)}</li>`)}</ul></div>`)}
     </div>`;
 
   function alcances(s) {
-    const fuente = s.pdf?.alcances || s.alcances || {};
-    const lista = fuente[s.variante] || Object.values(fuente)[0] || [];
+    const lista = s.alcances || [];
     const tituloSrv = s.pdf?.titulo || s.nombreLargo || s.nombre;
     return lista.map((a, k) => {
       const [nombre, sufijo] = a.titulo.split(" · ");
       const pill = `<span class="d-pill">Entregable: ${esc(a.entregable)}</span>`;
-      const cuerpo = a.lista
-        ? `<div class="d-cards d-cards--lista"><div class="d-card"><ul>${list(a.lista, (i) => `<li>${esc(i)}</li>`)}</ul></div></div>`
+      const cuerpo = a.plano
+        ? `<div class="d-cards d-cards--lista"><div class="d-card"><ul>${list((a.grupos || []).flatMap((g) => g.items), (i) => `<li>${esc(i)}</li>`)}</ul></div></div>`
         : tarjetas(a.grupos || []);
 
       // Servicios con ficha (objetivo, antecesor…), como "2. Definición e Innovación de Producto"
@@ -104,6 +107,7 @@
     const espec = (s) => {
       const items = s.pdf?.especGiros && P.giros?.length ? P.giros : s.especificaciones || [];
       const intro = s.pdf?.especIntro;
+      if (!items.length) return "";
       if (!intro && items.length === 1) return `<p>${esc(items[0])}</p>`;
       return `${intro ? `<p>${esc(intro)}</p>` : ""}<ul>${list(items, (e) => `<li>${esc(e)}</li>`)}</ul>`;
     };
@@ -167,7 +171,7 @@
 
   function armar() {
     if (document.getElementById("deck")) return document.getElementById("deck");
-    const porServicio = servicios.map((s) => list(INTRO_SERVICIO[s.id], fija) + alcances(s).join("")).join("");
+    const porServicio = servicios.map((s) => list(intro(s), fija) + alcances(s).join("")).join("");
     const deck = document.createElement("div");
     deck.id = "deck";
     deck.innerHTML =
@@ -185,6 +189,24 @@
     return deck;
   }
 
+  // Si los alcances no caben sobre el pie (p. ej. con puntos propios), reduce el texto de las tarjetas hasta que quepan
+  function ajustar(deck) {
+    const antes = deck.style.cssText;
+    deck.style.cssText = "display:block;position:absolute;left:-20000px;top:0";
+    deck.querySelectorAll(".d-alc").forEach((sl) => {
+      const cards = sl.querySelector(".d-cards");
+      const card = cards && cards.querySelector(".d-card");
+      if (!card) return;
+      const tope = sl.getBoundingClientRect().top + 720 - 58;
+      let fs = parseFloat(getComputedStyle(card).fontSize);
+      while (cards.getBoundingClientRect().bottom > tope && fs > 11) {
+        fs -= 0.5;
+        cards.querySelectorAll(".d-card").forEach((c) => { c.style.fontSize = fs + "px"; });
+      }
+    });
+    deck.style.cssText = antes;
+  }
+
   const cargadas = (deck) =>
     Promise.all(
       [...deck.querySelectorAll("img")].map((im) =>
@@ -199,14 +221,16 @@
   // Nombre del archivo al "Guardar como PDF" (igual que el deck original)
   let tituloWeb = document.title;
   const tituloPDF = `Propuesta ${P.proyecto} – ${P.cliente}`;
-  addEventListener("beforeprint", () => { armar(); tituloWeb = document.title; document.title = tituloPDF; });
+  addEventListener("beforeprint", () => { ajustar(armar()); tituloWeb = document.title; document.title = tituloPDF; });
   addEventListener("afterprint", () => { document.title = tituloWeb; });
 
   window.descargarPDF = async (btn) => {
     const texto = btn && btn.textContent;
     if (btn) { btn.disabled = true; btn.textContent = "Preparando PDF…"; }
     try {
-      await cargadas(armar());
+      const deck = armar();
+      await cargadas(deck);
+      ajustar(deck);
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = texto; }
     }

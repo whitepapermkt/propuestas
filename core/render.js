@@ -22,7 +22,7 @@
   const list = (arr, fn) => (arr || []).map(fn).join("");
 
   // Servicios de la propuesta enriquecidos con el catálogo
-  const servicios = P.servicios.map((s, i) => ({ ...B.servicios[s.id], ...s, num: i + 1 }));
+  const servicios = P.servicios.map((s, i) => B.resolver(s, i));
   const total = servicios.reduce((a, s) => a + s.inversion, 0);
   const semanasTotales = P.cronograma?.filas?.length
     ? Math.max(...P.cronograma.filas.map((f) => f.hasta)) - Math.min(...P.cronograma.filas.map((f) => f.desde)) + 1
@@ -180,7 +180,7 @@
       <div class="bloque">
         <h4 class="h4">Alcances y entregables</h4>
         <div class="espec"><b>Para ${esc(P.cliente)}:</b><ul>${list(s.especificaciones, (e) => `<li>${esc(e)}</li>`)}</ul></div>
-        ${list(s.alcances?.[s.variante], alcanceHTML)}
+        ${list(s.alcances, alcanceHTML)}
         ${s.requerimientos?.length ? `<div class="req"><b>Requerimientos para iniciar</b><ul>${list(s.requerimientos, (r) => `<li>${esc(r)}</li>`)}</ul></div>` : ""}
       </div>
     </article>`;
