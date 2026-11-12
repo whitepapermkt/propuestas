@@ -141,7 +141,7 @@
 
   // Especificaciones: en el estudio de mercado, los giros analizados + las extras del giro
   const espec = (s) => (s.pdf?.especGiros && P.giros?.length
-    ? [`${s.pdf.especIntro.replace(/:\s*$/, "")}: ${P.giros.join(", ")}.`, ...B.especExtras(s)]
+    ? [`${s.pdf.especIntro.replace(/:\s*$/, "")}: ${P.giros.join(", ")}.`, ...B.especExtras(s, P.ciudad)]
     : s.especificaciones || []);
 
   const servicioHTML = (s) => `

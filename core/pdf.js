@@ -146,7 +146,7 @@
     const espec = (s) => {
       // Estudio de mercado: giros analizados + especificaciones extra ("Se considera:")
       if (s.pdf?.especGiros && P.giros?.length) {
-        const extras = B.especExtras(s);
+        const extras = B.especExtras(s, P.ciudad);
         return `<p>${esc(s.pdf.especIntro)}</p><ul>${list(P.giros, (e) => `<li>${esc(e)}</li>`)}</ul>` +
           (extras.length ? `<p class="d-esp__sub">Se considera:</p><ul>${list(extras, (e) => `<li>${esc(e)}</li>`)}</ul>` : "");
       }

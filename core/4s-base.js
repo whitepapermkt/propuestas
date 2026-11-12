@@ -283,7 +283,7 @@ window.BASE_4S = {
         "Recomendación de tipologías y producto.",
         "Dimensiones y número de unidades recomendadas.",
         "Perfil del comprador: origen y demografía.",
-        "Benchmark de comparables en la zona.",
+        "Benchmark de comparables en {ciudad}.",
         "Evolución del mercado local en los últimos 5 años.",
         "Análisis del programa de rentas y comparativa de producto."
       ]
@@ -311,7 +311,11 @@ window.BASE_4S = {
   Object.keys(GIROS_ESTUDIO).forEach((k) => { if (!GIROS_ESTUDIO[k].detalle) E.alcances[k] = generico(k); });
   window.BASE_4S.alcanceGenerico = generico;
   // Especificaciones extra del estudio (sin la línea vieja "Oferta y demanda para los giros…", que ahora sale de los giros)
-  window.BASE_4S.especExtras = (s) => (s.especificaciones || []).filter((e) => !/^oferta y\/?o? demanda para los giros/i.test(e));
+  // {ciudad} = ciudad de la propuesta (si no hay, "la zona")
+  window.BASE_4S.conCiudad = (t, ciudad) => String(t).replace(/\{ciudad\}/g, String(ciudad || "").trim() || "la zona");
+  window.BASE_4S.especExtras = (s, ciudad) => (s.especificaciones || [])
+    .filter((e) => !/^oferta y\/?o? demanda para los giros/i.test(e))
+    .map((e) => window.BASE_4S.conCiudad(e, ciudad));
 })();
 
 /* Une un servicio de la propuesta con el catálogo.

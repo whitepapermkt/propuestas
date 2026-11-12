@@ -451,8 +451,21 @@
     if (!nuevo) return;
     const giros = $("giros"), es = $(`espec-${id}`);
     if (!giros.value.trim() || (viejo && giros.value.trim() === viejo.giros.join(", "))) giros.value = nuevo.giros.join(", ");
-    if (!es.value.trim() || (viejo && es.value.trim() === viejo.especificaciones.join("\n"))) es.value = nuevo.especificaciones.join("\n");
+    const extras = (g) => g.especificaciones.map((e) => B.conCiudad(e, $("ciudad").value)).join("\n");
+    if (!es.value.trim() || (viejo && es.value.trim() === extras(viejo))) es.value = extras(nuevo);
   }
+  // Si cambia la ciudad, actualiza las especificaciones que la mencionan (ej. "Benchmark de comparables en …")
+  let ciudadAntes = $("ciudad").value.trim() || "la zona";
+  $("ciudad").addEventListener("input", () => {
+    const ahora = $("ciudad").value.trim() || "la zona";
+    ids.forEach((id) => {
+      const es = $(`espec-${id}`), cat = B.servicios[id].giros;
+      if (!cat) return;
+      const plantillas = Object.values(cat).flatMap((g) => g.especificaciones).filter((e) => e.includes("{ciudad}"));
+      es.value = es.value.split("\n").map((l) => plantillas.some((p) => l === B.conCiudad(p, ciudadAntes)) ? l.replace(ciudadAntes, ahora) : l).join("\n");
+    });
+    ciudadAntes = ahora;
+  });
   cont.addEventListener("change", (e) => {
     const m = e.target.name && e.target.name.match(/^variante-(.+)$/);
     if (!m) return;
@@ -873,6 +886,7 @@
     const F = d._form || {};
     const set = (n, v) => { if ($(n) && v != null) $(n).value = v; };
     ["cliente", "proyecto", "ciudad", "fecha", "vigencia", "resumen", "notaPagos"].forEach((k) => set(k, d[k]));
+    ciudadAntes = $("ciudad").value.trim() || "la zona";
     set("objetivos", (d.objetivos || []).join("\n"));
     set("giros", (d.giros || []).join(", "));
     const a = d.socio || d.asesor || {};
@@ -893,7 +907,7 @@
       $(`on-${s.id}`).checked = true;
       set(`semanas-${s.id}`, s.semanas); set(`inversion-${s.id}`, s.inversion); set(`variante-${s.id}`, s.variante);
       $(`variante-${s.id}`).dataset.prev = $(`variante-${s.id}`).value;
-      set(`espec-${s.id}`, (B.servicios[s.id].giros ? B.especExtras(s) : s.especificaciones || []).join("\n"));
+      set(`espec-${s.id}`, (B.servicios[s.id].giros ? B.especExtras(s, d.ciudad) : s.especificaciones || []).join("\n"));
       pintarAlcances(s.id, s.alcances);
       const ini = F.inicios?.[s.id] ?? (trabajo.find((x) => x.n === i + 1)?.desde ?? off) - off + 1;
       set(`inicio-${s.id}`, Math.max(1, ini));
