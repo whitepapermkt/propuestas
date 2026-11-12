@@ -138,3 +138,29 @@
 .d-tb--mas { border-spacing: 0 3px; margin-top: -3px; }
 .d-tb--mas td { padding: 4px 14px; font-size: 15px; }
 .d-tb--mas .d-mxn, .d-tb--mas .d-num { font-size: 23px !important; }
+
+/* 13/14 · Estudio de Oferta / Demanda generados por giro (mismo diseño que las láminas del deck) */
+.d-est { --fs: 16.5px; background: var(--ink); color: #f1f0ec; padding: 44px 64px 0 64px; }
+.d-est::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 10px; background: var(--red); }
+.d-est__top { display: grid; grid-template-columns: 523px 1fr; align-items: start; }
+.d-est__sup { font-weight: 600; font-size: 18.5px; letter-spacing: .14em; text-transform: uppercase; color: #d9d8d4; line-height: 1; margin-top: 2px; }
+.d-est .d-tit.d-est__tit { font-size: 69px; color: #fff; margin-top: 8px; }
+.d-est .d-tit .d-out { color: #fff; -webkit-text-stroke: 1.3px #fff; }
+.d-est__intro { font-size: 17px; line-height: 1.38; color: #e6e5e1; }
+.d-est__intro b { font-weight: 700; color: #fff; }
+.d-est__cols { display: grid; grid-template-columns: 440px 268px 1fr; gap: 0 29px; margin-top: 34px; }
+.d-est h4 { font-family: "Bebas Neue", sans-serif; font-weight: 700; font-size: 29px; line-height: 1; letter-spacing: .01em; text-transform: uppercase; color: #fff; margin-bottom: 18px; }
+.d-est__cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.d-est .d-card { background: #1c1d1f; border: 0; border-radius: 4px; padding: 17px 17px 20px; font-size: var(--fs); line-height: 1.32; color: #f1f0ec; }
+.d-est__medio { font-size: var(--fs); line-height: 1.38; color: #e6e5e1; }
+.d-est__medio p + p { margin-top: 8px; }
+.d-est__medio p + h4, .d-est__giros + h4 { margin-top: 24px; }
+.d-est__medio h4 { margin-bottom: 10px; }
+.d-est__giros { font-weight: 700; color: #fff; }
+.d-est__der { display: grid; gap: 30px; align-content: start; padding-top: 2px; }
+.d-est__ico { display: grid; grid-template-columns: 48px 1fr; gap: 16px; align-items: start; }
+.d-est__ico img { width: 48px; height: 48px; object-fit: contain; object-position: top center; margin-top: 2px; }
+.d-est__ico h5 { font-weight: 700; font-size: calc(var(--fs) + 1px); letter-spacing: .05em; line-height: 1.2; text-transform: uppercase; color: #fff; margin-bottom: 4px; }
+.d-est__ico p { font-size: var(--fs); line-height: 1.38; color: #e6e5e1; }
+.d-est .d-pie { color: #9a9b9d; }
+.d-esp__sub { margin-top: 6px; font-weight: 600; }

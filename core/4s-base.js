@@ -115,17 +115,17 @@ window.BASE_4S = {
         {
           alcance: "oferta",
           titulo: "Competencia · Estudio de Oferta",
-          texto: "Análisis de oferta formal e informal de la zona, con el fin de identificar los principales indicadores del mercado: precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros.",
+          texto: "{ofertaIntro}",
           items: [
             { icono: "assets/deck/icons/s13-validacion-zona-mapa.png", titulo: "Validación de zona / ubicación", texto: "Determinamos NSE de la zona y número de personas en el polígono de influencia." },
-            { icono: "assets/deck/icons/s13-unidades-m2-ocupacion.png", titulo: "Unidades / m² totales y ocupación", texto: "Información actualizada de los m² totales y la ocupación de los proyectos en venta y renta del giro." },
+            { icono: "assets/deck/icons/s13-unidades-m2-ocupacion.png", titulo: "Unidades / m² totales y ocupación", texto: "{unidades}" },
             { icono: "assets/deck/icons/s13-precios-referencia.png", titulo: "Precios de referencia", texto: "Precios totales o por m² de venta/renta de los competidores de interés." }
           ]
         },
         {
           alcance: "demanda",
           titulo: "Mercado Meta · Estudio de Demanda",
-          texto: "Análisis cuantitativo de respuestas de compradores y/o inversionistas de la zona para conocer sus preferencias y disposición de compra del producto en el terreno. Se diseña una encuesta y una entrevista a la medida del proyecto, aplicadas en puntos estratégicos del área nuclear del predio.",
+          texto: "{demandaIntro}",
           items: [
             { icono: "assets/deck/icons/s14-segmentacion-mercado.png", titulo: "Segmentación del mercado", texto: "Definimos la segmentación apropiada de acuerdo a las personas o giros presentes en la zona." },
             { icono: "assets/deck/icons/s14-preferencias-mercado.png", titulo: "Preferencias del mercado", texto: "Indagamos las preferencias de los distintos segmentos según las especificaciones del estudio." },
@@ -140,7 +140,9 @@ window.BASE_4S = {
         especIntro: "{estudios} para los siguientes giros:",
         especGiros: true
       },
-      // Alcances (texto del deck de 4S). En el formulario se elige cada bloque y cada punto.
+      // Alcances por giro. Comercial trae alcances detallados (texto del deck de 4S);
+      // el resto de los giros se arma con la plantilla de Oferta/Demanda (ver GIROS_ESTUDIO abajo).
+      // En el formulario se elige el giro, cada bloque y cada punto.
       alcances: {
         comercial: [
           { id: "oferta", corto: "Oferta", titulo: "1.1 Estudio de Oferta · Alcance comercial", entregable: "Reporte PDF", grupos: [
@@ -209,6 +211,109 @@ window.BASE_4S = {
   }
 };
 
+/* ------------------------------------------------------------------------
+   ESTUDIO DE MERCADO POR GIRO
+   Todos los giros comparten la plantilla de Oferta y Demanda de las propuestas
+   de 4S; por giro cambian los giros que se analizan, el texto de unidades/m²,
+   cómo se mide la demanda y las especificaciones extra.
+   detalle: true → el giro tiene alcances detallados propios (láminas extra en el PDF).
+   ------------------------------------------------------------------------ */
+(function () {
+  const GIROS_ESTUDIO = {
+    comercial: {
+      nombre: "Comercial", detalle: true,
+      giros: ["Comercial", "Equipamiento y Servicios"],
+      ofertaIntro: "precios por m² en renta/venta, ocupación, estacionamientos y giros comerciales presentes, entre otros",
+      unidades: "Información actualizada constantemente de los m² totales de locales comerciales, así como la ocupación de los proyectos en venta y renta del giro.",
+      demanda: [
+        "Se determina la necesidad de demanda por giro, estimando la capacidad de mercado de cada uno.",
+        "Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican en puntos estratégicos del área nuclear del predio."
+      ],
+      especificaciones: []
+    },
+    oficinas: {
+      nombre: "Oficinas",
+      giros: ["Oficinas", "Comercial", "Vivienda Vertical"],
+      ofertaIntro: "precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros",
+      unidades: "Información actualizada constantemente de los m² totales de oficinas, así como la ocupación de los proyectos en venta y renta del giro.",
+      demanda: ["Se estima la demanda y se proyecta la necesidad de metros cuadrados de oficinas en la zona."],
+      especificaciones: []
+    },
+    "vivienda-horizontal": {
+      nombre: "Vivienda Horizontal",
+      giros: ["Vivienda Horizontal", "Vivienda Vertical", "Lotes Residenciales", "Macrolotes Residenciales", "Macrolotes Comerciales"],
+      ofertaIntro: "precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros",
+      unidades: "Información actualizada constantemente de las unidades y los m² totales de vivienda, así como los niveles de venta de los proyectos del giro.",
+      demanda: ["Se realiza la estimación de demanda para cada uno de los giros analizados."],
+      especificaciones: ["Análisis histórico de la evolución de la vivienda en tamaños, precios, preferencias de mercado y desplazamiento."]
+    },
+    "vivienda-vertical": {
+      nombre: "Vivienda Vertical",
+      giros: ["Vivienda Vertical", "Vivienda Horizontal"],
+      ofertaIntro: "precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros",
+      unidades: "Información actualizada constantemente de las unidades y los m² totales de departamentos, así como los niveles de venta y renta de los proyectos del giro.",
+      demanda: ["Se realiza la estimación de demanda para cada uno de los giros analizados."],
+      especificaciones: ["Análisis histórico de la evolución de la vivienda en tamaños, precios, preferencias de mercado y desplazamiento."]
+    },
+    industrial: {
+      nombre: "Industrial",
+      giros: ["Parques Industriales", "Microparques", "Bodegas", "Lotes Industriales", "Macrolotes"],
+      ofertaIntro: "precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros",
+      unidades: "Información actualizada constantemente de los m² totales de naves, bodegas y lotes industriales, así como la ocupación de los proyectos en venta y renta del giro.",
+      demanda: ["Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican en puntos estratégicos del área nuclear del predio."],
+      especificaciones: []
+    },
+    hospital: {
+      nombre: "Hospital",
+      giros: ["Hospital", "Consultorios", "Comercial"],
+      ofertaIntro: "precios por m² en renta/venta, ocupación, estacionamientos, giros médicos y giros comerciales presentes, entre otros",
+      unidades: "Información actualizada constantemente de los m² totales de consultorios y locales comerciales, así como la ocupación y los niveles de venta de los proyectos del giro.",
+      demanda: ["Se diseña una entrevista de acuerdo a las necesidades del proyecto, que se aplica a especialistas estratégicos y usuarios de consultorios."],
+      especificaciones: []
+    },
+    "hotel-turismo": {
+      nombre: "Hotel / Turismo",
+      giros: ["Hotel / Airbnb", "Rentas de Corta Estancia", "Vivienda Vertical", "Vivienda Horizontal"],
+      ofertaIntro: "precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros",
+      unidades: "Información actualizada constantemente de las unidades y los m² totales de vivienda, hoteles y rentas de corta estancia, así como la ocupación y los niveles de venta de los proyectos del giro.",
+      demanda: ["Se determina la demanda estadística por giro y segmento."],
+      especificaciones: [
+        "Precio de venta estimado (incluyendo el análisis por m²).",
+        "Velocidad de ventas (proyección de absorción).",
+        "Recomendación de tipologías y producto.",
+        "Dimensiones y número de unidades recomendadas.",
+        "Perfil del comprador: origen y demografía.",
+        "Benchmark de comparables en la zona.",
+        "Evolución del mercado local en los últimos 5 años.",
+        "Análisis del programa de rentas y comparativa de producto."
+      ]
+    }
+  };
+
+  // Plantilla de Oferta y Demanda (texto de las propuestas de 4S, corregido)
+  const generico = (key) => {
+    const g = GIROS_ESTUDIO[key];
+    const alc = g.nombre.toLowerCase();
+    return [
+      { id: "oferta", corto: "Oferta", titulo: `1.1 Estudio de Oferta · Alcance ${alc}`, entregable: "Reporte PDF", grupos: [
+        { titulo: "Análisis de oferta", items: ["Análisis de plaza e infraestructura.", "Análisis demográfico de la zona.", "Análisis de variables clave (número de unidades, segmento, rango, stock, ritmo de venta).", "Análisis de proyectos en venta y renta.", "Tipo de comprador, cliente potencial.", "Comparativa de inventarios y tipos de entrega."] },
+        { titulo: "Benchmark", items: ["Validación de zona / ubicación: determinamos el NSE de la zona y el número de personas en el polígono de influencia.", `Unidades / m² totales y ocupación: ${g.unidades.charAt(0).toLowerCase()}${g.unidades.slice(1)}`, "Precios de referencia de la zona: presentamos los precios totales o por m² de venta/renta de los competidores de interés."] }
+      ]},
+      { id: "demanda", corto: "Demanda", titulo: `1.2 Estudio de Demanda · Alcance ${alc}`, entregable: "Reporte PDF", nota: g.demanda.join(" "), grupos: [
+        { titulo: "Análisis de demanda", items: ["Definición del perfil del cliente.", "Generadores de valor de la ubicación.", "Poder adquisitivo del mercado.", "Usos, preferencias y hábitos del mercado.", "Determinar las necesidades insatisfechas del mercado.", "Conclusiones clave y retroalimentación al proyecto."] },
+        { titulo: "Mercado meta", items: ["Segmentación del mercado: definimos la segmentación apropiada de acuerdo a las personas o giros presentes en la zona.", "Preferencias del mercado: indagamos las preferencias de los distintos segmentos de mercado de acuerdo a las especificaciones del estudio.", "Capacidad de mercado: desarrollamos una metodología para estimar la capacidad del mercado de interés para el alcance del estudio."] }
+      ]}
+    ];
+  };
+
+  const E = window.BASE_4S.servicios["estudio-mercado"];
+  E.giros = GIROS_ESTUDIO;
+  Object.keys(GIROS_ESTUDIO).forEach((k) => { if (!GIROS_ESTUDIO[k].detalle) E.alcances[k] = generico(k); });
+  window.BASE_4S.alcanceGenerico = generico;
+  // Especificaciones extra del estudio (sin la línea vieja "Oferta y demanda para los giros…", que ahora sale de los giros)
+  window.BASE_4S.especExtras = (s) => (s.especificaciones || []).filter((e) => !/^oferta y\/?o? demanda para los giros/i.test(e));
+})();
+
 /* Une un servicio de la propuesta con el catálogo.
    s.alcances (opcional) = alcances elegidos en el formulario; si no viene, van todos los del catálogo. */
 window.BASE_4S.resolver = function (s, i) {
@@ -219,11 +324,20 @@ window.BASE_4S.resolver = function (s, i) {
   const ids = new Set(alcances.map((a) => a.id).filter(Boolean));
   const cortos = todos.filter((a) => a.corto && ids.has(a.id)).map((a) => a.corto);
   const estudios = (cortos.length ? cortos : todos.map((a) => a.corto).filter(Boolean)).join(" y ");
-  const t = (x) => (typeof x === "string" ? x.replace("{estudios}", estudios) : x);
+  const giro = cat.giros && (cat.giros[s.variante] || Object.values(cat.giros)[0]);
+  const vars = giro ? {
+    estudios,
+    ofertaIntro: `Análisis de oferta formal e informal de la zona, con el fin de identificar los principales indicadores del mercado: ${giro.ofertaIntro}.`,
+    demandaIntro: `Análisis cuantitativo de respuestas de compradores y/o inversionistas de la zona para conocer sus preferencias de mercado y su disposición de compra del producto en el terreno. ${giro.demanda.join(" ")}`,
+    unidades: giro.unidades
+  } : { estudios };
+  const t = (x) => (typeof x === "string" ? x.replace(/\{(\w+)\}/g, (m, k) => vars[k] ?? m) : x);
   return {
     ...cat, ...s, num: i + 1, alcances, alcanceIds: ids,
     nombreLargo: t(cat.nombreLargo),
-    bloques: (cat.bloques || []).filter((b) => !b.alcance || ids.has(b.alcance)),
+    giro, variante: s.variante || (cat.giros ? Object.keys(cat.giros)[0] : s.variante),
+    bloques: (cat.bloques || []).filter((b) => !b.alcance || ids.has(b.alcance))
+      .map((b) => ({ ...b, texto: t(b.texto), items: (b.items || []).map((it) => ({ ...it, texto: t(it.texto) })) })),
     pdf: cat.pdf && { ...cat.pdf, titulo: t(cat.pdf.titulo), especIntro: t(cat.pdf.especIntro) }
   };
 };

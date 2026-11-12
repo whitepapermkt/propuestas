@@ -53,6 +53,24 @@ Copia `_plantilla.html` → `cliente-proyecto.html`, llena el bloque `datos-prop
 - Mensajes de WhatsApp de “Aceptar propuesta” / “Tengo preguntas” con cliente, proyecto y monto.
 - Versión PDF: botón “Descargar PDF”. Arma un deck horizontal 16:9 (26 láminas para La Minera) con el mismo formato que la propuesta en Keynote: láminas institucionales fijas (`assets/pdf/`, exportadas del PDF original) + portada con mapas, alcances, propuesta de servicios, tiempos y orden de trabajo generados con los datos de la propuesta (`core/pdf.js`, `core/pdf.css`). Los textos del PDF salen de `servicios.<id>.pdf` en `core/4s-base.js`.
 
+## Estudio de Mercado por giro
+
+En **04 Servicios → Estudio de Mercado → Giro del estudio** se elige: Comercial, Oficinas, Vivienda Horizontal,
+Vivienda Vertical, Industrial, Hospital u Hotel / Turismo. El giro llena solo:
+
+- **Giros que se analizan** (campo *Giros / usos* de 02 Contexto).
+- **Cómo se mide la demanda** (texto de la lámina de Demanda y de la web).
+- **Especificaciones extra** (ej. Hotel / Turismo: precio estimado, absorción, tipologías…; Vivienda: análisis histórico).
+- Texto de *Unidades / m² totales y ocupación* propio del giro.
+
+Si ya editaste a mano los giros o las especificaciones, cambiar de giro no los sobrescribe.
+Los datos de cada giro están en `core/4s-base.js → GIROS_ESTUDIO`.
+
+- **Comercial** tiene alcances detallados (láminas 1.1 y 1.2 en el PDF).
+- **Los demás** usan la plantilla de Oferta y Demanda de las propuestas de 4S; sus puntos se eligen en el formulario
+  y salen en las láminas *Estudio de Oferta* / *Estudio de Demanda*, que ahora se generan con los datos del giro
+  (antes eran imágenes fijas de Comercial).
+
 ## Alcances en el formulario
 
 En **04 Servicios**, cada servicio muestra sus alcances por bloque (ej. *1.1 Estudio de Oferta* y *1.2 Estudio de Demanda* por separado):

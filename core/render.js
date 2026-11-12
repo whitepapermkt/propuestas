@@ -139,6 +139,11 @@
       </div>
     </details>`;
 
+  // Especificaciones: en el estudio de mercado, los giros analizados + las extras del giro
+  const espec = (s) => (s.pdf?.especGiros && P.giros?.length
+    ? [`${s.pdf.especIntro.replace(/:\s*$/, "")}: ${P.giros.join(", ")}.`, ...B.especExtras(s)]
+    : s.especificaciones || []);
+
   const servicioHTML = (s) => `
     <article class="srv" id="srv-${s.id}">
       <div class="srv__top">
@@ -179,7 +184,7 @@
 
       <div class="bloque">
         <h4 class="h4">Alcances y entregables</h4>
-        <div class="espec"><b>Para ${esc(P.cliente)}:</b><ul>${list(s.especificaciones, (e) => `<li>${esc(e)}</li>`)}</ul></div>
+        <div class="espec"><b>Para ${esc(P.cliente)}:</b><ul>${list(espec(s), (e) => `<li>${esc(e)}</li>`)}</ul></div>
         ${list(s.alcances, alcanceHTML)}
         ${s.requerimientos?.length ? `<div class="req"><b>Requerimientos para iniciar</b><ul>${list(s.requerimientos, (r) => `<li>${esc(r)}</li>`)}</ul></div>` : ""}
       </div>
@@ -212,7 +217,7 @@
             <span class="tabla__n">${s.num}</span>
             <span><b>${esc(s.nombreLargo)}</b></span>
             <span>${s.semanas} semanas</span>
-            <span><ul>${list(s.especificaciones, (e) => `<li>${esc(e)}</li>`)}</ul></span>
+            <span><ul>${list(espec(s), (e) => `<li>${esc(e)}</li>`)}</ul></span>
             <span class="tabla__monto">${mxn(s.inversion)}</span>
           </div>`)}
         <div class="tabla__total"><span>Total</span><span>${mxn(total)}</span></div>

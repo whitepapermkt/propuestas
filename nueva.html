@@ -183,7 +183,7 @@
         <label>Objetivos <small>— uno por línea</small></label>
         <textarea name="objetivos" rows="4" placeholder="Dimensionar la capacidad comercial de la zona&#10;Conocer al consumidor del área de influencia"></textarea>
         <label>Giros / usos <small>— separados por coma</small></label>
-        <input type="text" name="giros" placeholder="Comercial, Equipamiento y Servicios">
+        <input type="text" name="giros" placeholder="Se llenan con el giro del estudio de mercado">
       </fieldset>
 
       <fieldset>
@@ -320,8 +320,8 @@
           <div><label>Inicia en semana</label><input type="number" name="inicio-${id}" min="1" max="52" value="1"></div>
           <div><label>Inversión MXN</label><input type="number" name="inversion-${id}" min="0" step="1000" placeholder="0"></div>
         </div>
-        <label${Object.keys(s.alcances || {}).length > 1 ? "" : " hidden"}>Variante <small>(del catálogo)</small></label>
-        <select name="variante-${id}"${Object.keys(s.alcances || {}).length > 1 ? "" : " hidden"}>${Object.keys(s.alcances || {}).map((v) => `<option value="${v}">${v[0].toUpperCase() + v.slice(1)}</option>`).join("")}</select>
+        <label${Object.keys(s.alcances || {}).length > 1 ? "" : " hidden"}>${s.giros ? "Giro del estudio <small>— cambia giros analizados, medición de demanda y alcances</small>" : "Variante <small>(del catálogo)</small>"}</label>
+        <select name="variante-${id}" data-prev="${Object.keys(s.alcances || {})[0] || ""}"${Object.keys(s.alcances || {}).length > 1 ? "" : " hidden"}>${Object.keys(s.alcances || {}).map((v) => `<option value="${v}">${esc(s.giros?.[v]?.nombre || v[0].toUpperCase() + v.slice(1))}</option>`).join("")}</select>
         <label>Alcances <small>— activa cada estudio; abre un grupo para quitar o agregar puntos</small></label>
         <div class="alcs" id="alcs-${id}"></div>
         <label>Especificaciones para este cliente <small>— una por línea</small></label>
@@ -442,10 +442,25 @@
     if (add && !e.target.value.trim()) setTimeout(() => { if (!add.contains(document.activeElement)) add.classList.remove("alc__add--on"); }, 150);
   });
   cont.addEventListener("change", (e) => { if (e.target.closest(".alcs")) contar(e.target.closest(".alcs")); });
+  // Giro del estudio: llena los giros analizados y las especificaciones del giro,
+  // salvo que ya los hayas editado a mano (solo se reemplazan si están vacíos o tal cual venían del giro anterior)
+  function aplicarGiro(id, antes) {
+    const G = B.servicios[id].giros;
+    if (!G) return;
+    const nuevo = G[$(`variante-${id}`).value], viejo = G[antes];
+    if (!nuevo) return;
+    const giros = $("giros"), es = $(`espec-${id}`);
+    if (!giros.value.trim() || (viejo && giros.value.trim() === viejo.giros.join(", "))) giros.value = nuevo.giros.join(", ");
+    if (!es.value.trim() || (viejo && es.value.trim() === viejo.especificaciones.join("\n"))) es.value = nuevo.especificaciones.join("\n");
+  }
   cont.addEventListener("change", (e) => {
     const m = e.target.name && e.target.name.match(/^variante-(.+)$/);
-    if (m) pintarAlcances(m[1]);
+    if (!m) return;
+    pintarAlcances(m[1]);
+    aplicarGiro(m[1], e.target.dataset.prev);
+    e.target.dataset.prev = e.target.value;
   });
+  ids.forEach((id) => $(`on-${id}`).addEventListener("change", () => { if (srvOn(id)) aplicarGiro(id); }));
 
   // Al marcar un servicio, que empiece cuando acaba el anterior
   ids.forEach((id) => $(`on-${id}`).addEventListener("change", () => {
@@ -877,7 +892,8 @@
       if (!B.servicios[s.id]) return;
       $(`on-${s.id}`).checked = true;
       set(`semanas-${s.id}`, s.semanas); set(`inversion-${s.id}`, s.inversion); set(`variante-${s.id}`, s.variante);
-      set(`espec-${s.id}`, (s.especificaciones || []).join("\n"));
+      $(`variante-${s.id}`).dataset.prev = $(`variante-${s.id}`).value;
+      set(`espec-${s.id}`, (B.servicios[s.id].giros ? B.especExtras(s) : s.especificaciones || []).join("\n"));
       pintarAlcances(s.id, s.alcances);
       const ini = F.inicios?.[s.id] ?? (trabajo.find((x) => x.n === i + 1)?.desde ?? off) - off + 1;
       set(`inicio-${s.id}`, Math.max(1, ini));
