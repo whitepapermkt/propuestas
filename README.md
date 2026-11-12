@@ -57,9 +57,10 @@ Copia `_plantilla.html` → `cliente-proyecto.html`, llena el bloque `datos-prop
 
 En **04 Servicios**, cada servicio muestra sus alcances por bloque (ej. *1.1 Estudio de Oferta* y *1.2 Estudio de Demanda* por separado):
 
-- Activa o quita cada bloque completo; la numeración y el nombre del servicio se ajustan solos (ej. “Estudio de Mercado: Oferta”).
-- Marca o desmarca cada punto del catálogo.
-- **+ Agregar** en cualquier grupo para escribir un punto propio, o en *Alcances adicionales* para algo que no encaje en ningún grupo.
+- Cada bloque es una tarjeta con interruptor; debajo del nombre se ve el resumen ("15 de 16 puntos · 1 propio"). Activarlo o quitarlo ajusta la numeración y el nombre del servicio (ej. “Estudio de Mercado: Oferta”).
+- Los grupos vienen cerrados con su contador (3/3). Ábrelos solo si hay que quitar puntos; cada grupo tiene *Quitar todos / Marcar todos*.
+- **+ Agregar punto a este grupo** abre un campo para escribir un punto propio (Enter agrega y deja el campo listo para otro). *Alcances adicionales* es para lo que no encaje en ningún grupo.
+- Pensado para celular: renglones completos tocables, casillas grandes y texto de 16 px en los campos (iOS no hace zoom).
 
 Lo elegido se guarda en la propuesta (`servicios[].alcances`) y se usa en la web y en el PDF. Las propuestas sin `alcances` muestran el catálogo completo.
 
