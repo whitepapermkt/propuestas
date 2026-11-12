@@ -129,3 +129,12 @@
 .d-tb--pagos td { padding: 12px 14px; font-size: 18px; }
 .d-tb--pagos .d-mxn { font-size: 35px !important; }
 .d-tb--pagos .d-num { font-size: 36px; }
+/* Orden de trabajo con muchos pagos (ej. mensualidades): filas más compactas para que quepa en una lámina */
+.d-tb--muchos { border-spacing: 0 6px; margin-top: -6px; }
+.d-tb--muchos td { padding: 7px 14px; font-size: 16.5px; }
+.d-tb--muchos .d-srv { font-size: 16px !important; }
+.d-tb--muchos .d-mxn { font-size: 28px !important; }
+.d-tb--muchos .d-num { font-size: 28px; }
+.d-tb--mas { border-spacing: 0 3px; margin-top: -3px; }
+.d-tb--mas td { padding: 4px 14px; font-size: 15px; }
+.d-tb--mas .d-mxn, .d-tb--mas .d-num { font-size: 23px !important; }

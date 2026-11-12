@@ -190,6 +190,8 @@
         <label>Esquema de pago</label>
         <select name="esquemaPago">
           <option value="50-50">50% anticipo / 50% al entregar</option>
+          <option value="70-30">70% anticipo / 30% finiquito</option>
+          <option value="mensual">Pago mensual hasta la entrega</option>
           <option value="100">100% anticipo</option>
         </select>
         <label>Nota de costos</label>
@@ -698,11 +700,22 @@
 
     // Pagos
     const pagos = [];
-    if ($("esquemaPago").value === "100") {
+    const esquema = $("esquemaPago").value;
+    if (esquema === "100") {
       sel.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Pago 100%", fecha: mesDe(off), monto: s.inversion }));
+    } else if (esquema === "mensual") {
+      // Una mensualidad por mes, desde el arranque del servicio hasta el mes de su entrega (presentación)
+      const lista = [];
+      sel.forEach((s, i) => {
+        const m0 = Math.floor(filas[i * 2].desde / 4), m1 = Math.floor(filas[i * 2 + 1].desde / 4), n = m1 - m0 + 1;
+        const base = Math.floor(s.inversion / n);
+        for (let k = 0; k < n; k++) lista.push({ mes: m0 + k, i, p: { servicio: s.cat.nombre, concepto: n > 1 ? `Mensualidad ${k + 1} de ${n}` : "Pago 100%", fecha: MESES[(mes0 + m0 + k) % 12], monto: k < n - 1 ? base : s.inversion - base * (n - 1) } });
+      });
+      lista.sort((a, b) => a.mes - b.mes || a.i - b.i).forEach((x) => pagos.push(x.p));
     } else {
-      sel.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Anticipo 50%", fecha: mesDe(off), monto: s.inversion / 2 }));
-      sel.forEach((s, i) => pagos.push({ servicio: s.cat.nombre, concepto: "Finiquito 50%", fecha: mesDe(filas[i * 2 + 1].desde), monto: s.inversion / 2 }));
+      const [a, f] = esquema === "70-30" ? [70, 30] : [50, 50];
+      sel.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: `Anticipo ${a}%`, fecha: mesDe(off), monto: s.inversion * a / 100 }));
+      sel.forEach((s, i) => pagos.push({ servicio: s.cat.nombre, concepto: `Finiquito ${f}%`, fecha: mesDe(filas[i * 2 + 1].desde), monto: s.inversion - s.inversion * a / 100 }));
     }
 
     return {
@@ -787,7 +800,7 @@
     set("mesInicio", mesIdx >= 0 ? mesIdx : hoy.getMonth());
     set("anio", F.anio || (String(d.fecha || "").match(/\d{4}/) || [hoy.getFullYear()])[0]);
     set("semanaInicio", off + 1);
-    set("esquemaPago", F.esquemaPago || ((d.pagos || []).some((p) => /100/.test(p.concepto)) ? "100" : "50-50"));
+    set("esquemaPago", F.esquemaPago || ((d.pagos || []).some((p) => /Mensualidad/.test(p.concepto)) ? "mensual" : (d.pagos || []).some((p) => /70%/.test(p.concepto)) ? "70-30" : (d.pagos || []).some((p) => /100/.test(p.concepto)) ? "100" : "50-50"));
 
     ids.forEach((id) => { $(`on-${id}`).checked = false; pintarAlcances(id); });
     (d.servicios || []).forEach((s, i) => {

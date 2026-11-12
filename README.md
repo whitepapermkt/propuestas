@@ -48,6 +48,7 @@ Copia `_plantilla.html` → `cliente-proyecto.html`, llena el bloque `datos-prop
 ## Qué se calcula solo
 
 - Totales de inversión y pagos, KPIs del hero y semanas totales.
+- Esquemas de pago del formulario: 50/50, 70/30 (anticipo al inicio, finiquito en el mes de la presentación), mensual (una mensualidad por mes desde el arranque de cada servicio hasta el mes de su presentación; la última absorbe el redondeo) y 100% anticipo.
 - Pasos resaltados en la cadena de valor (según los servicios incluidos).
 - Mensajes de WhatsApp de “Aceptar propuesta” / “Tengo preguntas” con cliente, proyecto y monto.
 - Versión PDF: botón “Descargar PDF”. Arma un deck horizontal 16:9 (26 láminas para La Minera) con el mismo formato que la propuesta en Keynote: láminas institucionales fijas (`assets/pdf/`, exportadas del PDF original) + portada con mapas, alcances, propuesta de servicios, tiempos y orden de trabajo generados con los datos de la propuesta (`core/pdf.js`, `core/pdf.css`). Los textos del PDF salen de `servicios.<id>.pdf` en `core/4s-base.js`.

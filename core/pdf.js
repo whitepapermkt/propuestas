@@ -158,7 +158,7 @@
     if (!P.pagos?.length) return "";
     return lamina("d-tabla", `
       <div class="d-head">${titulo("De trabajo", "Orden", true)}${cliente}</div>
-      <table class="d-tb d-tb--pagos">
+      <table class="d-tb d-tb--pagos${P.pagos.length > 4 ? " d-tb--muchos" : ""}${P.pagos.length > 7 ? " d-tb--mas" : ""}">
         <thead><tr><th>#</th><th>Servicio</th><th>Concepto</th><th>Fechas</th><th class="r">Inversión MXN</th></tr></thead>
         <tbody>${list(P.pagos, (p, i) => `
           <tr><td class="d-num">#${i + 1}</td><td class="d-srv">${esc(p.servicio)}</td><td>${esc(p.concepto)}</td><td>${esc(p.fecha)}</td><td class="d-mxn">${mxn(p.monto)}</td></tr>`)}
