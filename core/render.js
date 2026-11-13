@@ -28,6 +28,12 @@
     ? Math.max(...P.cronograma.filas.map((f) => f.hasta)) - Math.min(...P.cronograma.filas.map((f) => f.desde)) + 1
     : servicios.reduce((a, s) => a + s.semanas, 0);
   const idsIncluidos = new Set(servicios.map((s) => s.id));
+  const pasoOn = (p) => (p.ids || [p.id]).some((id) => idsIncluidos.has(id));
+  // Duración e inversión según el tipo de cobro (único, mensual o comisión)
+  const duracion = (s) => (s.cobro === "mensual" || s.cobro === "comision" ? `${s.meses} ${s.meses === 1 ? "mes" : "meses"}` : `${s.semanas} semanas`);
+  const precioCorto = (s) => (s.cobro === "comision" ? esc(s.inversionTexto) : s.cobro === "mensual" ? `${mxnCorto(s.mensual)}<small>/mes</small>` : mxnCorto(s.inversion));
+  const precioLargo = (s) => (s.cobro === "comision" ? `<small>${esc(s.inversionTexto)}</small>`
+    : s.cobro === "mensual" ? `${mxn(s.inversion)}<small>${mxn(s.mensual)} mensuales × ${s.meses}</small>` : mxn(s.inversion));
 
   const socio = P.socio || P.asesor || {};
   const wa = socio.whatsapp || B.contactoGeneral.whatsapp;
@@ -117,20 +123,20 @@
           <div class="cadena__col">
             <p class="cadena__etapa">${esc(e.etapa)}</p>
             ${list(e.pasos, (p) => `
-              <div class="paso ${idsIncluidos.has(p.id) ? "paso--on" : ""}">
+              <div class="paso ${pasoOn(p) ? "paso--on" : ""}">
                 <span class="paso__n">${p.n}</span>
                 <div><b>${esc(p.nombre)}</b><small>${esc(p.sub)}</small></div>
-                ${idsIncluidos.has(p.id) ? `<span class="paso__badge">Incluido</span>` : ""}
+                ${pasoOn(p) ? `<span class="paso__badge">Incluido</span>` : ""}
               </div>`)}
           </div>`)}
       </div>
-      <p class="cadena__plus"><b>Complementos:</b> ${B.complementos.map(esc).join(" · ")}</p>
+      <p class="cadena__plus"><b>Complementos:</b> ${B.complementos.map((c) => (typeof c === "string" ? esc(c) : idsIncluidos.has(c.id) ? `<b class="cadena__on">${esc(c.nombre)} · Incluido</b>` : esc(c.nombre))).join(" · ")}</p>
     </div>
   </section>`;
 
   const alcanceHTML = (a) => `
     <details class="acc">
-      <summary><span>${esc(a.titulo)}</span><span class="pill">Entregable: ${esc(a.entregable)}</span></summary>
+      <summary><span>${esc(a.titulo)}</span>${a.entregable ? `<span class="pill">Entregable: ${esc(a.entregable)}</span>` : ""}</summary>
       <div class="acc__body">
         ${a.nota ? `<p class="muted">${esc(a.nota)}</p>` : ""}
         <div class="acc__grid">
@@ -153,8 +159,8 @@
           <h3 class="h3">${esc(s.nombreLargo)}</h3>
         </div>
         <div class="srv__meta">
-          <div><span>Duración</span><b>${s.semanas} semanas</b></div>
-          <div><span>Inversión</span><b>${mxnCorto(s.inversion)}</b></div>
+          <div><span>Duración</span><b>${duracion(s)}</b></div>
+          <div><span>Inversión</span><b>${precioCorto(s)}</b></div>
         </div>
       </div>
 
@@ -187,6 +193,7 @@
         <div class="espec"><b>Para ${esc(P.cliente)}:</b><ul>${list(espec(s), (e) => `<li>${esc(e)}</li>`)}</ul></div>
         ${list(s.alcances, alcanceHTML)}
         ${s.requerimientos?.length ? `<div class="req"><b>Requerimientos para iniciar</b><ul>${list(s.requerimientos, (r) => `<li>${esc(r)}</li>`)}</ul></div>` : ""}
+        ${s.noIncluye?.length ? `<div class="req"><b>No incluye</b><ul>${list(s.noIncluye, (r) => `<li>${esc(r)}</li>`)}</ul></div>` : ""}
       </div>
     </article>`;
 
@@ -216,9 +223,9 @@
           <div class="tabla__row">
             <span class="tabla__n">${s.num}</span>
             <span><b>${esc(s.nombreLargo)}</b></span>
-            <span>${s.semanas} semanas</span>
+            <span>${duracion(s)}</span>
             <span><ul>${list(espec(s), (e) => `<li>${esc(e)}</li>`)}</ul></span>
-            <span class="tabla__monto">${mxn(s.inversion)}</span>
+            <span class="tabla__monto">${precioLargo(s)}</span>
           </div>`)}
         <div class="tabla__total"><span>Total</span><span>${mxn(total)}</span></div>
       </div>
@@ -267,11 +274,11 @@
         <h3 class="h3">Orden de trabajo</h3>
       </div>
       <div class="pagos">
-        ${list(P.pagos, (p, i) => `
+        ${list(B.agruparPagos(P.pagos), (p, i) => `
           <div class="pago">
             <span class="pago__n">${i + 1}</span>
             <div><b>${esc(p.servicio)}</b><small>${esc(p.concepto)} · ${esc(p.fecha)}</small></div>
-            <span class="pago__monto">${mxn(p.monto)}</span>
+            <span class="pago__monto">${p.montoTexto ? `<small>${esc(p.montoTexto)}</small>` : mxn(p.monto)}</span>
           </div>`)}
         <div class="tabla__total"><span>Total</span><span>${mxn(P.pagos.reduce((a, p) => a + p.monto, 0))}</span></div>
       </div>

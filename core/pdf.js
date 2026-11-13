@@ -17,12 +17,41 @@
 
   // Láminas fijas del deck (exportadas del PDF original)
   const INSTITUCIONAL = ["01-portada", "02-vision", "03-modelo-negocio", "04-expertise", "05-portafolio", "06-clientes-mexico", "07-clientes-internacional", "08-awards"];
-  // Texto = lámina fija; { oferta } / { demanda } = lámina generada con el giro del estudio (solo si ese alcance va incluido)
+  // Láminas de introducción de cada servicio (s4s-pNN = página NN del catálogo SERVICIOS 4S 2025).
+  //   "nombre"                      → lámina fija
+  //   { estudio: "oferta" }         → lámina generada con el giro del estudio (si ese alcance va incluido)
+  //   { si: "bloque", img: [...] }  → solo si ese bloque de alcance va incluido
+  //   { variante: "x", img: [...] } → solo para esa variante (ej. tipo de sitio web)
   const INTRO_SERVICIO = {
     "estudio-mercado": ["11-estudio-mercado-portada", "12-estudio-mercado-pilares", { estudio: "oferta" }, { estudio: "demanda" }],
-    "definicion-producto": ["17-definicion-producto-portada", "18-definicion-producto-diagrama", "19-definicion-producto-proceso"]
+    "definicion-producto": ["17-definicion-producto-portada", "18-definicion-producto-diagrama", "19-definicion-producto-proceso"],
+    "modelo-financiero": ["s4s-p21", "s4s-p22", "s4s-p23"],
+    "preventa-simulada": ["s4s-p16", "s4s-p17", { si: "presencial", img: ["s4s-p18"] }, { si: "digital", img: ["s4s-p19"] }, "s4s-p20"],
+    "concepto-creativo": ["s4s-p24", "s4s-p25", "s4s-p26", "s4s-p27"],
+    "aplicaciones-marketing": ["s4s-p34", "s4s-p35", "s4s-p36",
+      { si: "presentacion", img: ["s4s-p37", "s4s-p38"] }, { si: "brochure", img: ["s4s-p40", "s4s-p41"] },
+      { si: "modulo", img: ["s4s-p44", "s4s-p45"] }, { si: "video", img: ["s4s-p48", "s4s-p49"] }],
+    "lanzamiento-comercial": ["s4s-p30", "s4s-p31", "s4s-p32"],
+    "web-setup": ["s4s-p51", "s4s-p53", "s4s-p54", { variante: "minisite", img: ["s4s-p55"] }, { variante: "multipager", img: ["s4s-p56"] }, { variante: "corporate", img: ["s4s-p57"] }],
+    "digital-concierge": ["s4s-p59", "s4s-p60", "s4s-p61", "s4s-p62", "s4s-p63"],
+    "lead-generation": ["s4s-p64", "s4s-p65"],
+    "direccion-digital": ["s4s-p66", "s4s-p67", "s4s-p68"],
+    "diagnostico-comercial": ["s4s-p70", "s4s-p71", "s4s-p72", "s4s-p73", "s4s-p74"],
+    "direccion-comercial": ["s4s-p75", "s4s-p76", "s4s-p77", "s4s-p78", "s4s-p79", "s4s-p80"],
+    "gerencia-comercial": ["s4s-p81", "s4s-p82", "s4s-p83", "s4s-p84", "s4s-p85"]
   };
-  const intro = (s) => list(INTRO_SERVICIO[s.id], (x) => (typeof x === "string" ? fija(x) : s.alcanceIds.has(x.estudio) ? estudioLamina(s, x.estudio) : ""));
+  const intro = (s) => list(INTRO_SERVICIO[s.id], (x) => {
+    if (typeof x === "string") return fija(x);
+    if (x.estudio) return s.alcanceIds.has(x.estudio) ? estudioLamina(s, x.estudio) : "";
+    if (x.si) return s.alcanceIds.has(x.si) ? list(x.img, fija) : "";
+    if (x.variante) return s.variante === x.variante ? list(x.img, fija) : "";
+    return "";
+  });
+
+  // Duración y precio según el tipo de cobro (único, mensual o comisión)
+  const duracion = (s) => (s.cobro === "mensual" || s.cobro === "comision" ? `${s.meses} ${s.meses === 1 ? "Mes" : "Meses"}` : `${s.semanas} Semanas`);
+  const precio = (s) => (s.cobro === "comision" ? `<span class="d-mxn__txt">${esc(s.inversionTexto)}</span>`
+    : s.cobro === "mensual" ? `${mxn(s.inversion)}<span class="d-mxn__txt d-mxn__txt--mes">${mxn(s.mensual)} × ${s.meses} meses</span>` : mxn(s.inversion));
 
   const servicios = P.servicios.map((s, i) => B.resolver(s, i));
   const total = servicios.reduce((a, s) => a + s.inversion, 0);
@@ -88,6 +117,22 @@
       ${pie}`);
   }
 
+  // 10 · Nuevos proyectos (cadena de valor): resalta en rojo los pasos y complementos incluidos
+  const ids = new Set(servicios.map((s) => s.id));
+  const PASOS = [ // posición de cada columna / círculo en la lámina (px de 1280 × 720)
+    { ids: ["estudio-mercado"], x: 137, w: 122 }, { ids: ["definicion-producto"], x: 265, w: 121 }, { ids: ["modelo-financiero"], x: 391, w: 122 },
+    { ids: ["concepto-creativo"], x: 565, w: 121, gris: 1 }, { ids: ["lanzamiento-comercial"], x: 691, w: 122, gris: 1 },
+    { ids: ["web-setup", "digital-concierge", "lead-generation", "direccion-digital"], x: 818, w: 121, gris: 1 },
+    { ids: ["direccion-comercial", "gerencia-comercial"], x: 988, w: 122, y: 285, h: 294 }
+  ];
+  const CIRCULOS = [{ id: "preventa-simulada", x: 388, y: 569 }, { id: "aplicaciones-marketing", x: 689, y: 569 }, { id: "diagnostico-comercial", x: 1131, y: 580 }];
+  function cadena() {
+    const cols = PASOS.filter((p) => p.ids.some((id) => ids.has(id)))
+      .map((p) => `<i class="d-cad__col${p.gris ? " d-cad__col--gris" : ""}" style="left:${p.x}px;width:${p.w}px;top:${p.y || 203}px;height:${p.h || 376}px"></i>`);
+    const circ = CIRCULOS.filter((c) => ids.has(c.id)).map((c) => `<i class="d-cad__circ" style="left:${c.x}px;top:${c.y}px"></i>`);
+    return lamina("d-img d-cad", `<img src="${img("s4s-p08")}" alt="">${cols.join("")}${circ.join("")}`);
+  }
+
   // Grupos de alcance en tarjetas (con 3+ grupos la última lleva filete rojo, como el deck)
   const tarjetas = (grupos) => `
     <div class="d-cards${grupos.length > 2 ? " d-cards--rojo" : ""}" style="--cols:${grupos.length === 4 ? 2 : Math.min(grupos.length, 3)}">
@@ -100,7 +145,7 @@
     const tituloSrv = s.pdf?.titulo || s.nombreLargo || s.nombre;
     return lista.map((a, k) => {
       const [nombre, sufijo] = a.titulo.split(" · ");
-      const pill = `<span class="d-pill">Entregable: ${esc(a.entregable)}</span>`;
+      const pill = a.entregable ? `<span class="d-pill">Entregable: ${esc(a.entregable)}</span>` : "";
       const cuerpo = a.plano
         ? `<div class="d-cards d-cards--lista"><div class="d-card"><ul>${list((a.grupos || []).flatMap((g) => g.items), (i) => `<li>${esc(i)}</li>`)}</ul></div></div>`
         : tarjetas(a.grupos || []);
@@ -111,7 +156,7 @@
           ["Servicio 4S", s.nombreLargo],
           ["Área de operación 4S", s.area],
           ["Servicio antecesor 4S", s.antecesor],
-          ["Duración", s.semanas ? `${s.semanas} semanas` : ""]
+          ["Duración", s.semanas ? duracion(s).toLowerCase() : ""]
         ].filter(([, v]) => v);
         const req = s.pdf?.requerimientos || (s.requerimientos || []).join(" ");
         return lamina("d-alc", `
@@ -156,24 +201,41 @@
       if (!intro && items.length === 1) return `<p>${esc(items[0])}</p>`;
       return `${intro ? `<p>${esc(intro)}</p>` : ""}<ul>${list(items, (e) => `<li>${esc(e)}</li>`)}</ul>`;
     };
-    return lamina("d-tabla", `
+    // Varias láminas si no caben: alto estimado por fila según sus líneas de especificaciones (el total va en la última)
+    const lineas = (s) => (s.pdf?.especGiros && P.giros?.length ? P.giros.length + B.especExtras(s, P.ciudad).length + 2 : (s.especificaciones || []).length + 1);
+    const paginas = trozos(servicios, (s) => Math.max(72, 26 + lineas(s) * 16), 470);
+    return paginas.map((filas, k) => lamina("d-tabla", `
       <div class="d-head">${titulo("Propuesta de", "Servicios")}${cliente}</div>
       <table class="d-tb">
         <thead><tr><th>#</th><th>Servicio</th><th>Entrega</th><th>Especificaciones generales</th><th class="r">Inversión MXN</th></tr></thead>
-        <tbody>${list(servicios, (s) => `
-          <tr><td class="d-num">#${s.num}</td><td class="d-srv">${esc(s.pdf?.titulo || s.nombreLargo || s.nombre)}</td><td>${s.semanas} Semanas</td><td class="d-esp">${espec(s)}</td><td class="d-mxn">${mxn(s.inversion)}</td></tr>`)}
+        <tbody>${list(filas, (s) => `
+          <tr><td class="d-num">#${s.num}</td><td class="d-srv">${esc(s.pdf?.titulo || s.nombreLargo || s.nombre)}</td><td>${duracion(s)}</td><td class="d-esp">${espec(s)}</td><td class="d-mxn">${precio(s)}</td></tr>`)}
         </tbody>
       </table>
-      <div class="d-total"><span>Total</span><b>${mxn(total)}</b></div>
-      ${pie}`);
+      ${k === paginas.length - 1 ? `<div class="d-total"><span>Total</span><b>${mxn(total)}</b></div>` : `<p class="d-sigue">Continúa en la siguiente lámina →</p>`}
+      ${pie}`)).join("");
   }
 
-  // 23 · Tiempos estimados
+  // Reparte filas en láminas según un alto estimado por fila
+  function trozos(filas, alto, max) {
+    const out = [[]]; let h = 0;
+    filas.forEach((f) => {
+      const a = alto(f);
+      if (h + a > max && out[out.length - 1].length) { out.push([]); h = 0; }
+      out[out.length - 1].push(f); h += a;
+    });
+    return out;
+  }
+
+  // 23 · Tiempos estimados (con muchas filas se reparte en varias láminas; con muchas semanas solo se muestran los meses)
   function tiempos() {
     const c = P.cronograma;
     if (!c?.filas?.length || !c.meses?.length) return "";
     const nSem = c.meses.reduce((a, m) => a + m.semanas, 0);
-    const alto = Math.min(68, Math.floor(330 / c.filas.length));
+    const porLamina = 16, paginas = [];
+    for (let i = 0; i < c.filas.length; i += porLamina) paginas.push(c.filas.slice(i, i + porLamina));
+    const anchoSem = 770 / nSem, conSemanas = anchoSem >= 22;
+    const mes = (m) => (m.semanas * anchoSem >= 90 ? m.nombre : m.semanas * anchoSem >= 34 ? m.nombre.slice(0, 3) : m.nombre.slice(0, 1));
     const celdas = (f) => {
       let h = "";
       for (let w = 0; w < nSem; ) {
@@ -185,33 +247,38 @@
       }
       return h;
     };
-    return lamina("d-tiempos", `
+    return paginas.map((filas) => {
+      const alto = Math.min(68, Math.floor((conSemanas ? 330 : 360) / filas.length));
+      return lamina("d-tiempos", `
       <div class="d-head">${titulo("Estimados", "Tiempos", true)}${cliente}</div>
-      <table class="d-gantt" style="--alto:${alto}px">
+      <table class="d-gantt${filas.length > 9 ? " d-gantt--compacto" : ""}" style="--alto:${alto}px">
         <thead>
-          <tr><th class="d-gantt__lbl"></th>${list(c.meses, (m) => `<th class="d-mes" colspan="${m.semanas}">${esc(m.nombre)}</th>`)}</tr>
-          <tr><th class="d-gantt__lbl"></th>${list(c.meses, (m) => Array.from({ length: m.semanas }, (_, i) => `<th class="d-sem">S${i + 1}</th>`).join(""))}</tr>
+          <tr><th class="d-gantt__lbl"></th>${list(c.meses, (m) => `<th class="d-mes${conSemanas ? "" : " d-mes--corto"}" colspan="${m.semanas}">${esc(mes(m))}</th>`)}</tr>
+          ${conSemanas ? `<tr><th class="d-gantt__lbl"></th>${list(c.meses, (m) => Array.from({ length: m.semanas }, (_, i) => `<th class="d-sem">S${i + 1}</th>`).join(""))}</tr>` : ""}
         </thead>
-        <tbody>${list(c.filas, (f) => `<tr><th class="d-gantt__lbl"><div><em>${esc(f.n)}</em><span>${esc(f.nombre)}</span></div></th>${celdas(f)}</tr>`)}</tbody>
+        <tbody>${list(filas, (f) => `<tr><th class="d-gantt__lbl"><div><em>${esc(f.n)}</em><span>${esc(f.nombre)}</span></div></th>${celdas(f)}</tr>`)}</tbody>
       </table>
       <p class="d-txt">Desglose de tiempos para el proyecto. La información presentada en la siguiente tabla es estimada y puede llegar a cambiar. <b>4S Real Estate</b> vigila la ruta crítica y notifica por escrito sobre cambios que afecten la relación de tiempos en variables entregables.</p>
       ${pie}`);
+    }).join("");
   }
 
-  // 24 · Orden de trabajo (calendario de pagos)
+  // 24 · Orden de trabajo (mensualidades agrupadas; más de 12 filas → varias láminas)
   function ordenTrabajo() {
     if (!P.pagos?.length) return "";
-    return lamina("d-tabla", `
+    const pagos = B.agruparPagos(P.pagos), porLamina = 12, paginas = [];
+    for (let i = 0; i < pagos.length; i += porLamina) paginas.push(pagos.slice(i, i + porLamina));
+    return paginas.map((filas, k) => lamina("d-tabla", `
       <div class="d-head">${titulo("De trabajo", "Orden", true)}${cliente}</div>
-      <table class="d-tb d-tb--pagos${P.pagos.length > 4 ? " d-tb--muchos" : ""}${P.pagos.length > 7 ? " d-tb--mas" : ""}">
+      <table class="d-tb d-tb--pagos${filas.length > 4 ? " d-tb--muchos" : ""}${filas.length > 7 ? " d-tb--mas" : ""}">
         <thead><tr><th>#</th><th>Servicio</th><th>Concepto</th><th>Fechas</th><th class="r">Inversión MXN</th></tr></thead>
-        <tbody>${list(P.pagos, (p, i) => `
-          <tr><td class="d-num">#${i + 1}</td><td class="d-srv">${esc(p.servicio)}</td><td>${esc(p.concepto)}</td><td>${esc(p.fecha)}</td><td class="d-mxn">${mxn(p.monto)}</td></tr>`)}
+        <tbody>${list(filas, (p, i) => `
+          <tr><td class="d-num">#${k * porLamina + i + 1}</td><td class="d-srv">${esc(p.servicio)}</td><td>${esc(p.concepto)}</td><td>${esc(p.fecha)}</td><td class="d-mxn">${p.montoTexto ? `<span class="d-mxn__txt">${esc(p.montoTexto)}</span>` : mxn(p.monto)}</td></tr>`)}
         </tbody>
       </table>
-      <div class="d-total"><span>Total</span><b>${mxn(P.pagos.reduce((a, p) => a + p.monto, 0))}</b></div>
-      ${P.notaPagos ? `<p class="d-legal">${esc(P.notaPagos)}</p>` : ""}
-      ${pie}`);
+      ${k === paginas.length - 1 ? `<div class="d-total"><span>Total</span><b>${mxn(pagos.reduce((a, p) => a + p.monto, 0))}</b></div>
+      ${P.notaPagos ? `<p class="d-legal">${esc(P.notaPagos)}</p>` : ""}` : `<p class="d-sigue">Continúa en la siguiente lámina →</p>`}
+      ${pie}`)).join("");
   }
 
   function armar() {
@@ -222,7 +289,7 @@
     deck.innerHTML =
       list(INSTITUCIONAL, fija) +
       portada() +
-      fija("10-nuevos-proyectos") +
+      cadena() +
       porServicio +
       propuestaServicios() +
       tiempos() +
@@ -254,7 +321,7 @@
     });
     // Propuesta de servicios con muchas especificaciones: compacta filas y texto hasta que el total quede sobre el pie
     deck.querySelectorAll(".d-tabla").forEach((sl) => {
-      const tb = sl.querySelector(".d-tb:not(.d-tb--pagos)"), tot = sl.querySelector(".d-total");
+      const tb = sl.querySelector(".d-tb:not(.d-tb--pagos)"), tot = sl.querySelector(".d-total") || sl.querySelector(".d-sigue");
       if (!tb || !tot) return;
       const tope = sl.getBoundingClientRect().top + 720 - 58;
       const pasa = () => tot.getBoundingClientRect().bottom > tope;

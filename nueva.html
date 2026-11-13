@@ -43,6 +43,8 @@
     .slug span { padding: 0 4px 0 12px; color: var(--gray); font-size: 13px; white-space: nowrap; }
     .slug input { border: 0 !important; padding-left: 0; background: transparent !important; }
 
+    .srv-etapa { font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 20px; letter-spacing: .04em; color: var(--gray); margin: 22px 0 -4px; }
+    .srv-etapa:first-child { margin-top: 4px; }
     .srv { border: 1.5px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 12px; }
     .srv--on { border-color: var(--ink); }
     .srv__head { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; }
@@ -311,23 +313,47 @@
 
   // Servicios del catálogo
   const cont = document.getElementById("servicios");
-  cont.innerHTML = Object.entries(B.servicios).map(([id, s]) => `
+  // Orden y agrupación: etapas de la cadena de valor (los complementos A/B/C van con su etapa)
+  const ETAPAS = [
+    ["Market Research", ["estudio-mercado", "definicion-producto", "modelo-financiero", "preventa-simulada"]],
+    ["Go-To Market", ["concepto-creativo", "aplicaciones-marketing", "lanzamiento-comercial", "web-setup", "digital-concierge", "lead-generation", "direccion-digital"]],
+    ["Sales", ["diagnostico-comercial", "direccion-comercial", "gerencia-comercial"]]
+  ];
+  const enEtapas = ETAPAS.flatMap(([, l]) => l);
+  const otrosSrv = Object.keys(B.servicios).filter((id) => !enEtapas.includes(id));
+  if (otrosSrv.length) ETAPAS.push(["Otros", otrosSrv]);
+  const varNombre = (s, v) => s.giros?.[v]?.nombre || s.variantes?.[v] || v[0].toUpperCase() + v.slice(1);
+  const srvHTML = (id) => {
+    const s = B.servicios[id], vars = Object.keys(s.alcances || {}), cobro = s.cobro || "unico";
+    const precio = cobro === "mensual"
+      ? `<div><label>Meses</label><input type="number" name="meses-${id}" min="1" max="60" value="${s.meses || 6}"></div>
+         <div><label>Inicia en semana</label><input type="number" name="inicio-${id}" min="1" max="52" value="1"></div>
+         <div><label>Inversión mensual MXN</label><input type="number" name="mensual-${id}" min="0" step="1000" placeholder="0"></div>`
+      : cobro === "comision"
+      ? `<div><label>Meses</label><input type="number" name="meses-${id}" min="1" max="60" value="${s.meses || 12}"></div>
+         <div><label>Inicia en semana</label><input type="number" name="inicio-${id}" min="1" max="52" value="1"></div>
+         <div></div>`
+      : `<div><label>Semanas</label><input type="number" name="semanas-${id}" min="1" max="52" value="${s.semanas || 5}"></div>
+         <div><label>Inicia en semana</label><input type="number" name="inicio-${id}" min="1" max="52" value="1"></div>
+         <div><label>Inversión MXN</label><input type="number" name="inversion-${id}" min="0" step="1000" placeholder="0"></div>`;
+    return `
     <div class="srv" data-id="${id}">
-      <label class="srv__head"><input type="checkbox" name="on-${id}"> ${esc(B.resolver({ id, variante: Object.keys(s.alcances || {})[0] }, 0).nombreLargo)}</label>
+      <label class="srv__head"><input type="checkbox" name="on-${id}"> ${esc(B.resolver({ id, variante: vars[0] }, 0).nombreLargo)}</label>
       <div class="srv__body">
-        <div class="row3">
-          <div><label>Semanas</label><input type="number" name="semanas-${id}" min="1" max="52" value="5"></div>
-          <div><label>Inicia en semana</label><input type="number" name="inicio-${id}" min="1" max="52" value="1"></div>
-          <div><label>Inversión MXN</label><input type="number" name="inversion-${id}" min="0" step="1000" placeholder="0"></div>
-        </div>
-        <label${Object.keys(s.alcances || {}).length > 1 ? "" : " hidden"}>${s.giros ? "Giro del estudio <small>— cambia giros analizados, medición de demanda y alcances</small>" : "Variante <small>(del catálogo)</small>"}</label>
-        <select name="variante-${id}" data-prev="${Object.keys(s.alcances || {})[0] || ""}"${Object.keys(s.alcances || {}).length > 1 ? "" : " hidden"}>${Object.keys(s.alcances || {}).map((v) => `<option value="${v}">${esc(s.giros?.[v]?.nombre || v[0].toUpperCase() + v.slice(1))}</option>`).join("")}</select>
-        <label>Alcances <small>— activa cada estudio; abre un grupo para quitar o agregar puntos</small></label>
+        <div class="row3">${precio}</div>
+        ${cobro === "mensual" ? `<p class="hint" style="margin:6px 0 0">Cobro mensual: el total es la inversión mensual × meses y se agrega una mensualidad por mes al calendario de pagos.</p>` : ""}
+        ${cobro === "comision" ? `<label>Esquema de cobro <small>— sin monto fijo; no suma al total</small></label><input type="text" name="cobroTxt-${id}" value="${esc(s.inversionTexto || "")}">` : ""}
+        ${cobro !== "unico" ? `<input type="hidden" name="semanas-${id}" value="${(s.meses || 6) * 4}">` : ""}
+        <label${vars.length > 1 ? "" : " hidden"}>${s.giros ? "Giro del estudio <small>— cambia giros analizados, medición de demanda y alcances</small>" : `${esc(s.varianteEtiqueta || "Variante")}`}</label>
+        <select name="variante-${id}" data-prev="${vars[0] || ""}"${vars.length > 1 ? "" : " hidden"}>${vars.map((v) => `<option value="${v}">${esc(varNombre(s, v))}</option>`).join("")}</select>
+        <label>Alcances <small>— activa cada bloque; abre un grupo para quitar o agregar puntos</small></label>
         <div class="alcs" id="alcs-${id}"></div>
         <label>Especificaciones para este cliente <small>— una por línea</small></label>
         <textarea name="espec-${id}" rows="3"></textarea>
       </div>
-    </div>`).join("");
+    </div>`;
+  };
+  cont.innerHTML = ETAPAS.map(([etapa, l]) => `<h3 class="srv-etapa">${esc(etapa)}</h3>${l.filter((id) => B.servicios[id]).map(srvHTML).join("")}`).join("");
   const ids = Object.keys(B.servicios);
   const srvOn = (id) => $(`on-${id}`).checked;
   const syncSrv = () => {
@@ -376,11 +402,11 @@
     const mismo = (a, c) => (a.id ? a.id === c.id : a.titulo === c.titulo);
     document.getElementById(`alcs-${id}`).innerHTML = catAlc(id).map((c, k) => {
       const el = Array.isArray(elegidos) ? elegidos.find((a) => mismo(a, c)) : null;
-      const on = !Array.isArray(elegidos) || !!el;
+      const on = Array.isArray(elegidos) ? !!el : c.inicial !== false;
       const grupos = c.grupos.map((g) => {
         const eg = el?.grupos?.find((x) => x.titulo === g.titulo);
         return grupoHTML(g.titulo,
-          g.items.map((t) => ({ t, on: !el || !!eg?.items.includes(t) })),
+          g.items.map((t) => ({ t, on: el ? !!eg?.items.includes(t) : g.inicial !== false })),
           eg ? eg.items.filter((t) => !g.items.includes(t)) : []);
       }).join("");
       const otros = el ? (el.grupos || []).filter((x) => !c.grupos.some((g) => g.titulo === x.titulo)).flatMap((x) => x.items) : [];
@@ -473,7 +499,14 @@
     aplicarGiro(m[1], e.target.dataset.prev);
     e.target.dataset.prev = e.target.value;
   });
-  ids.forEach((id) => $(`on-${id}`).addEventListener("change", () => { if (srvOn(id)) aplicarGiro(id); }));
+  ids.forEach((id) => $(`on-${id}`).addEventListener("change", () => {
+    if (!srvOn(id)) return;
+    if (B.servicios[id].giros) return aplicarGiro(id);
+    const es = $(`espec-${id}`);
+    if (!es.value.trim()) es.value = (B.servicios[id].especificaciones || []).join("\n");
+  }));
+  // Servicios mensuales: la duración en el calendario sigue a los meses
+  ids.forEach((id) => { const m = $(`meses-${id}`); if (m) m.addEventListener("input", () => { $(`semanas-${id}`).value = Math.max(1, +m.value || 1) * 4; }); });
 
   // Al marcar un servicio, que empiece cuando acaba el anterior
   ids.forEach((id) => $(`on-${id}`).addEventListener("change", () => {
@@ -774,47 +807,66 @@
   function construir() {
     const off = +$("semanaInicio").value - 1;
     const mes0 = +$("mesInicio").value;
-    const sel = ids.filter(srvOn).map((id) => ({
-      id, cat: B.servicios[id],
-      semanas: Math.max(1, +$(`semanas-${id}`).value || 1),
+    const sel = ids.filter(srvOn).map((id) => {
+      const cat = B.servicios[id], cobro = cat.cobro || "unico";
+      const meses = cobro === "unico" ? 0 : Math.max(1, +$(`meses-${id}`).value || 1);
+      const mensual = cobro === "mensual" ? Math.max(0, +$(`mensual-${id}`).value || 0) : 0;
+      return {
+      id, cat, cobro, meses, mensual,
+      inversionTexto: cobro === "comision" ? $(`cobroTxt-${id}`).value.trim() || cat.inversionTexto || "" : "",
+      semanas: cobro === "unico" ? Math.max(1, +$(`semanas-${id}`).value || 1) : meses * 4,
       inicio: Math.max(1, +$(`inicio-${id}`).value || 1),
-      inversion: Math.max(0, +$(`inversion-${id}`).value || 0),
+      inversion: cobro === "mensual" ? mensual * meses : cobro === "comision" ? 0 : Math.max(0, +$(`inversion-${id}`).value || 0),
       variante: $(`variante-${id}`).value,
       alcances: leerAlcances(id),
       especificaciones: lineas($(`espec-${id}`).value)
-    }));
+    }; });
 
     // Cronograma: trabajo + presentación una semana después
-    const filas = []; let ult = off;
+    // Servicios de pago único: trabajo + presentación una semana después; mensuales / comisión: solo el periodo
+    const filas = [], filaTrabajo = new Map(), filaHito = new Map(); let ult = off;
     sel.forEach((s, i) => {
       const d = off + s.inicio - 1, h = d + s.semanas - 1;
+      filaTrabajo.set(s, filas.length);
       filas.push({ n: i + 1, nombre: s.cat.nombre, desde: d, hasta: h, tipo: "trabajo" });
-      filas.push({ n: i + 1, nombre: `Presentación ${s.cat.nombre}`, desde: h + 1, hasta: h + 1, tipo: "hito" });
-      ult = Math.max(ult, h + 1);
+      if (s.cobro === "unico") {
+        filaHito.set(s, filas.length);
+        filas.push({ n: i + 1, nombre: `Presentación ${s.cat.nombre}`, desde: h + 1, hasta: h + 1, tipo: "hito" });
+      }
+      ult = Math.max(ult, s.cobro === "unico" ? h + 1 : h);
     });
     const totalSem = ult + 1, nMeses = Math.max(1, Math.ceil(totalSem / 4));
     const meses = Array.from({ length: nMeses }, (_, i) => ({ nombre: MESES[(mes0 + i) % 12], semanas: i < nMeses - 1 ? 4 : totalSem - 4 * (nMeses - 1) }));
     const mesDe = (idx) => MESES[(mes0 + Math.floor(idx / 4)) % 12];
 
-    // Pagos
+    // Pagos: el esquema elegido aplica a los servicios de pago único; los mensuales y por comisión van aparte
     const pagos = [];
+    const inicioDe = (s) => filas[filaTrabajo.get(s)].desde, entregaDe = (s) => filas[filaHito.get(s) ?? filaTrabajo.get(s)].desde;
+    const unicos = sel.filter((s) => s.cobro === "unico");
     const esquema = $("esquemaPago").value;
     if (esquema === "100") {
-      sel.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Pago 100%", fecha: mesDe(off), monto: s.inversion }));
+      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Pago 100%", fecha: mesDe(inicioDe(s)), monto: s.inversion }));
     } else if (esquema === "mensual") {
       // Una mensualidad por mes, desde el arranque del servicio hasta el mes de su entrega (presentación)
       const lista = [];
-      sel.forEach((s, i) => {
-        const m0 = Math.floor(filas[i * 2].desde / 4), m1 = Math.floor(filas[i * 2 + 1].desde / 4), n = m1 - m0 + 1;
+      unicos.forEach((s) => {
+        const i = sel.indexOf(s), m0 = Math.floor(inicioDe(s) / 4), m1 = Math.floor(entregaDe(s) / 4), n = m1 - m0 + 1;
         const base = Math.floor(s.inversion / n);
         for (let k = 0; k < n; k++) lista.push({ mes: m0 + k, i, p: { servicio: s.cat.nombre, concepto: n > 1 ? `Mensualidad ${k + 1} de ${n}` : "Pago 100%", fecha: MESES[(mes0 + m0 + k) % 12], monto: k < n - 1 ? base : s.inversion - base * (n - 1) } });
       });
       lista.sort((a, b) => a.mes - b.mes || a.i - b.i).forEach((x) => pagos.push(x.p));
     } else {
       const [a, f] = esquema === "70-30" ? [70, 30] : [50, 50];
-      sel.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: `Anticipo ${a}%`, fecha: mesDe(off), monto: s.inversion * a / 100 }));
-      sel.forEach((s, i) => pagos.push({ servicio: s.cat.nombre, concepto: `Finiquito ${f}%`, fecha: mesDe(filas[i * 2 + 1].desde), monto: s.inversion - s.inversion * a / 100 }));
+      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: `Anticipo ${a}%`, fecha: mesDe(inicioDe(s)), monto: s.inversion * a / 100 }));
+      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: `Finiquito ${f}%`, fecha: mesDe(entregaDe(s)), monto: s.inversion - s.inversion * a / 100 }));
     }
+
+    // Servicios mensuales: una mensualidad por mes desde su arranque; comisión: una fila informativa sin monto
+    sel.filter((s) => s.cobro === "mensual").forEach((s) => {
+      const m0 = Math.floor(inicioDe(s) / 4);
+      for (let k = 0; k < s.meses; k++) pagos.push({ servicio: s.cat.nombre, concepto: `Mensualidad ${k + 1} de ${s.meses}`, fecha: MESES[(mes0 + m0 + k) % 12], monto: s.mensual });
+    });
+    sel.filter((s) => s.cobro === "comision").forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Comisión", fecha: `Desde ${mesDe(inicioDe(s))}`, monto: 0, montoTexto: s.inversionTexto }));
 
     return {
       cliente: $("cliente").value.trim() || "Cliente",
@@ -827,7 +879,10 @@
       objetivos: lineas($("objetivos").value),
       giros: $("giros").value.split(",").map((x) => x.trim()).filter(Boolean),
       mapas: mapas.filter((m) => m.src).map((m) => ({ titulo: m.titulo, img: m.src, pie: m.pie })),
-      servicios: sel.map((s) => ({ id: s.id, variante: s.variante, semanas: s.semanas, inversion: s.inversion, alcances: s.alcances, especificaciones: s.especificaciones })),
+      servicios: sel.map((s) => ({ id: s.id, variante: s.variante, semanas: s.semanas, inversion: s.inversion,
+        ...(s.cobro === "mensual" ? { meses: s.meses, mensual: s.mensual } : {}),
+        ...(s.cobro === "comision" ? { meses: s.meses, inversionTexto: s.inversionTexto } : {}),
+        alcances: s.alcances, especificaciones: s.especificaciones })),
       cronograma: { meses, filas, nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables." },
       pagos,
       notaPagos: $("notaPagos").value.trim(),
@@ -858,7 +913,7 @@
     document.getElementById("resumen").innerHTML = d.servicios.length
       ? `<b>${d.servicios.length} servicio${d.servicios.length > 1 ? "s" : ""} · <span class="r">${mxn(total)} MXN</span></b><br>
          ${periodo} · ${semanas} semanas<br>
-         ${d.pagos.map((p) => `${p.concepto} ${esc(p.servicio)}: ${mxn(p.monto)} (${p.fecha})`).join("<br>")}`
+         ${d.pagos.map((p) => `${p.concepto} ${esc(p.servicio)}: ${p.montoTexto ? esc(p.montoTexto) : mxn(p.monto)} (${esc(p.fecha)})`).join("<br>")}`
       : "Marca al menos un servicio para calcular calendario y pagos.";
     clearTimeout(t);
     t = setTimeout(() => {
@@ -906,6 +961,7 @@
       if (!B.servicios[s.id]) return;
       $(`on-${s.id}`).checked = true;
       set(`semanas-${s.id}`, s.semanas); set(`inversion-${s.id}`, s.inversion); set(`variante-${s.id}`, s.variante);
+      set(`meses-${s.id}`, s.meses); set(`mensual-${s.id}`, s.mensual); set(`cobroTxt-${s.id}`, s.inversionTexto);
       $(`variante-${s.id}`).dataset.prev = $(`variante-${s.id}`).value;
       set(`espec-${s.id}`, (B.servicios[s.id].giros ? B.especExtras(s, d.ciudad) : s.especificaciones || []).join("\n"));
       pintarAlcances(s.id, s.alcances);

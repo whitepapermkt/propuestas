@@ -82,11 +82,34 @@ En **04 Servicios**, cada servicio muestra sus alcances por bloque (ej. *1.1 Est
 
 Lo elegido se guarda en la propuesta (`servicios[].alcances`) y se usa en la web y en el PDF. Las propuestas sin `alcances` muestran el catálogo completo.
 
+## Catálogo de servicios (SERVICIOS 4S 2025)
+
+El formulario agrupa los servicios por etapa:
+
+| Etapa | Servicios | Cobro |
+|---|---|---|
+| Market Research | Estudio de Mercado · Definición de Producto · Modelo Financiero · Preventa Simulada (A) | Único |
+| Go-To Market | Concepto Creativo Central · Aplicaciones de Marketing y Video (B) · Lanzamiento Comercial (PAC) · Web Setup | Único |
+| Go-To Market | Digital Concierge · Lead Generation · Dirección Digital | Mensual |
+| Sales | Diagnóstico Comercial (C) | Único |
+| Sales | Dirección Comercial | Mensual |
+| Sales | Gerencia Comercial | Comisión (texto, ej. 4.5% mensual sobre resultados) |
+
+- **Cobro mensual:** se captura inversión mensual + meses; el total es mensual × meses y el calendario de pagos agrega una
+  mensualidad por mes (en el PDF se agrupan en una fila). No llevan hito de "Presentación" en el Gantt.
+- **Comisión:** no suma al total; aparece como texto en la tabla y como fila informativa en la orden de trabajo.
+- **Bloques que vienen apagados** (`inicial: false`): integraciones adicionales, preventa digital, brochure, módulo de
+  aplicaciones, video. Se encienden en el formulario si se cotizan. En el módulo de aplicaciones se eligen las 8 piezas.
+- **Web Setup** tiene *Tipo de sitio* (Minisite, Multi-Pager, Corporate).
+- **PDF:** cada servicio lleva sus láminas del catálogo (`assets/pdf/s4s-pNN.jpg` = página NN de SERVICIOS 4S 2025) +
+  láminas de alcances generadas con lo elegido. La lámina *Nuevos Proyectos* resalta en rojo los pasos y complementos incluidos.
+  Las tablas de servicios, tiempos y pagos se reparten en varias láminas si no caben.
+- No se usan las páginas del catálogo con precios (integraciones del PAC, add-ons web, inversión de gerencia).
+
 ## Agregar un servicio al catálogo
 
-En `core/4s-base.js → servicios` copia un servicio existente con el `id` de la cadena de valor
-(`modelo-financiero`, `concepto-creativo`, `lanzamiento-comercial`, `servicios-digitales`, `direccion-comercial`).
-Los alcances van por variante (`comercial`, `residencial`, …), y cada propuesta elige la suya con `variante`.
+En `core/4s-base.js → servicios` copia un servicio existente. Para que se resalte en *Nuevos Proyectos*, agrega su id
+en `cadenaValor` (`ids`) y en `PASOS` de `core/pdf.js`; sus láminas de introducción van en `INTRO_SERVICIO`.
 
 ## Notas
 

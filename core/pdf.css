@@ -164,3 +164,23 @@
 .d-est__ico p { font-size: var(--fs); line-height: 1.38; color: #e6e5e1; }
 .d-est .d-pie { color: #9a9b9d; }
 .d-esp__sub { margin-top: 6px; font-weight: 600; }
+
+/* 10 · Cadena de valor: columnas incluidas en rojo (multiply conserva el texto negro) y círculos con aro rojo */
+.d-cad { position: relative; }
+.d-cad__col { position: absolute; border-radius: 6px; background: #e5383b; mix-blend-mode: multiply; }
+.d-cad__col--gris { background: #ff4346; }
+.d-cad__circ { position: absolute; width: 104px; height: 104px; margin: -52px 0 0 -52px; border-radius: 50%; border: 5px solid #e5383b; }
+
+/* Precio mensual / por comisión en tablas */
+.d-mxn__txt { display: block; font-family: "Futura 4S", "Jost 4S", sans-serif; font-weight: 600; font-size: 13px; line-height: 1.25; white-space: normal; text-align: right; color: var(--gray); margin-top: 4px; }
+td.d-mxn > .d-mxn__txt:only-child { font-size: 15px; color: var(--ink); margin: 0; }
+
+/* Tablas largas repartidas en varias láminas */
+.d-sigue { text-align: right; font-weight: 600; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--gray); margin-top: 10px; }
+.d-tb--pagos td.d-srv { white-space: nowrap; }
+.d-gantt--compacto tbody th.d-gantt__lbl { font-size: 12.5px; line-height: 1.1; }
+.d-gantt--compacto .d-gantt__lbl em { font-size: 20px; }
+.d-gantt--compacto .d-gantt__lbl div { gap: 8px; }
+.d-mes--corto { font-size: 12px; letter-spacing: .04em; }
+.d-mxn__txt--mes { white-space: nowrap; }
+.d-cards[style*="--cols:1"]:not(.d-cards--lista) ul { columns: 2; column-gap: 40px; }
