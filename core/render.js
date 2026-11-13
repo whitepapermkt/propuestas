@@ -150,6 +150,16 @@
     ? [`${s.pdf.especIntro.replace(/:\s*$/, "")}: ${P.giros.join(", ")}.`, ...B.especExtras(s, P.ciudad)]
     : s.especificaciones || []);
 
+  // Panel diseñado para los servicios sin foto: etapa, título, cifras del catálogo y pasos en línea de tiempo
+  const visualHTML = (v) => `
+    <div class="srv__vis">
+      <span class="srv__vis-marca" aria-hidden="true">${esc(v.marca)}</span>
+      <p class="srv__vis-etapa">${esc(v.etapa)}</p>
+      <h4 class="srv__vis-tit">${esc(v.titulo)}</h4>
+      ${v.cifras?.length ? `<div class="srv__vis-cifras">${list(v.cifras, (c) => `<div><b>${esc(c.v)}</b><span>${esc(c.t)}</span></div>`)}</div>` : ""}
+      <ol class="srv__vis-pasos" style="--n:${v.pasos.length}">${list(v.pasos, (p, i) => `<li><em>${String(i + 1).padStart(2, "0")}</em><span>${esc(p)}</span></li>`)}</ol>
+    </div>`;
+
   const servicioHTML = (s) => `
     <article class="srv" id="srv-${s.id}">
       <div class="srv__top">
@@ -170,7 +180,7 @@
           <p>${esc(s.intro)}</p>
           ${s.objetivo ? `<div class="callout"><b>Objetivo del servicio</b><p>${esc(s.objetivo)}</p></div>` : ""}
         </div>
-        <div class="srv__img ${s.imgContain ? "srv__img--contain" : ""}"><img src="${esc(s.img)}" alt="" loading="lazy"></div>
+        ${s.visual ? visualHTML(s.visual) : `<div class="srv__img ${s.imgContain ? "srv__img--contain" : ""}"><img src="${esc(s.img)}" alt="" loading="lazy"></div>`}
       </div>
 
       ${s.pilares ? `<div class="pilares swipe">${list(s.pilares, (p, i) => `<div class="pilar"><span>0${i + 1}</span><h4>${esc(p.titulo)}</h4><p>${esc(p.texto)}</p></div>`)}</div>` : ""}

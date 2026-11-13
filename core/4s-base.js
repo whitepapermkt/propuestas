@@ -223,7 +223,7 @@ window.BASE_4S = {
       nombre: "Modelo Financiero",
       nombreLargo: "Análisis y Modelo Financiero",
       area: "Desarrollo y Modelo de Negocio",
-      img: "assets/pdf/s4s-p22.jpg", imgContain: true,
+      visual: { etapa: "Market Research · 3", marca: "3", titulo: "Desarrollo y modelo de negocio", cifras: [{ v: "TIR · ROI", t: "payback, múltiplo y flujos de efectivo del proyecto" }], pasos: ["Proforma estática", "Modelo financiero", "Indicadores", "Modelo de negocio"] },
       semanas: 4,
       lead: "Desarrollo y modelo de negocio.",
       intro:
@@ -250,7 +250,7 @@ window.BASE_4S = {
       nombre: "Concepto Creativo Central",
       nombreLargo: "Concepto Creativo Central: Desarrollo de Marca",
       area: "Desarrollo de Marca",
-      img: "assets/pdf/s4s-p25.jpg", imgContain: true,
+      visual: { etapa: "Go-To Market · 4", marca: "4", titulo: "Desarrollo de marca", cifras: [{ v: "+300", t: "marcas inmobiliarias creadas" }], pasos: ["Black · Concepto", "Gray · Identidad", "White · Manual"] },
       semanas: 6,
       lead: "+300 marcas inmobiliarias creadas con reflexividad, profundidad y consistencia.",
       intro:
@@ -275,7 +275,7 @@ window.BASE_4S = {
       nombre: "Lanzamiento Comercial",
       nombreLargo: "Lanzamiento Comercial: Plan de Aceleración Comercial",
       area: "Estrategia y Lanzamiento",
-      img: "assets/pdf/s4s-p32.jpg", imgContain: true,
+      visual: { etapa: "Go-To Market · 5", marca: "5", titulo: "Estrategia y lanzamiento", cifras: [{ v: "ATL · BTL · TTL", t: "plan de medios de acuerdo al presupuesto" }], pasos: ["Fundamentos", "Generación", "Atracción", "Conversión", "Cierre"] },
       semanas: 6,
       lead: "Proceso comercial · Metodología 4S.",
       intro:
@@ -314,7 +314,7 @@ window.BASE_4S = {
       nombre: "Preventa Simulada",
       nombreLargo: "Preventa Simulada (PVS)",
       area: "Validación de Producto",
-      img: "assets/pdf/s4s-p17.jpg", imgContain: true,
+      visual: { etapa: "Complemento A", marca: "A", titulo: "Validación de producto", cifras: [{ v: "3", t: "proyectos frente a prospectos reales" }], pasos: ["Reclutamiento", "Presentación", "Entrevista", "Validación"] },
       semanas: 4,
       lead: "Validación de producto con prospectos reales.",
       intro:
@@ -354,7 +354,7 @@ window.BASE_4S = {
       nombre: "Aplicaciones de Marketing",
       nombreLargo: "Aplicaciones de Marketing y Video",
       area: "Aplicaciones de Marketing",
-      img: "assets/pdf/s4s-p36.jpg", imgContain: true,
+      visual: { etapa: "Complemento B", marca: "B", titulo: "Aplicaciones de marketing & video", cifras: [{ v: "3", t: "rondas de revisión y cambios incluidas" }], pasos: ["Presentación de ventas", "Brochure", "Módulo de apps", "Video"] },
       semanas: 8,
       lead: "Un impacto en ventas mediante el diseño.",
       intro:
@@ -401,7 +401,7 @@ window.BASE_4S = {
       nombre: "Web Setup",
       nombreLargo: "Web Setup: Diseño y Programación Web",
       area: "Servicios Digitales",
-      img: "assets/pdf/s4s-p54.jpg", imgContain: true,
+      visual: { etapa: "Go-To Market · 6", marca: "6", titulo: "Diseño y programación web", cifras: [{ v: "+100", t: "sitios web por año" }], pasos: ["Perfil digital", "Wireframe", "Propuesta gráfica", "WordPress"] },
       semanas: 6,
       varianteEtiqueta: "Tipo de sitio",
       variantes: { multipager: "Multi-Pager Website", minisite: "Minisite", corporate: "Corporate Website" },
@@ -442,7 +442,7 @@ window.BASE_4S = {
       nombre: "Digital Concierge",
       nombreLargo: "Digital Concierge: Diseño e Implementación de Estrategia",
       area: "Servicios Digitales",
-      img: "assets/pdf/s4s-p61.jpg", imgContain: true,
+      visual: { etapa: "Go-To Market · 6", marca: "6", titulo: "Ecosistema digital inteligente", cifras: [{ v: "+350", t: "proyectos gestionados digitalmente" }], pasos: ["Plan digital", "Contenido", "Campañas", "Reporte mensual"] },
       cobro: "mensual", meses: 6,
       lead: "+350 proyectos gestionados digitalmente.",
       intro:
@@ -470,7 +470,7 @@ window.BASE_4S = {
       nombre: "Lead Generation",
       nombreLargo: "Lead Generation: Diseño e Implementación de Estrategia",
       area: "Servicios Digitales",
-      img: "assets/pdf/s4s-p65.jpg", imgContain: true,
+      visual: { etapa: "Go-To Market · 6", marca: "6", titulo: "Generación de leads", cifras: [{ v: "A/B", t: "pruebas para encontrar el formato más efectivo por campaña" }], pasos: ["Plan digital LG", "Meta", "Google Ads", "Reporte mensual"] },
       cobro: "mensual", meses: 6,
       lead: "Estrategia digital exclusivamente para generación de leads.",
       intro:
@@ -497,7 +497,7 @@ window.BASE_4S = {
       nombre: "Dirección Digital",
       nombreLargo: "Dirección Digital: Dirección de Estrategia Digital",
       area: "Servicios Digitales",
-      img: "assets/pdf/s4s-p67.jpg", imgContain: true,
+      visual: { etapa: "Go-To Market · 6", marca: "6", titulo: "Dirección de estrategia digital", cifras: [{ v: "Semanal", t: "junta de seguimiento de resultados" }], pasos: ["Diagnóstico", "Plan trimestral", "Bootcamp", "Seguimiento semanal"] },
       cobro: "mensual", meses: 6,
       lead: "Consultoría para equipos digitales internos.",
       intro:
@@ -519,7 +519,7 @@ window.BASE_4S = {
       nombre: "Diagnóstico Comercial",
       nombreLargo: "Diagnóstico Comercial Integral",
       area: "Dirección Comercial",
-      img: "assets/pdf/s4s-p71.jpg", imgContain: true,
+      visual: { etapa: "Complemento C", marca: "C", titulo: "Diagnóstico comercial integral", cifras: [{ v: "3–5", t: "semanas desde el kick-off" }], pasos: ["Digital", "Estratégico", "Comercial"] },
       semanas: 4,
       lead: "Digital · Estratégico · Comercial.",
       intro:
@@ -556,7 +556,7 @@ window.BASE_4S = {
       nombre: "Dirección Comercial",
       nombreLargo: "Dirección Comercial: Consultoría Especializada y Estratégica",
       area: "Dirección Comercial",
-      img: "assets/pdf/s4s-p79.jpg", imgContain: true,
+      visual: { etapa: "Sales · 7", marca: "7", titulo: "Consultoría especializada y estratégica", cifras: [{ v: "Diario", t: "corte del dashboard con la información del CRM" }], pasos: ["Auditoría", "Dashboard", "Estrategias", "Consultoría mensual"] },
       cobro: "mensual", meses: 6,
       lead: "Strategic and Systematic Sale Supervision (4S).",
       intro:
@@ -612,7 +612,7 @@ window.BASE_4S = {
       nombre: "Gerencia Comercial",
       nombreLargo: "Gerencia Comercial: Operación y Gerencia Comercial",
       area: "Comercialización",
-      img: "assets/pdf/s4s-p82.jpg", imgContain: true,
+      visual: { etapa: "Sales · 7", marca: "7", titulo: "Operación y gerencia comercial", cifras: [{ v: "+85", t: "proyectos gestionados comercialmente" }, { v: "+$100 MDD", t: "en ventas de unidades verticales por año" }], pasos: ["Equipo exclusivo", "Experiencia de compra", "Seguimiento", "Cierre"] },
       cobro: "comision", meses: 12,
       inversionTexto: "4.5% mensual en relación a resultados",
       lead: "+85 proyectos gestionados comercialmente · +$100 MDD en ventas de unidades verticales por año.",
