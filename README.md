@@ -109,6 +109,12 @@ cadena de valor institucional, pero nunca se resaltan.
 En `core/4s-base.js → servicios` copia un servicio existente. Para que se resalte en *Nuevos Proyectos*, agrega su id
 en `cadenaValor` (`ids`) y en `PASOS` de `core/pdf.js`; sus láminas de introducción van en `INTRO_SERVICIO`.
 
+## Objetivos sugeridos
+
+En **02 Contexto**, el botón **✦ Sugerir objetivos** manda el resumen, cliente, ciudad, giros y los servicios/alcances
+marcados a `/api/objetivos`, que los redacta con Claude (`claude-opus-5-5`). Pide la misma contraseña de publicar.
+Requiere la variable `ANTHROPIC_API_KEY` en Vercel; sin ella, el botón pone objetivos base por servicio.
+
 ## Notas
 
 - Las páginas llevan `noindex`; solo las ve quien tenga el link.

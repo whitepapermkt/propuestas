@@ -110,6 +110,7 @@
     .mapa__img { width: 96px; height: 72px; border-radius: 8px; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); text-align: center; cursor: pointer; }
     .mapa input[type=text] { padding: 8px 10px; margin-bottom: 6px; }
     .mapas-acc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .obj-ia { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
     .x { background: none; border: 0; font-size: 20px; color: var(--gray); cursor: pointer; padding: 0 4px; }
 
     .resumen { background: var(--ink); color: #fff; border-radius: 12px; padding: 14px 16px; margin-top: 14px; font-size: 14px; line-height: 1.7; }
@@ -192,6 +193,11 @@
         <textarea name="resumen" rows="5" placeholder="El cliente busca definir el producto óptimo para…"></textarea>
         <label>Objetivos <small>— uno por línea</small></label>
         <textarea name="objetivos" rows="4" placeholder="Dimensionar la capacidad comercial de la zona&#10;Conocer al consumidor del área de influencia"></textarea>
+        <div class="obj-ia">
+          <button type="button" class="btn btn--line btn--sm" id="b-obj">✦ Sugerir objetivos</button>
+          <span class="hint" style="margin:0">Con el resumen, los giros y los servicios que marques.</span>
+        </div>
+        <div class="estado" id="obj-estado"></div>
         <label>Giros / usos <small>— separados por coma</small></label>
         <input type="text" name="giros" placeholder="Se llenan con el giro del estudio de mercado">
       </fieldset>
@@ -781,6 +787,56 @@
     const file = kmzInput.files[0]; kmzInput.value = "";
     if (file) generarDesdeKMZ(file).catch(() => {});
   });
+
+  /* ---------- Objetivos sugeridos (Claude, vía /api/objetivos) ---------- */
+  const OBJ_RESPALDO = { // si la función no está configurada, objetivos base por servicio
+    "estudio-mercado": (d) => `Dimensionar la oferta y la demanda${d.giros.length ? ` de ${d.giros.map((g) => g.toLowerCase()).join(", ").replace(/, ([^,]*)$/, " y $1")}` : ""}${d.ciudad ? ` en ${d.ciudad}` : ""} para identificar al mercado más rentable.`,
+    "definicion-producto": () => "Definir la mezcla óptima de producto, áreas y amenidades enfocada en el mercado meta.",
+    "modelo-financiero": () => "Validar la factibilidad financiera del proyecto y definir su estructura de negocio.",
+    "preventa-simulada": () => "Validar el producto con prospectos reales antes del lanzamiento.",
+    "concepto-creativo": () => "Crear la marca del proyecto: concepto, naming e identidad visual.",
+    "lanzamiento-comercial": () => "Definir la estrategia de lanzamiento comercial, el plan de medios y el modelo de precios.",
+    "diagnostico-comercial": () => "Identificar las áreas de oportunidad digitales, de marketing y de ventas del proyecto.",
+    "direccion-comercial": () => "Monitorear los KPIs comerciales y ajustar la estrategia mes a mes para acelerar la absorción.",
+    "gerencia-comercial": () => "Operar la comercialización con un equipo exclusivo para maximizar los ingresos del proyecto."
+  };
+  const estObj = document.getElementById("obj-estado"), bObj = document.getElementById("b-obj");
+  const ponerObjetivos = (lista) => {
+    const ta = $("objetivos");
+    if (ta.value.trim() && !confirm("¿Reemplazar los objetivos que ya escribiste?")) return false;
+    ta.value = lista.join("\n"); actualizar(); return true;
+  };
+  bObj.onclick = async () => {
+    const d = construir();
+    if (!d.servicios.length) { estObj.className = "estado err"; estObj.textContent = "Marca al menos un servicio."; return; }
+    let pass = document.getElementById("pub-pass").value;
+    try { pass = pass || sessionStorage.getItem("p4s") || ""; } catch (_) {}
+    if (!pass) pass = prompt("Contraseña (la misma que usas para publicar):") || "";
+    if (!pass) return;
+    bObj.disabled = true; estObj.className = "estado"; estObj.textContent = "Pensando los objetivos…";
+    try {
+      const r = await fetch("/api/objetivos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+        password: pass,
+        propuesta: { cliente: d.cliente, proyecto: d.proyecto, ciudad: d.ciudad, giros: d.giros, resumen: d.resumen,
+          servicios: d.servicios.map((s) => ({ nombre: B.resolver(s, 0).nombreLargo || B.servicios[s.id].nombre, alcances: s.alcances })) }
+      }) });
+      const j = await r.json().catch(() => ({}));
+      if (r.status === 501 || r.status === 404) {
+        // Sin la llave de la API todavía: objetivos base por servicio
+        if (ponerObjetivos(d.servicios.map((s) => OBJ_RESPALDO[s.id]?.(d)).filter(Boolean))) {
+          estObj.className = "estado"; estObj.textContent = "Puse objetivos base por servicio (falta activar la sugerencia con IA). Edítalos a tu gusto.";
+        } else estObj.textContent = "";
+        return;
+      }
+      if (r.status === 401) { try { sessionStorage.removeItem("p4s"); } catch (_) {} throw new Error("Contraseña incorrecta."); }
+      if (!r.ok) throw new Error(j.error || `Error ${r.status}`);
+      try { sessionStorage.setItem("p4s", pass); } catch (_) {}
+      if (ponerObjetivos(j.objetivos)) { estObj.className = "estado ok"; estObj.textContent = "✓ Listo. Revísalos y ajústalos si hace falta."; }
+      else estObj.textContent = "";
+    } catch (e) {
+      estObj.className = "estado err"; estObj.textContent = e.message || "No pude sugerir objetivos.";
+    } finally { bObj.disabled = false; }
+  };
 
   /* ---------- Foto del socio: siempre la misma (assets/socios/carlos-del-valle.jpg) ---------- */
   const FOTO_SOCIO = "assets/socios/carlos-del-valle.jpg";
