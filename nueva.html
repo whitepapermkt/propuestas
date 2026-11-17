@@ -104,9 +104,6 @@
     .mapa__img { width: 96px; height: 72px; border-radius: 8px; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); text-align: center; cursor: pointer; }
     .mapa input[type=text] { padding: 8px 10px; margin-bottom: 6px; }
     .mapas-acc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .foto-socio { display: flex; gap: 14px; align-items: center; }
-    .foto-socio > div:nth-child(2) { display: flex; gap: 8px; flex-wrap: wrap; }
-    .foto-socio__img { width: 84px; height: 84px; border-radius: 50%; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); }
     .x { background: none; border: 0; font-size: 20px; color: var(--gray); cursor: pointer; padding: 0 4px; }
 
     .resumen { background: var(--ink); color: #fff; border-radius: 12px; padding: 14px 16px; margin-top: 14px; font-size: 14px; line-height: 1.7; }
@@ -241,15 +238,6 @@
         </div>
         <label>WhatsApp <small>— solo dígitos con lada, ej. 5218112345678</small></label>
         <input type="tel" name="socioWhatsapp" inputmode="numeric">
-        <label>Foto <small>— cuadrada de preferencia; se recorta y comprime sola</small></label>
-        <div class="foto-socio">
-          <div class="foto-socio__img" id="socio-foto-prev">Sin foto</div>
-          <div>
-            <button type="button" class="btn btn--line btn--sm" id="b-socio-foto">Subir foto</button>
-            <button type="button" class="btn btn--line btn--sm" id="b-socio-quitar">Quitar</button>
-          </div>
-          <input type="file" id="socio-file" accept="image/*" hidden>
-        </div>
       </fieldset>
     </form>
 
@@ -300,7 +288,7 @@
   const slugify = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 70);
 
   let mapas = [];
-  let socioFoto = "";        // data URL (nueva) o ruta (existente)            // { titulo, pie, src, nuevo }
+  let socioFoto = "assets/socios/carlos-del-valle.jpg";        // data URL (nueva) o ruta (existente)            // { titulo, pie, src, nuevo }
   let slugManual = false;
   let plantilla = "";
 
@@ -770,21 +758,9 @@
     if (file) generarDesdeKMZ(file).catch(() => {});
   });
 
-  /* ---------- Foto del socio ---------- */
-  const fotoPrev = document.getElementById("socio-foto-prev");
-  const fotoFile = document.getElementById("socio-file");
-  function pintarFoto() {
-    fotoPrev.style.backgroundImage = socioFoto ? `url('${socioFoto}')` : "";
-    fotoPrev.textContent = socioFoto ? "" : "Sin foto";
-  }
-  document.getElementById("b-socio-foto").onclick = () => fotoFile.click();
-  document.getElementById("b-socio-quitar").onclick = () => { socioFoto = ""; pintarFoto(); actualizar(); };
-  fotoFile.addEventListener("change", async () => {
-    const file = fotoFile.files[0]; fotoFile.value = "";
-    if (!file) return;
-    socioFoto = await recortarCuadrada(file, 600, 0.82);
-    pintarFoto(); actualizar();
-  });
+  /* ---------- Foto del socio: siempre la misma (assets/socios/carlos-del-valle.jpg) ---------- */
+  const FOTO_SOCIO = "assets/socios/carlos-del-valle.jpg";
+  const pintarFoto = () => {};
   function recortarCuadrada(file, lado, q) {
     return new Promise((ok, mal) => {
       const img = new Image();
@@ -883,7 +859,7 @@
       cronograma: { meses, filas, nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables." },
       pagos,
       notaPagos: $("notaPagos").value.trim(),
-      socio: { nombre: $("socioNombre").value.trim(), puesto: $("socioPuesto").value.trim(), foto: socioFoto, email: $("socioEmail").value.trim(), telefono: $("socioTelefono").value.trim(), whatsapp: $("socioWhatsapp").value.replace(/\D/g, "") },
+      socio: { nombre: $("socioNombre").value.trim(), puesto: $("socioPuesto").value.trim(), foto: FOTO_SOCIO, email: $("socioEmail").value.trim(), telefono: $("socioTelefono").value.trim(), whatsapp: $("socioWhatsapp").value.replace(/\D/g, "") },
       _form: { mesInicio: mes0, anio: +$("anio").value, semanaInicio: off + 1, esquemaPago: $("esquemaPago").value, inicios: Object.fromEntries(sel.map((s) => [s.id, s.inicio])) }
     };
   }

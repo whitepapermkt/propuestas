@@ -409,7 +409,7 @@
   <section class="contacto" id="contacto">
     <div class="wrap contacto__inner">
       <div class="contacto__foto">
-        <img src="${esc(socio.foto || "assets/brand/isotipo-4s-trim-white.png")}" alt="${esc(socio.nombre || "4S Real Estate")}" class="${socio.foto ? "" : "contacto__iso"}" loading="lazy">
+        <img src="assets/socios/carlos-del-valle.jpg" alt="${esc(socio.nombre || "4S Real Estate")}" loading="lazy">
       </div>
       <div class="contacto__datos">
         ${socio.nombre ? "" : `<p class="eyebrow eyebrow--red">Contacto 4S Real Estate</p>`}
