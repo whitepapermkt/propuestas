@@ -714,18 +714,18 @@
     const area = geo.pol.reduce((s, [ext, ...huecos]) => s + areaAnillo(ext) - huecos.reduce((h, r) => h + areaAnillo(r), 0), 0);
     try { await document.fonts.load('600 22px Jost'); } catch (_) {}
 
-    // Zona: zoom entero (máx. 15 ≈ 3.5 km de ancho) en el que el predio ocupe ≤ 25%; entero para que las etiquetas queden nítidas a 2x
-    let zz = 15;
-    while (zz > 9 && (dw * 256 * 2 ** (zz + 1) > 1600 * 0.25 || dh * 256 * 2 ** (zz + 1) > 900 * 0.25)) zz--;
-    // Terreno: ajustado al predio con margen (máx. 18)
-    const zt = dw || dh ? Math.max(3, Math.min(18, Math.log2(Math.min(1600 * 0.6 / (dw || 1e-9), 1200 * 0.6 / (dh || 1e-9)) / 256) - 1)) : 17;
+    // Zona: zoom entero (máx. 16 ≈ 1.7 km de ancho) en el que el predio ocupe ≤ 35%; entero para que las etiquetas queden nítidas a 2x
+    let zz = 16;
+    while (zz > 9 && (dw * 256 * 2 ** (zz + 1) > 1600 * 0.35 || dh * 256 * 2 ** (zz + 1) > 900 * 0.35)) zz--;
+    // Terreno: el predio ocupa ~70% del encuadre (máx. 19.5)
+    const zt = dw || dh ? Math.max(3, Math.min(19.5, Math.log2(Math.min(1600 * 0.7 / (dw || 1e-9), 1200 * 0.7 / (dh || 1e-9)) / 256) - 1)) : 18;
 
     avance("Descargando imágenes satelitales…");
     const [zona, terreno] = await Promise.all([
       pintarMapa({ W: 1600, H: 900, c, zl: zz, geo, zona: true, credito: CREDITO_REF,
         capas: [[CAPAS.sat, zz + 1], [CAPAS.calles, zz, 0.9], [CAPAS.lugares, zz]] }),
       pintarMapa({ W: 1600, H: 1200, c, zl: zt, geo, zona: false, credito: CREDITO_SAT,
-        capas: [[CAPAS.sat, Math.min(19, Math.round(zt + 1))]] })
+        capas: [[CAPAS.sat, Math.min(20, Math.round(zt + 1))]] })
     ]);
     return { zona, terreno, area };
   }
