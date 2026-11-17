@@ -577,3 +577,23 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
   .srv__vis-pasos li { padding: 0 0 0 20px; }
   .srv__vis-pasos li::before { top: 5px; }
 }
+
+/* Portada de cada línea de servicio */
+.linea { position: relative; overflow: hidden; display: flex; align-items: flex-end; min-height: 300px; margin-top: 64px; padding: 44px 48px; border-radius: var(--radius); background: var(--ink); color: var(--white); }
+.sec__head + .linea { margin-top: 8px; }
+.linea::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--red); }
+.linea__txt { position: relative; z-index: 1; max-width: 72%; }
+.linea__eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; color: var(--gray-l); }
+.linea__tit { margin-top: 12px; font-family: var(--display); font-weight: 400; font-size: clamp(54px, 7vw, 104px); line-height: .88; letter-spacing: .01em; text-transform: uppercase; }
+.linea__out { color: transparent; -webkit-text-stroke: 1.4px var(--white); }
+.linea__sub { margin-top: 14px; font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: #d6d6d3; }
+.linea__srv { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.linea__srv li { display: flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px; border: 1px solid rgba(255, 255, 255, .25); border-radius: 99px; font-size: 13px; font-weight: 500; }
+.linea__srv b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--red); font-family: var(--display); font-weight: 400; font-size: 15px; }
+.linea__marca { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); font-family: var(--display); font-size: clamp(200px, 24vw, 290px); line-height: .72; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, .5); pointer-events: none; user-select: none; }
+.linea + .srv { border-top: 0; margin-top: 40px; padding-top: 0; }
+@media (max-width: 700px) {
+  .linea { min-height: 220px; margin-top: 48px; padding: 30px 22px 26px 28px; }
+  .linea__txt { max-width: 100%; }
+  .linea__marca { font-size: 220px; right: -10px; top: auto; bottom: -26px; transform: none; -webkit-text-stroke-color: rgba(255, 255, 255, .22); }
+}

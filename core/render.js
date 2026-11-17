@@ -207,6 +207,24 @@
       </div>
     </article>`;
 
+  // Servicios agrupados por línea (como el catálogo): cada línea abre con su portada
+  const porLinea = [];
+  servicios.forEach((s) => {
+    const l = B.lineaDe(s.id), ult = porLinea[porLinea.length - 1];
+    if (ult && ult.l.nombre === l.nombre) ult.srv.push(s); else porLinea.push({ l, srv: [s] });
+  });
+  const tituloLinea = (n) => { const [a, ...r] = n.split(" "); return `${esc(a)}${r.length ? ` <span class="linea__out">${esc(r.join(" "))}</span>` : ""}`; };
+  const portadaLinea = ({ l, srv }) => `
+    <div class="linea">
+      <div class="linea__txt">
+        <p class="linea__eyebrow">Línea de servicio${l.marca ? ` · ${esc(l.marca)}` : ""}</p>
+        <h3 class="linea__tit">${tituloLinea(l.nombre)}</h3>
+        ${l.sub ? `<p class="linea__sub">${esc(l.sub)}</p>` : ""}
+        ${l.ids.length > 1 ? `<ul class="linea__srv">${list(srv, (s) => `<li><b>${s.num}</b>${esc(s.nombre)}</li>`)}</ul>` : ""}
+      </div>
+      ${l.marca ? `<span class="linea__marca" aria-hidden="true">${esc(l.marca)}</span>` : ""}
+    </div>`;
+
   const serviciosSec = `
   <section class="sec sec--light" id="servicios">
     <div class="wrap">
@@ -215,7 +233,7 @@
         <h2 class="h2"><span class="outline">Nuestra</span> propuesta</h2>
         <div class="srv__tabs">${list(servicios, (s) => `<a href="#srv-${s.id}" class="chip"><b>${s.num}</b> ${esc(s.nombre)}</a>`)}</div>
       </div>
-      ${list(servicios, servicioHTML)}
+      ${list(porLinea, (g) => portadaLinea(g) + list(g.srv, servicioHTML))}
     </div>
   </section>`;
 

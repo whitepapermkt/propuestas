@@ -25,14 +25,14 @@
   const INTRO_SERVICIO = {
     "estudio-mercado": ["11-estudio-mercado-portada", "12-estudio-mercado-pilares", { estudio: "oferta" }, { estudio: "demanda" }],
     "definicion-producto": ["17-definicion-producto-portada", "18-definicion-producto-diagrama", "19-definicion-producto-proceso"],
-    "modelo-financiero": ["s4s-p21", "s4s-p22", "s4s-p23"],
-    "preventa-simulada": ["s4s-p16", "s4s-p17", { si: "presencial", img: ["s4s-p18"] }, { si: "digital", img: ["s4s-p19"] }, "s4s-p20"],
-    "concepto-creativo": ["s4s-p24", "s4s-p25", "s4s-p26", "s4s-p27"],
-    "aplicaciones-marketing": ["s4s-p34", "s4s-p35", "s4s-p36",
+    "modelo-financiero": ["s4s-p22", "s4s-p23"],
+    "preventa-simulada": ["s4s-p17", { si: "presencial", img: ["s4s-p18"] }, { si: "digital", img: ["s4s-p19"] }, "s4s-p20"],
+    "concepto-creativo": ["s4s-p25", "s4s-p26", "s4s-p27"],
+    "aplicaciones-marketing": ["s4s-p35", "s4s-p36",
       { si: "presentacion", img: ["s4s-p37", "s4s-p38"] }, { si: "brochure", img: ["s4s-p40", "s4s-p41"] },
       { si: "modulo", img: ["s4s-p44", "s4s-p45"] }, { si: "video", img: ["s4s-p48", "s4s-p49"] }],
-    "lanzamiento-comercial": ["s4s-p30", "s4s-p31", "s4s-p32"],
-    "web-setup": ["s4s-p51", "s4s-p53", "s4s-p54", { variante: "minisite", img: ["s4s-p55"] }, { variante: "multipager", img: ["s4s-p56"] }, { variante: "corporate", img: ["s4s-p57"] }],
+    "lanzamiento-comercial": ["s4s-p31", "s4s-p32"],
+    "web-setup": ["s4s-p53", "s4s-p54", { variante: "minisite", img: ["s4s-p55"] }, { variante: "multipager", img: ["s4s-p56"] }, { variante: "corporate", img: ["s4s-p57"] }],
     "digital-concierge": ["s4s-p59", "s4s-p60", "s4s-p61", "s4s-p62", "s4s-p63"],
     "lead-generation": ["s4s-p64", "s4s-p65"],
     "direccion-digital": ["s4s-p66", "s4s-p67", "s4s-p68"],
@@ -131,6 +131,21 @@
       .map((p) => `<i class="d-cad__col${p.gris ? " d-cad__col--gris" : ""}" style="left:${p.x}px;width:${p.w}px;top:${p.y || 203}px;height:${p.h || 376}px"></i>`);
     const circ = CIRCULOS.filter((c) => ids.has(c.id)).map((c) => `<i class="d-cad__circ" style="left:${c.x}px;top:${c.y}px"></i>`);
     return lamina("d-img d-cad", `<img src="${img("s4s-p08")}" alt="">${cols.join("")}${circ.join("")}`);
+  }
+
+  // Portada de línea de servicio: título en Bebas (sólido + contorno), número o letra en contorno y servicios incluidos
+  function portadaLinea(l) {
+    const [p1, ...resto] = l.nombre.split(" ");
+    const incl = servicios.filter((s) => l.ids.includes(s.id));
+    return lamina("d-linea", `
+      <div class="d-linea__txt">
+        <p class="d-linea__sup">Línea de servicio</p>
+        <h2 class="d-tit d-linea__tit">${esc(p1)}${resto.length ? `<br><span class="d-out">${esc(resto.join(" "))}</span>` : ""}</h2>
+        ${l.sub ? `<p class="d-linea__sub">${esc(l.sub)}</p>` : ""}
+        ${l.ids.length > 1 ? `<ul class="d-linea__srv">${list(incl, (s) => `<li><b>${s.num}</b>${esc(s.nombreLargo?.split(":")[0] || s.nombre)}</li>`)}</ul>` : ""}
+      </div>
+      <span class="d-linea__marca">${esc(l.marca)}</span>
+      ${pie}`);
   }
 
   // Grupos de alcance en tarjetas (con 3+ grupos la última lleva filete rojo, como el deck)
@@ -283,7 +298,13 @@
 
   function armar() {
     if (document.getElementById("deck")) return document.getElementById("deck");
-    const porServicio = servicios.map((s) => intro(s) + alcances(s).join("")).join("");
+    // Cada línea de servicio (Servicios Digitales, Dirección y Gerencia Comercial…) abre con su portada
+    let lineaAnt = null;
+    const porServicio = servicios.map((s) => {
+      const l = B.lineaDe(s.id), nueva = !lineaAnt || lineaAnt.nombre !== l.nombre;
+      lineaAnt = l;
+      return (nueva && l.portadaPDF !== false ? portadaLinea(l) : "") + intro(s) + alcances(s).join("");
+    }).join("");
     const deck = document.createElement("div");
     deck.id = "deck";
     deck.innerHTML =

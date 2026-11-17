@@ -184,3 +184,18 @@ td.d-mxn > .d-mxn__txt:only-child { font-size: 15px; color: var(--ink); margin: 
 .d-mes--corto { font-size: 12px; letter-spacing: .04em; }
 .d-mxn__txt--mes { white-space: nowrap; }
 .d-cards[style*="--cols:1"]:not(.d-cards--lista) ul { columns: 2; column-gap: 40px; }
+
+/* Portada de línea de servicio */
+.d-linea { background: var(--ink); color: #fff; display: flex; align-items: center; padding: 0 64px; }
+.d-linea::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 10px; background: var(--red); }
+.d-linea__txt { position: relative; z-index: 1; max-width: 760px; }
+.d-linea__sup { font-weight: 600; font-size: 18px; letter-spacing: .2em; text-transform: uppercase; color: #bdbdbb; }
+.d-linea .d-linea__tit { margin-top: 14px; font-size: 128px; line-height: .86; color: #fff; }
+.d-linea .d-tit .d-out { color: #fff; -webkit-text-stroke: 1.8px #fff; }
+.d-linea__sub { margin-top: 22px; font-size: 21px; letter-spacing: .16em; text-transform: uppercase; color: #e6e5e1; }
+.d-linea__srv { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+.d-slide .d-linea__srv li { padding: 8px 18px 8px 8px; border: 1.5px solid rgba(255,255,255,.3); border-radius: 99px; font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.d-slide .d-linea__srv li::before { display: none; }
+.d-linea__srv b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--red); font-family: "Bebas Neue", sans-serif; font-size: 20px; }
+.d-linea__marca { position: absolute; right: 80px; top: 172px; font-family: "Bebas Neue", sans-serif; font-weight: 700; font-size: 500px; line-height: 1; color: transparent; -webkit-text-stroke: 2.5px rgba(255,255,255,.55); }
+.d-linea .d-pie { color: #9a9b9d; }
