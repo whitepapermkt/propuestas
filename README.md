@@ -86,21 +86,19 @@ Lo elegido se guarda en la propuesta (`servicios[].alcances`) y se usa en la web
 
 El formulario agrupa los servicios por etapa:
 
-| Etapa | Servicios | Cobro |
+| Línea | Servicios | Cobro |
 |---|---|---|
-| Market Research | Estudio de Mercado · Definición de Producto · Modelo Financiero · Preventa Simulada (A) | Único |
-| Go-To Market | Concepto Creativo Central · Aplicaciones de Marketing y Video (B) · Lanzamiento Comercial (PAC) · Web Setup | Único |
-| Go-To Market | Digital Concierge · Lead Generation · Dirección Digital | Mensual |
-| Sales | Diagnóstico Comercial (C) | Único |
-| Sales | Dirección Comercial | Mensual |
-| Sales | Gerencia Comercial | Comisión (texto, ej. 4.5% mensual sobre resultados) |
+| 1 Estudio de Mercado · 2 Definición de Producto · A Preventa Simulada · 3 Análisis Financiero | uno por línea | Único |
+| 4 Concepto Creativo Central · 5 Lanzamiento Comercial | uno por línea | Único |
+| 7 Dirección y Gerencia Comercial | Diagnóstico Comercial (único) · Dirección Comercial (mensual) · Gerencia Comercial (comisión) | — |
+
+Servicios Digitales (6) y Aplicaciones de Marketing (B) no se ofrecen en las propuestas; siguen apareciendo en la
+cadena de valor institucional, pero nunca se resaltan.
 
 - **Cobro mensual:** se captura inversión mensual + meses; el total es mensual × meses y el calendario de pagos agrega una
   mensualidad por mes (en el PDF se agrupan en una fila). No llevan hito de "Presentación" en el Gantt.
 - **Comisión:** no suma al total; aparece como texto en la tabla y como fila informativa en la orden de trabajo.
-- **Bloques que vienen apagados** (`inicial: false`): integraciones adicionales, preventa digital, brochure, módulo de
-  aplicaciones, video. Se encienden en el formulario si se cotizan. En el módulo de aplicaciones se eligen las 8 piezas.
-- **Web Setup** tiene *Tipo de sitio* (Minisite, Multi-Pager, Corporate).
+- **Bloques que vienen apagados** (`inicial: false`): integraciones adicionales del PAC y preventa digital. Se encienden en el formulario si se cotizan.
 - **PDF:** cada servicio lleva sus láminas del catálogo (`assets/pdf/s4s-pNN.jpg` = página NN de SERVICIOS 4S 2025) +
   láminas de alcances generadas con lo elegido. La lámina *Nuevos Proyectos* resalta en rojo los pasos y complementos incluidos.
   Las tablas de servicios, tiempos y pagos se reparten en varias láminas si no caben.

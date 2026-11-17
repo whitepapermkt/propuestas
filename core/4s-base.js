@@ -83,7 +83,7 @@ window.BASE_4S = {
     { etapa: "Go-To Market", pasos: [
       { id: "concepto-creativo", n: 4, nombre: "Concepto Creativo Central", sub: "Desarrollo de marca" },
       { id: "lanzamiento-comercial", n: 5, nombre: "Plan de Aceleración Comercial", sub: "Estrategia y lanzamiento" },
-      { id: "servicios-digitales", ids: ["web-setup", "digital-concierge", "lead-generation", "direccion-digital"], n: 6, nombre: "Servicios Digitales (Web Setup + Digital Concierge)", sub: "Ecosistema digital inteligente" }
+      { id: "servicios-digitales", ids: [], n: 6, nombre: "Servicios Digitales (Web Setup + Digital Concierge)", sub: "Ecosistema digital inteligente" }
     ]},
     { etapa: "Sales", pasos: [
       { id: "direccion-comercial", ids: ["direccion-comercial", "gerencia-comercial"], n: 7, nombre: "Dirección y Operación Comercial", sub: "Dirección comercial · Metodología 4S" }
@@ -91,7 +91,7 @@ window.BASE_4S = {
   ],
   complementos: [
     { letra: "A", id: "preventa-simulada", nombre: "Preventa Simulada (PVS)" },
-    { letra: "B", id: "aplicaciones-marketing", nombre: "Aplicaciones de Marketing y Video" },
+    { letra: "B", id: "", nombre: "Aplicaciones de Marketing y Video" },
     { letra: "C", id: "diagnostico-comercial", nombre: "Diagnóstico Comercial" },
     { letra: "+", id: "", nombre: "Real Estate Data Insights (REDI)" }
   ],
@@ -106,8 +106,6 @@ window.BASE_4S = {
     { marca: "3", nombre: "Análisis Financiero", sub: "Desarrollo y modelo de negocio", ids: ["modelo-financiero"] },
     { marca: "4", nombre: "Concepto Creativo Central", sub: "Desarrollo de marca", ids: ["concepto-creativo"] },
     { marca: "5", nombre: "Lanzamiento Comercial", sub: "Estrategia y lanzamiento", ids: ["lanzamiento-comercial"] },
-    { marca: "B", nombre: "Aplicaciones de Marketing & Video", sub: "Impacto en ventas mediante el diseño", ids: ["aplicaciones-marketing"] },
-    { marca: "6", nombre: "Servicios Digitales", sub: "Ecosistema digital inteligente", ids: ["web-setup", "digital-concierge", "lead-generation", "direccion-digital"] },
     { marca: "7", nombre: "Dirección y Gerencia Comercial", sub: "Comercialización · Metodología 4S", ids: ["diagnostico-comercial", "direccion-comercial", "gerencia-comercial"] }
   ],
 
@@ -365,170 +363,10 @@ window.BASE_4S = {
       ]}
     },
 
-    "aplicaciones-marketing": {
-      nombre: "Aplicaciones de Marketing",
-      nombreLargo: "Aplicaciones de Marketing y Video",
-      area: "Aplicaciones de Marketing",
-      visual: { etapa: "Aplicaciones de Marketing & Video · B", marca: "B", titulo: "Aplicaciones de marketing & video", cifras: [{ v: "3", t: "rondas de revisión y cambios incluidas" }], pasos: ["Presentación de ventas", "Brochure", "Módulo de apps", "Video"] },
-      semanas: 8,
-      lead: "Un impacto en ventas mediante el diseño.",
-      intro:
-        "Las aplicaciones de marketing son materiales gráficos y audiovisuales creados para dar valor comercial a la marca por medio de la aplicación del branding realizado por 4S Real Estate. Nuestro equipo transforma el concepto e identidad del proyecto en una experiencia de diseño que conecta con clientes y equipos.",
-      requerimientos: [
-        "Características del proyecto arquitectónico definidas.",
-        "Insumos de branding de la marca.",
-        "Llenado de la estructura 4S.",
-        "Renders del proyecto (tiff, jpg, png).",
-        "Planos arquitectónicos o tipologías (pdf, ai, eps).",
-        "Para el módulo de aplicaciones: datos de contacto para papelería y medidas de los materiales impresos (si no se tienen, se trabaja con medidas estandarizadas y se entregan templates editables)."
-      ],
-      especificaciones: ["Presentación de ventas digital."],
-      pdf: { titulo: "Aplicaciones de Marketing y Video" },
-      alcances: { general: [
-        { id: "presentacion", titulo: "Presentación de ventas digital", entregable: "PDF, Keynote y/o PowerPoint",
-          nota: "Cada ronda adicional de cambios tiene un costo de 500 USD / 10,000 MXN. Las aplicaciones gráficas solo se realizan de brandings de 4S Real Estate.",
-          grupos: [
-          { titulo: "Incluye", items: ["Narrativa de la presentación de ventas.", "Diseño de mapas.", "Selección de imágenes de stock emocionales.", "Consolidación de estilo de plantas arquitectónicas.", "Diseño completo del entregable."] },
-          { titulo: "Especificaciones", items: ["Tiempo estimado: 8 semanas.", "Máximo 50 slides.", "3 rondas de revisión y cambios."] }
-        ]},
-        { id: "brochure", titulo: "Brochure impreso", entregable: "PDF + paquete de Adobe InDesign", inicial: false,
-          nota: "No incluye impresión. Se puede adaptar a Brochure WhatsApp por 500 USD / 10,000 MXN. Cada ronda adicional de cambios tiene un costo de 500 USD / 10,000 MXN.",
-          grupos: [
-          { titulo: "Incluye", items: ["Acompañamiento en el proceso de redacción y construcción visual.", "Asesoría en la propuesta de materiales de impresión.", "Diseño completo del entregable."] },
-          { titulo: "Especificaciones", items: ["Tiempo estimado: 8 semanas.", "Máximo 15 pliegos (60 páginas).", "3 rondas de revisión y cambios."] }
-        ]},
-        { id: "modulo", titulo: "Módulo de aplicaciones", entregable: "PDF, PNG, JPG o GIF + editables de Adobe", inicial: false,
-          nota: "Elige 8 aplicaciones (hasta 1 repetición por módulo). Tarjeta de presentación y firma electrónica: plantilla + 10 personalizaciones. Vallas: longitud total máxima de 25 m. Viniles de showroom: no incluye diseño o ejecución de interiorismo. No incluye impresión, implementación, producción ni instalación.",
-          grupos: [
-          { titulo: "Aplicaciones elegidas (8)", inicial: false, items: ["Tarjeta de presentación impresa o QR.", "Hoja membretada.", "Folder tamaño carta.", "Firma electrónica.", "One pager.", "Imágenes de WhatsApp.", "Stickers de WhatsApp.", "Mailings.", "GIFs de 6 segundos.", "Template de presentación (8 slides).", "Roll up / araña.", "Volante (1/2 carta, 2 caras).", "Brochure light impreso (tríptico o cuadríptico).", "Lona.", "Pendones.", "Publicaciones en revista.", "Panorámicos.", "Vallas.", "Señalética interior.", "Viniles de showroom (interiores o exteriores)."] },
-          { titulo: "Especificaciones", items: ["Tiempo estimado: 4 a 5 semanas.", "Templates de presentación en Keynote y/o PowerPoint.", "3 rondas de revisión y cambios."] }
-        ]},
-        { id: "video", titulo: "Video conceptual (1:00 – 2:00 min)", entregable: "Video", inicial: false,
-          nota: "La locución no está incluida: se contrata con un proveedor externo y el guion debe autorizarse antes de grabar la voz. No incluye tomas aéreas. Los clips de bancos externos tienen costo adicional.",
-          grupos: [
-          { titulo: "Incluye", items: ["Pre-producción.", "Acompañamiento de producción.", "Post-producción.", "Animación 2D de gráficos y textos.", "Diseño de audio en estéreo con música de librería libre de derechos.", "Clips de stock ilimitados de los bancos con licencia de 4S."] },
-          { titulo: "Especificaciones", items: ["Tiempo estimado: 6 a 8 semanas.", "Video emocional y general del proyecto, con clips de stock e insumos del cliente."] }
-        ]}
-      ]}
-    },
 
-    "web-setup": {
-      nombre: "Web Setup",
-      nombreLargo: "Web Setup: Diseño y Programación Web",
-      area: "Servicios Digitales",
-      visual: { etapa: "Servicios Digitales · 6", marca: "6", titulo: "Diseño y programación web", cifras: [{ v: "+100", t: "sitios web por año" }], pasos: ["Perfil digital", "Wireframe", "Propuesta gráfica", "WordPress"] },
-      semanas: 6,
-      varianteEtiqueta: "Tipo de sitio",
-      variantes: { multipager: "Multi-Pager Website", minisite: "Minisite", corporate: "Corporate Website" },
-      lead: "+100 sitios web por año.",
-      intro:
-        "Según investigadores de Google, un usuario forma su opinión sobre un sitio web en 17 ms, y los primeros 3 resultados de búsqueda orgánica obtienen el 58% de los clics. Diseñamos y programamos sitios web inteligentes para informar al mercado meta y convertir visitas digitales en prospectos calificados.",
-      pilares: [
-        { titulo: "Perfil digital", texto: "Información fundamental del proyecto, incluyendo sus metas estratégicas y comerciales." },
-        { titulo: "Wireframe", texto: "Estructura del sitio y organización del contenido." },
-        { titulo: "Propuesta gráfica web", texto: "Cómo se verá el sitio a nivel gráfico y textual, de acuerdo al wireframe y al branding." }
-      ],
-      especificaciones: ["Sitio web en WordPress con propuesta gráfica en Figma.", "Configuración básica SEO y Google Analytics.", "Advanced Custom Fields (web editable)."],
-      pdf: { titulo: "Web Setup", especIntro: "Se considera:" },
-      alcances: (() => {
-        const base = (tipo, nav, tiempo, nota) => [
-          { id: "web", titulo: `Set-up web · ${tipo}`, entregable: "Sitio web en WordPress",
-            nota: `${nota} No incluye la compra del dominio y/o hosting. Una vez aprobada la propuesta gráfica, los cambios pueden tener costo adicional.`,
-            grupos: [
-            { titulo: "Desarrollo", items: ["Perfil digital del proyecto.", "Arquitectura de sitio (wireframe).", "Prototipo (propuesta gráfica) en Figma.", "Desarrollo web en WordPress.", "Configuración básica SEO.", "Inserción de Tag Manager (Google Analytics).", "Advanced Custom Fields: web editable (fotos, video y texto), hasta 7 secciones e incluye 2 horas de capacitación."] },
-            { titulo: "Navegación y animaciones", items: nav },
-            { titulo: "Tiempos", items: [tiempo] }
-          ]},
-          { id: "integraciones", titulo: "Integraciones adicionales web", inicial: false,
-            nota: "Cada integración tiene inversión adicional y, en su caso, un pago mensual al proveedor.",
-            grupos: [
-            { titulo: "Integraciones", inicial: false, items: ["HelloBox: chat omnicanal (correo, Messenger y WhatsApp) desde una misma herramienta.", "AI Chatbot.", "Calendly o Acuity para agendar citas en el sitio.", "Pick n’ Choose: disponibilidad, tipología, vista y otros atributos en línea.", "Sitio multilenguaje (español e inglés).", "eCommerce (WooCommerce y PayPal) para separar unidades en línea.", "Mantenimiento web semestral (optimización y ajustes de pop-ups, textos y fotografías)."] }
-          ]}
-        ];
-        return {
-          multipager: base("Multi-Pager Website", ["Menú de navegación (máximo 7).", "Máximo 7 pestañas / landing pages.", "Animaciones básicas y avanzadas."], "5 a 7 semanas.", "Recomendado para proyectos medianos o grandes con múltiples productos, variedad de tipologías, amenidades, etc."),
-          minisite: base("Minisite", ["Menú en formato scroll down.", "Animaciones básicas."], "4 a 5 semanas.", "Recomendado para proyectos pequeños de un solo producto."),
-          corporate: base("Corporate Website", ["Menú de navegación (máximo 7).", "Máximo 7 pestañas y/o landing pages.", "Animaciones básicas y avanzadas."], "6 a 8 semanas.", "Recomendado para posicionar desarrolladoras o fondos y/o mostrar múltiples proyectos en un solo sitio.")
-        };
-      })()
-    },
 
-    "digital-concierge": {
-      nombre: "Digital Concierge",
-      nombreLargo: "Digital Concierge: Diseño e Implementación de Estrategia",
-      area: "Servicios Digitales",
-      visual: { etapa: "Servicios Digitales · 6", marca: "6", titulo: "Ecosistema digital inteligente", cifras: [{ v: "+350", t: "proyectos gestionados digitalmente" }], pasos: ["Plan digital", "Contenido", "Campañas", "Reporte mensual"] },
-      cobro: "mensual", meses: 6,
-      lead: "+350 proyectos gestionados digitalmente.",
-      intro:
-        "Una vez que el proyecto cuenta con un sitio web inteligente y ad hoc al producto y a su mercado meta, es importante conectarlo a otras plataformas digitales y redes sociales para lograr una estrategia digital integral. Diseñamos, implementamos y evaluamos estrategias digitales mensuales con un enfoque de conversión real a ventas.",
-      especificaciones: ["Plan digital (estrategia inicial).", "Contenido y campañas en Facebook, Instagram y Google Ads para un (1) proyecto.", "Community management, e-mail marketing y content marketing.", "Reporte mensual y mystery shopper."],
-      pdf: { titulo: "Digital Concierge", especIntro: "Se considera:" },
-      alcances: { general: [
-        { id: "estrategia", titulo: "Paso 1: estrategia (plan digital)", grupos: [
-          { titulo: "Definición de estrategia inicial", items: ["Mercado meta.", "Estrategia de mailings.", "KPIs y reporteo.", "Chatbots e IA.", "Optimización web.", "Community management.", "Campañas en Google Ads.", "Campañas en Meta.", "Creación de contenido.", "Evaluación de leads.", "Estrategias digitales semanales."] }
-        ]},
-        { id: "implementacion", titulo: "Paso 2: implementación (alcances mensuales)", entregable: "Reporte mensual",
-          nota: "Para un (1) solo proyecto. El servicio no incluye la pauta / inversión en publicidad pagada, que se paga directamente con la tarjeta del cliente.",
-          grupos: [
-          { titulo: "Facebook", items: ["5 anuncios.", "12 publicaciones."] },
-          { titulo: "Instagram", items: ["5 anuncios.", "6 sets de Instagram Stories.", "8 publicaciones."] },
-          { titulo: "Google Ads", items: ["Anuncios en red de búsqueda.", "Anuncios en red de display."] },
-          { titulo: "Videos & AI animation", items: ["Hasta 50% de los anuncios en video y/o con animaciones con IA.", "Video máster bimestral (menos de 60 s).", "3 mini clips o animaciones con IA."] },
-          { titulo: "Contenido y mailing", items: ["Content marketing: 4 entregables de blog y página web.", "E-mail marketing: diseño y programación de 4 mailings a base de datos."] },
-          { titulo: "Seguimiento", items: ["Community management.", "Mantenimiento web.", "Reporte mensual.", "Mystery shopper mensual al equipo de ventas.", "Revisión y optimización trimestral del plan digital."] }
-        ]}
-      ]}
-    },
 
-    "lead-generation": {
-      nombre: "Lead Generation",
-      nombreLargo: "Lead Generation: Diseño e Implementación de Estrategia",
-      area: "Servicios Digitales",
-      visual: { etapa: "Servicios Digitales · 6", marca: "6", titulo: "Generación de leads", cifras: [{ v: "A/B", t: "pruebas para encontrar el formato más efectivo por campaña" }], pasos: ["Plan digital LG", "Meta", "Google Ads", "Reporte mensual"] },
-      cobro: "mensual", meses: 6,
-      lead: "Estrategia digital exclusivamente para generación de leads.",
-      intro:
-        "Estrategia digital enfocada en generar leads a través de medios pagados como Google Ads (paid search y display) y redes sociales como Facebook, Instagram y LinkedIn.",
-      especificaciones: ["Plan digital LG (estrategia inicial).", "Anuncios en Facebook, Instagram y Google Ads para un (1) proyecto.", "Plan digital trimestral, mystery shopper y reporte mensual."],
-      pdf: { titulo: "Lead Generation", especIntro: "Se considera:" },
-      alcances: { general: [
-        { id: "estrategia", titulo: "Paso 1: estrategia (plan digital LG)", grupos: [
-          { titulo: "Definición de estrategia inicial", items: ["Mercado meta.", "KPIs y reporteo.", "Optimización web.", "Campañas en Google Ads.", "Campañas en Meta.", "Evaluación de leads.", "Estrategias digitales semanales."] }
-        ]},
-        { id: "implementacion", titulo: "Paso 2: implementación (alcances mensuales)", entregable: "Reporte mensual",
-          nota: "Para un (1) solo proyecto. No incluye la pauta / inversión en publicidad pagada, que se paga directamente con la tarjeta del cliente. Los videos se hacen con contenido de stock y material del cliente; no incluye toma de video ni producción.",
-          grupos: [
-          { titulo: "Plan digital trimestral", items: ["Objetivos trimestrales, embudo de conversión meta y anuncios."] },
-          { titulo: "Facebook e Instagram", items: ["Hasta 5 anuncios."] },
-          { titulo: "Google Ads", items: ["Anuncios en red de búsqueda.", "Anuncios en red de display."] },
-          { titulo: "Videos & AI animation", items: ["Hasta 50% de los anuncios en video, con pruebas A/B para determinar el formato más efectivo por campaña."] },
-          { titulo: "Seguimiento", items: ["Mystery shopper mensual al equipo de ventas.", "Mantenimiento web.", "Reporte mensual."] }
-        ]}
-      ]}
-    },
 
-    "direccion-digital": {
-      nombre: "Dirección Digital",
-      nombreLargo: "Dirección Digital: Dirección de Estrategia Digital",
-      area: "Servicios Digitales",
-      visual: { etapa: "Servicios Digitales · 6", marca: "6", titulo: "Dirección de estrategia digital", cifras: [{ v: "Semanal", t: "junta de seguimiento de resultados" }], pasos: ["Diagnóstico", "Plan trimestral", "Bootcamp", "Seguimiento semanal"] },
-      cobro: "mensual", meses: 6,
-      lead: "Consultoría para equipos digitales internos.",
-      intro:
-        "Para clientes que cuentan con un equipo interno y requieren apoyo para visibilizar áreas de oportunidad, replantear estrategias digitales con base en metas claras y utilizar herramientas eficientes.",
-      especificaciones: ["Diagnóstico digital.", "Plan digital trimestral.", "Juntas de seguimiento semanal y reporte mensual de resultados.", "Bootcamp en plataformas digitales."],
-      pdf: { titulo: "Dirección Digital", especIntro: "Se considera:" },
-      alcances: { general: [
-        { id: "direccion", titulo: "Dirección de estrategia digital", grupos: [
-          { titulo: "Diagnóstico digital", items: ["Revisión web (SEO, Tag Manager, contenido, etc.).", "Diagnóstico de redes sociales (Facebook e Instagram).", "Diagnóstico de Google Ads.", "Diagnóstico de Google My Business."] },
-          { titulo: "Plan digital", items: ["Definición de buyer persona.", "Segmentación.", "Mensaje rector y pilares de contenido.", "Embudo de conversión y presupuesto.", "Anuncios en medios pagados sociales.", "Anuncios en medios pagados de búsqueda.", "E-mail marketing.", "Content marketing."] },
-          { titulo: "Bootcamp en plataformas digitales", items: ["Meta (Business Manager, campañas, segmentación, anuncios y copys, indicadores y reporteo).", "Google Ads (fundamentos, búsqueda y medición).", "Google Analytics y Tag Manager.", "Reporte mensual (elaboración de KPIs y seguimiento)."] },
-          { titulo: "Operación del servicio", items: ["Plan digital trimestral.", "Juntas de seguimiento semanal para revisar resultados.", "Reporte mensual de resultados y optimización de la estrategia.", "Mystery shopper digital con metodología 4S."] },
-          { titulo: "Integraciones de inteligencia artificial", items: ["Recomendación y coordinación de la implementación de herramientas de IA como complemento a la estrategia digital."] }
-        ]}
-      ]}
-    },
 
     "diagnostico-comercial": {
       nombre: "Diagnóstico Comercial",

@@ -28,14 +28,7 @@
     "modelo-financiero": ["s4s-p22", "s4s-p23"],
     "preventa-simulada": ["s4s-p17", { si: "presencial", img: ["s4s-p18"] }, { si: "digital", img: ["s4s-p19"] }, "s4s-p20"],
     "concepto-creativo": ["s4s-p25", "s4s-p26", "s4s-p27"],
-    "aplicaciones-marketing": ["s4s-p35", "s4s-p36",
-      { si: "presentacion", img: ["s4s-p37", "s4s-p38"] }, { si: "brochure", img: ["s4s-p40", "s4s-p41"] },
-      { si: "modulo", img: ["s4s-p44", "s4s-p45"] }, { si: "video", img: ["s4s-p48", "s4s-p49"] }],
     "lanzamiento-comercial": ["s4s-p31", "s4s-p32"],
-    "web-setup": ["s4s-p53", "s4s-p54", { variante: "minisite", img: ["s4s-p55"] }, { variante: "multipager", img: ["s4s-p56"] }, { variante: "corporate", img: ["s4s-p57"] }],
-    "digital-concierge": ["s4s-p59", "s4s-p60", "s4s-p61", "s4s-p62", "s4s-p63"],
-    "lead-generation": ["s4s-p64", "s4s-p65"],
-    "direccion-digital": ["s4s-p66", "s4s-p67", "s4s-p68"],
     "diagnostico-comercial": ["s4s-p70", "s4s-p71", "s4s-p72", "s4s-p73", "s4s-p74"],
     "direccion-comercial": ["s4s-p75", "s4s-p76", "s4s-p77", "s4s-p78", "s4s-p79", "s4s-p80"],
     "gerencia-comercial": ["s4s-p81", "s4s-p82", "s4s-p83", "s4s-p84", "s4s-p85"]
@@ -122,10 +115,9 @@
   const PASOS = [ // posición de cada columna / círculo en la lámina (px de 1280 × 720)
     { ids: ["estudio-mercado"], x: 137, w: 122 }, { ids: ["definicion-producto"], x: 265, w: 121 }, { ids: ["modelo-financiero"], x: 391, w: 122 },
     { ids: ["concepto-creativo"], x: 565, w: 121, gris: 1 }, { ids: ["lanzamiento-comercial"], x: 691, w: 122, gris: 1 },
-    { ids: ["web-setup", "digital-concierge", "lead-generation", "direccion-digital"], x: 818, w: 121, gris: 1 },
     { ids: ["direccion-comercial", "gerencia-comercial"], x: 988, w: 122, y: 285, h: 294 }
   ];
-  const CIRCULOS = [{ id: "preventa-simulada", x: 388, y: 569 }, { id: "aplicaciones-marketing", x: 689, y: 569 }, { id: "diagnostico-comercial", x: 1131, y: 580 }];
+  const CIRCULOS = [{ id: "preventa-simulada", x: 388, y: 569 }, { id: "diagnostico-comercial", x: 1131, y: 580 }];
   function cadena() {
     const cols = PASOS.filter((p) => p.ids.some((id) => ids.has(id)))
       .map((p) => `<i class="d-cad__col${p.gris ? " d-cad__col--gris" : ""}" style="left:${p.x}px;width:${p.w}px;top:${p.y || 203}px;height:${p.h || 376}px"></i>`);
