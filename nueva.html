@@ -43,9 +43,15 @@
     .slug span { padding: 0 4px 0 12px; color: var(--gray); font-size: 13px; white-space: nowrap; }
     .slug input { border: 0 !important; padding-left: 0; background: transparent !important; }
 
-    .srv-etapa { font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 22px; letter-spacing: .03em; color: var(--ink); margin: 26px 0 -4px; padding-bottom: 6px; border-bottom: 1.5px solid var(--ink); }
-    .srv-etapa:first-child { margin-top: 4px; }
-    .srv-etapa span { display: inline-block; min-width: 22px; margin-right: 8px; color: var(--red); }
+    /* Líneas de servicio: en celular se abren con un toque (cerradas salvo las que tienen servicios marcados) */
+    .lf { margin-top: 22px; }
+    .lf:first-child { margin-top: 4px; }
+    .srv-etapa { display: flex; align-items: center; gap: 8px; width: 100%; background: none; border: 0; border-bottom: 1.5px solid var(--ink); padding: 0 0 6px; text-align: left; font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 22px; letter-spacing: .03em; color: var(--ink); cursor: default; }
+    .srv-etapa > span { min-width: 22px; color: var(--red); }
+    .srv-etapa b { flex: 1; font-weight: 400; }
+    .srv-etapa small { font-family: var(--body, system-ui); font-size: 12px; font-weight: 600; letter-spacing: 0; color: var(--red); }
+    .srv-etapa i { display: none; width: 9px; height: 9px; margin: 0 4px 4px 6px; border-right: 2px solid var(--gray); border-bottom: 2px solid var(--gray); transform: rotate(45deg); transition: transform .2s; }
+    .lf__body { margin-top: -4px; }
     .srv { border: 1.5px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 12px; }
     .srv--on { border-color: var(--ink); }
     .srv__head { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; }
@@ -133,6 +139,10 @@
     [hidden] { display: none !important; }
     .solo-movil { display: none; }
     @media (max-width: 900px) {
+      .srv-etapa { cursor: pointer; min-height: 44px; padding-bottom: 8px; }
+      .srv-etapa i { display: block; }
+      .lf--open .srv-etapa i { transform: rotate(-135deg); margin-bottom: -2px; }
+      .lf:not(.lf--open) .lf__body { display: none; }
       .layout { grid-template-columns: 1fr; }
       form { height: auto; overflow: visible; padding: 16px 14px 120px; }
       .preview { position: fixed; inset: 54px 0 0 0; z-index: 15; display: none; }
@@ -338,11 +348,25 @@
       </div>
     </div>`;
   };
-  cont.innerHTML = LINEAS.map(([l, ids]) => `<h3 class="srv-etapa"><span>${esc(l.marca)}</span>${esc(l.nombre)}</h3>${ids.filter((id) => B.servicios[id]).map(srvHTML).join("")}`).join("");
+  cont.innerHTML = LINEAS.map(([l, ids]) => `
+    <section class="lf">
+      <button type="button" class="srv-etapa" aria-expanded="false"><span>${esc(l.marca)}</span><b>${esc(l.nombre)}</b><small></small><i></i></button>
+      <div class="lf__body">${ids.filter((id) => B.servicios[id]).map(srvHTML).join("")}</div>
+    </section>`).join("");
+  cont.addEventListener("click", (e) => {
+    const h = e.target.closest(".srv-etapa");
+    if (!h) return;
+    const lf = h.parentElement, abierta = lf.classList.toggle("lf--open");
+    h.setAttribute("aria-expanded", abierta);
+  });
   const ids = LINEAS.flatMap(([, l]) => l).filter((id) => B.servicios[id]); // orden de las líneas de servicio
   const srvOn = (id) => $(`on-${id}`).checked;
   const syncSrv = () => {
     cont.querySelectorAll(".srv").forEach((el) => el.classList.toggle("srv--on", srvOn(el.dataset.id)));
+    cont.querySelectorAll(".lf").forEach((lf) => {
+      const n = lf.querySelectorAll(".srv__head input:checked").length, t = lf.querySelectorAll(".srv").length;
+      lf.querySelector(".srv-etapa small").textContent = n ? (t > 1 ? `${n} de ${t}` : "Incluido") : "";
+    });
     cont.querySelectorAll(".alc").forEach((el) => el.classList.toggle("alc--on", el.querySelector(".alc-on").checked));
   };
 
@@ -938,6 +962,7 @@
       $(`variante-${s.id}`).dataset.prev = $(`variante-${s.id}`).value;
       set(`espec-${s.id}`, (B.servicios[s.id].giros ? B.especExtras(s, d.ciudad) : s.especificaciones || []).join("\n"));
       pintarAlcances(s.id, s.alcances);
+      $(`on-${s.id}`).closest(".lf").classList.add("lf--open");
       const ini = F.inicios?.[s.id] ?? (trabajo.find((x) => x.n === i + 1)?.desde ?? off) - off + 1;
       set(`inicio-${s.id}`, Math.max(1, ini));
     });
