@@ -99,6 +99,10 @@
     .chk .x { flex: none; width: 36px; height: 36px; margin: -7px -4px -7px 0; display: grid; place-items: center; font-size: 22px; line-height: 1; border-radius: 50%; }
     .alc__nuevo { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 46px; padding: 0 8px; margin-top: 2px; background: none; border: 1.5px dashed var(--gray-l); border-radius: 10px; color: var(--ink); font-size: 14px; font-weight: 600; cursor: pointer; }
     .alc__nuevo b { color: var(--red); font-size: 20px; line-height: 1; }
+    .alc__campos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 8px 10px; }
+    .alc__campos label { margin: 0; font-size: 10px; }
+    .alc__campos input { margin-top: 4px; padding: 9px 10px; font-size: 16px; }
+    .alc__campos-nota { grid-column: 1 / -1; }
     .alc__add { display: none; gap: 8px; margin-top: 4px; }
     .alc__add--on { display: flex; }
     .alc__add--on + .alc__nuevo, .alc__nuevo:has(+ .alc__add--on) { display: none; }
@@ -380,10 +384,18 @@
   const OTROS = "Alcances adicionales";
   const catAlc = (id) => { const c = B.servicios[id].alcances || {}; return c[$(`variante-${id}`).value] || Object.values(c)[0] || []; };
   const extraHTML = (t) => `<label class="chk chk--extra"><input type="checkbox" value="${esc(t)}" checked><span>${esc(t)}<em>Propio</em></span><button type="button" class="x" aria-label="Quitar">×</button></label>`;
-  const grupoHTML = (titulo, items, extras, otros) => `
+  // campos: tiempo / inversión / nota de un add-on (tabla "Integraciones adicionales" del PDF)
+  const camposHTML = (c) => `
+        <div class="alc__campos">
+          <label>Tiempo<input type="text" data-f="tiempo" value="${esc(c.tiempo ?? "")}"></label>
+          <label>Inversión MXN<input type="text" inputmode="numeric" data-f="precio" value="${c.precio ? Number(c.precio).toLocaleString("es-MX") : ""}"></label>
+          <label class="alc__campos-nota">Nota de inversión<input type="text" data-f="precioNota" value="${esc(c.precioNota ?? "")}" placeholder="Ej. *No incluye viáticos"></label>
+        </div>`;
+  const grupoHTML = (titulo, items, extras, otros, campos) => `
     <details class="alc__g${otros ? " alc__g--otros" : ""}" data-g="${esc(titulo)}">
       <summary><h5>${esc(titulo)}</h5><span class="alc__n"></span></summary>
       <div class="alc__lista">
+        ${campos ? camposHTML(campos) : ""}
         ${items.length > 1 ? `<div class="alc__todos"><button type="button" class="alc__link" data-todos></button></div>` : ""}
         ${otros ? `<p class="alc__vacio">Puntos que no entran en ningún grupo. Se agregan al final del estudio.</p>` : ""}
         ${items.map((i) => `<label class="chk"><input type="checkbox" value="${esc(i.t)}"${i.on ? " checked" : ""}><span>${esc(i.t)}</span></label>`).join("")}
@@ -422,7 +434,8 @@
         const eg = el?.grupos?.find((x) => x.titulo === g.titulo);
         return grupoHTML(g.titulo,
           g.items.map((t) => ({ t, on: el ? !!eg?.items.includes(t) : g.inicial !== false })),
-          eg ? eg.items.filter((t) => !g.items.includes(t)) : []);
+          eg ? eg.items.filter((t) => !g.items.includes(t)) : [], false,
+          g.addon && { tiempo: eg?.tiempo ?? g.addon.tiempo, precio: eg?.precio ?? g.addon.precio, precioNota: eg?.precioNota ?? g.addon.precioNota });
       }).join("");
       const otros = el ? (el.grupos || []).filter((x) => !c.grupos.some((g) => g.titulo === x.titulo)).flatMap((x) => x.items) : [];
       const [nombre, sufijo] = c.titulo.split(" · ");
@@ -443,7 +456,14 @@
     return [...document.querySelectorAll(`#alcs-${id} .alc`)].map((el) => {
       if (!el.querySelector(".alc-on").checked) return null;
       const grupos = [...el.querySelectorAll(".alc__g")]
-        .map((g) => ({ titulo: g.dataset.g, items: [...g.querySelectorAll(".chk input:checked")].map((i) => i.value) }))
+        .map((g) => {
+          const r = { titulo: g.dataset.g, items: [...g.querySelectorAll(".chk input:checked")].map((i) => i.value) };
+          g.querySelectorAll("[data-f]").forEach((i) => {
+            const v = i.value.trim();
+            if (i.dataset.f === "precio") r.precio = +v.replace(/[^\d.]/g, "") || 0; else r[i.dataset.f] = v;
+          });
+          return r;
+        })
         .filter((g) => g.items.length);
       if (!grupos.length) return null;
       const { id: aid, corto, titulo, entregable, nota, plano } = cat[+el.dataset.k];

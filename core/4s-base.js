@@ -311,14 +311,26 @@ window.BASE_4S = {
           { titulo: "3 · Conversión", items: ["Experiencia de compra.", "Estructura comercial.", "Procesos de seguimiento."] },
           { titulo: "4 · Cierre", items: ["Modelo de precios.", "Reporteo y KPIs.", "Integración de CRM (Seleris).", "Procesos de auditoría."] }
         ]},
-        { id: "integraciones", titulo: "Integraciones adicionales", inicial: false,
+        // Se imprime como la tabla "Integraciones adicionales" del deck (catálogo p. 33): una fila por add-on.
+        // El primer punto de cada grupo es la descripción (párrafo); los demás son viñetas. Tiempo e inversión se editan en el formulario.
+        { id: "integraciones", titulo: "Integraciones adicionales", inicial: false, tabla: "addons",
           nota: "Cada integración tiene inversión adicional. No incluye costo de CRM, viáticos de eventos, dominio ni hosting.",
           grupos: [
-          { titulo: "Implementación de CRM · 3 a 4 semanas", items: ["Puesta en marcha del CRM con base en los lineamientos definidos según el proceso comercial.", "Carga de variables e indicadores de seguimiento.", "Capacitación al equipo comercial."] },
-          { titulo: "Implementación de eventos · 3 a 4 semanas", items: ["Estrategia del evento alineada al posicionamiento del proyecto (por evento: F&F, lanzamiento, primera piedra, etc.).", "Necesidades de herramientas y coordinación integral con proveedores.", "Supervisión de logística, montaje/instalación y acompañamiento en el evento."] },
-          { titulo: "Implementación de experiencia · 6 a 8 semanas", items: ["Acompañamiento en la ejecución de la experiencia de compra definida.", "Gestión, coordinación y seguimiento a la implementación de proveedores.", "Revisión y seguimiento del montaje del showroom / punto de venta."] },
-          { titulo: "Capacitaciones comerciales · 1 semana", items: ["Workshops para reforzar las habilidades básicas y digitales del equipo comercial.", "Mercado, producto y discurso de ventas.", "Experiencia de compra en sitio."] },
-          { titulo: "Setup web (mini site) · 3 a 4 semanas", items: ["Diseño y programación de página web (mini site / scroll-down).", "Estructura y propuesta gráfica en Figma.", "Configuración básica SEO.", "Programación con Advanced Custom Fields para editar después de la entrega."] }
+          { titulo: "Implementación de CRM · 3 a 4 semanas",
+            addon: { pre: "Implementación de:", nombre: "CRM", descNota: "*No incluye costo de CRM.", tiempo: "3 a 4 Semanas", precio: 40000 },
+            items: ["Coordinamos la puesta en marcha del CRM con base en los lineamientos definidos según el proceso comercial. Desde la carga de variables e indicadores de seguimiento hasta la capacitación al equipo comercial."] },
+          { titulo: "Implementación de eventos · 3 a 4 semanas",
+            addon: { pre: "Implementación de:", nombre: "Eventos", descNota: "(por evento: F&F, Lanzamiento, Primera Piedra, etc)", tiempo: "3 a 4 Semanas", precio: 75000, precioNota: "*No incluye viáticos" },
+            items: ["Ejecutamos la estrategia del evento asegurando una experiencia alineada al posicionamiento del proyecto:", "Necesidades de herramientas y coordinación integral con proveedores", "Supervisión de logística, montaje/instalación y acompañamiento en el evento"] },
+          { titulo: "Implementación de experiencia · 6 a 8 semanas",
+            addon: { pre: "Implementación de:", nombre: "Experiencia", tiempo: "6 a 8 semanas", precio: 75000 },
+            items: ["Acompañamos la ejecución de la experiencia de compra definida, asegurando que cada elemento se materialice de forma coherente, funcional y alineada con los objetivos del proyecto.", "Gestión, coordinación y seguimiento a implementación de proveedores", "Revisión y seguimiento de montaje del showroom/punto de venta"] },
+          { titulo: "Capacitaciones comerciales · 1 semana",
+            addon: { nombre: "Capacitaciones\nComerciales", tiempo: "1 Semana", precio: 35000 },
+            items: ["Workshops para el equipo comercial para reforzar habilidades iniciales básicas y digitales necesarias para la operación comercial.", "Mercado, producto y discurso de ventas", "Experiencia de compra en sitio", "Procesos de seguimiento", "Acceso a 2 módulos de Xelex"] },
+          { titulo: "Setup web (mini site) · 3 a 4 semanas",
+            addon: { nombre: "Setup\nWeb", sub: "(Mini Site)", descNota: "*No incluye dominio o hosting.", tiempo: "3 a 4 Semanas", precio: 70000 },
+            items: ["Diseño y programación de página web (mini site/scroll-down), incluyendo: estructura, propuesta gráfica en Figma, configuración básica SEO, programación y Advanced Custom Fields para facilitar edición post-entrega."] }
         ]}
       ]}
     },

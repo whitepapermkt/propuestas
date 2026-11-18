@@ -5,6 +5,7 @@
 /* Texto: Futura instalada en el equipo (la del deck) → si no hay, Jost reducida para igualar su tamaño */
 @font-face { font-family: "Futura 4S"; font-weight: 300 450; src: local("Futura Book BT"), local("FuturaBT-Book"), local("Futura Std Book"), local("FuturaStd-Book"), local("Futura PT Book"), local("FuturaPT-Book"), local("Futura Book"), local("Futura-Book"), local("Futura Medium"), local("Futura-Medium"); }
 @font-face { font-family: "Futura 4S"; font-weight: 451 900; src: local("Futura Bold BT"), local("FuturaBT-Bold"), local("Futura PT Demi"), local("FuturaPT-Demi"), local("Futura Std Heavy"), local("FuturaStd-Heavy"), local("Futura Bold"), local("Futura-Bold"); }
+@font-face { font-family: "Bebas Neue"; font-weight: 300; src: url("../assets/fonts/BebasNeue-Book.otf") format("opentype"); }
 @font-face { font-family: "Jost 4S"; font-weight: 300 700; src: url("../assets/fonts/Jost-latin.woff2") format("woff2"); size-adjust: 95%; }
 
 #deck { display: none; }
@@ -199,3 +200,34 @@ td.d-mxn > .d-mxn__txt:only-child { font-size: 15px; color: var(--ink); margin: 
 .d-linea__srv b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--red); font-family: "Bebas Neue", sans-serif; font-size: 20px; }
 .d-linea__marca { position: absolute; right: 80px; top: 172px; font-family: "Bebas Neue", sans-serif; font-weight: 700; font-size: 500px; line-height: 1; color: transparent; -webkit-text-stroke: 2.5px rgba(255,255,255,.55); }
 .d-linea .d-pie { color: #9a9b9d; }
+
+/* Integraciones adicionales: misma lámina del deck original (catálogo p. 33), solo cambian los datos */
+.d-add { background: radial-gradient(ellipse 75% 85% at 38% 55%, #2e2e2e 0%, #1d1d1d 50%, #0a0a0a 100%); color: #fff; padding: 0; }
+.d-add::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 17px; background: #be2f2c; }
+.d-add__sup { position: absolute; left: 108px; top: 49px; font-size: 17px; line-height: 1; text-transform: uppercase; letter-spacing: -.005em; }
+.d-add__tit { position: absolute; left: 105px; top: 79px; font-family: "Bebas Neue", sans-serif; font-size: 67px; line-height: .78; text-transform: uppercase; font-weight: 700; }
+.d-add__tit b, .d-add__tit span { display: block; }
+.d-add__tit span { font-weight: 300; margin-top: 7px; }
+.d-add__head { position: absolute; left: 104px; top: 217px; width: 1045px; height: 38px; display: grid; grid-template-columns: 157px 1fr; gap: 6px; font-family: "Bebas Neue", sans-serif; font-weight: 700; font-size: 22px; line-height: 40px; text-align: center; text-transform: uppercase; }
+.d-add__head span:first-child { background: #be2f2c; border-radius: 9px 9px 0 0; }
+.d-add__head span:last-child { background: #fff; color: #0f1011; border-radius: 9px 9px 0 0; }
+.d-add__tb { position: absolute; left: 104px; top: 263px; width: 1045px; border-collapse: collapse; table-layout: fixed; }
+.d-add__tb tr > * { border: 1px solid #3a3a3a; vertical-align: middle; font-size: 12px; line-height: 1.32; }
+.d-add__tb th { width: 157px; background: #202428; padding: 8px 6px; text-align: center; font-weight: 400; font-size: 14px; line-height: 1.3; border-right: 6px solid #0d0d0d; }
+.d-add__tb th span, .d-add__tb th b { display: block; }
+.d-add__tb th b { font-weight: 700; font-size: 15.5px; letter-spacing: .02em; text-transform: uppercase; white-space: pre-line; line-height: 1.32; }
+.d-add__tb td { background: #000; }
+.d-add__esp { width: 475px; padding: 8px 12px; }
+.d-add__esp i { font-size: 11px; }
+.d-add__esp ul { margin-top: 1px; }
+.d-slide .d-add__esp li { padding-left: 22px; }
+.d-slide .d-add__esp li::before { left: 10px; top: .55em; width: 4px; height: 4px; }
+.d-add__esp .d-add__2 { display: grid; grid-auto-flow: column; grid-template-columns: max-content max-content; column-gap: 20px; }
+.d-add__esp .d-add__2 li { break-inside: avoid; }
+.d-add__t { width: 198px; text-align: center; font-size: 13px !important; }
+.d-add__p { text-align: center; }
+.d-add__p b { display: block; font-weight: 700; font-size: 14.5px; letter-spacing: .01em; }
+.d-add__p i { display: block; font-size: 11.5px; }
+.d-add__v { position: absolute; left: 1219px; font-family: "Bebas Neue", sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .17em; text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg); line-height: 1; }
+.d-add__v--a { top: 80px; }
+.d-add__v--b { top: 543px; }

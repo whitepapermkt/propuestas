@@ -146,11 +146,49 @@
       ${list(grupos, (g) => `<div class="d-card"><h4>${esc(g.titulo)}</h4><ul>${list(g.items, (i) => `<li>${esc(i)}</li>`)}</ul></div>`)}
     </div>`;
 
+  // Tabla de add-ons con el formato del deck original ("Integraciones adicionales", catálogo p. 33).
+  // Solo cambian los datos: add-ons elegidos, puntos, tiempo e inversión.
+  function addons(s, a, cat) {
+    const filas = (a.grupos || []).map((g) => {
+      const cg = cat.grupos.find((x) => x.titulo === g.titulo);
+      const ad = cg?.addon || {};
+      const desc = cg && ad.nombre ? cg.items[0] : null;
+      const vinetas = g.items.filter((t) => t !== desc);
+      const precio = g.precio ?? ad.precio;
+      return {
+        pre: ad.pre || "", nombre: ad.nombre || g.titulo.split(" · ")[0], sub: ad.sub || "",
+        desc: desc && g.items.includes(desc) ? desc : "", descNota: ad.descNota || "", vinetas,
+        tiempo: g.tiempo ?? ad.tiempo ?? (g.titulo.split(" · ")[1] || ""),
+        precio: precio ? `$${Number(precio).toLocaleString("es-MX")} MXN` : "",
+        precioNota: g.precioNota ?? ad.precioNota ?? ""
+      };
+    });
+    // Alto estimado por fila (≈80 caracteres por renglón en la columna de especificaciones; 4+ viñetas van en 2 columnas)
+    const alto = (f) => Math.max(72, 20 + 16.3 * (Math.ceil((f.desc + f.descNota).length / 80) +
+      (f.vinetas.length >= 4 ? Math.ceil(f.vinetas.length / 2) : f.vinetas.reduce((n, v) => n + Math.ceil(v.length / 80), 0))));
+    const [fuerte, ...ligero] = String(a.titulo).replace(/^[\d.]+\s*/, "").split(" ");
+    return trozos(filas, alto, 435).map((grupo) => lamina("d-add", `
+      <p class="d-add__sup">${esc(s.pdf?.titulo || s.nombreLargo || s.nombre)}</p>
+      <h2 class="d-add__tit"><b>${esc(fuerte)}</b>${ligero.length ? `<span>${esc(ligero.join(" "))}</span>` : ""}</h2>
+      <div class="d-add__head"><span>Add-on</span><span>Especificaciones</span></div>
+      <table class="d-add__tb"><tbody>${list(grupo, (f) => `
+        <tr>
+          <th>${f.pre ? `<span>${esc(f.pre)}</span>` : ""}<b>${esc(f.nombre)}</b>${f.sub ? `<span>${esc(f.sub)}</span>` : ""}</th>
+          <td class="d-add__esp">${f.desc || f.descNota ? `<p>${esc(f.desc)}${f.descNota ? ` <i>${esc(f.descNota)}</i>` : ""}</p>` : ""}${f.vinetas.length ? `<ul${f.vinetas.length >= 4 ? ` class="d-add__2" style="grid-template-rows:repeat(${Math.ceil(f.vinetas.length / 2)},auto)"` : ""}>${list(f.vinetas, (v) => `<li>${esc(v)}</li>`)}</ul>` : ""}</td>
+          <td class="d-add__t">${esc(f.tiempo)}</td>
+          <td class="d-add__p">${f.precio ? `<b>${esc(f.precio)}</b>` : ""}${f.precioNota ? `<i>${esc(f.precioNota)}</i>` : ""}</td>
+        </tr>`)}</tbody></table>
+      <p class="d-add__v d-add__v--a">Real Estate Foresight</p><p class="d-add__v d-add__v--b">4SRealEstate.com</p>`));
+  }
+
   function alcances(s) {
     if (s.giro && !s.giro.detalle) return [];
     const lista = s.alcances || [];
     const tituloSrv = s.pdf?.titulo || s.nombreLargo || s.nombre;
-    return lista.map((a, k) => {
+    const catAlc = Object.values(B.servicios[s.id]?.alcances || {}).flat();
+    return lista.flatMap((a, k) => {
+      const cat = catAlc.find((c) => a.id && c.id === a.id);
+      if (cat?.tabla === "addons") return addons(s, a, cat);
       const [nombre, sufijo] = a.titulo.split(" · ");
       const pill = a.entregable ? `<span class="d-pill">Entregable: ${esc(a.entregable)}</span>` : "";
       const cuerpo = a.plano
@@ -361,7 +399,7 @@
   }
 
   const fuentes = () => (document.fonts
-    ? ['400 16px "Futura 4S"', '700 16px "Futura 4S"', '400 16px "Jost 4S"', '600 16px "Jost 4S"', '700 16px "Bebas Neue"']
+    ? ['400 16px "Futura 4S"', '700 16px "Futura 4S"', '400 16px "Jost 4S"', '600 16px "Jost 4S"', '700 16px "Bebas Neue"', '300 16px "Bebas Neue"']
         .map((f) => document.fonts.load(f).catch(() => null))
         .concat(document.fonts.ready)
     : []);
