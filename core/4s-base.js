@@ -98,15 +98,16 @@ window.BASE_4S = {
 
   /* Líneas de servicio (como las portadas del catálogo SERVICIOS 4S 2025).
      Ordenan el formulario y la propuesta; cada línea lleva su portada en la web y en el PDF.
-     portadaPDF: false → el servicio ya trae su propia portada en el PDF (láminas del deck). */
+     portadaPDF: false → el servicio ya trae su propia portada en el PDF (láminas del deck).
+     portadaImg: portada original del catálogo que se usa en el PDF (assets/pdf/<portadaImg>.jpg). */
   lineas: [
     { marca: "1", nombre: "Estudio de Mercado", sub: "Producto y mercado meta", ids: ["estudio-mercado"], portadaPDF: false },
     { marca: "2", nombre: "Definición de Producto", sub: "Idea + disruptividad", ids: ["definicion-producto"], portadaPDF: false },
-    { marca: "A", nombre: "Preventa Simulada", sub: "Validación de producto", ids: ["preventa-simulada"] },
-    { marca: "3", nombre: "Análisis Financiero", sub: "Desarrollo y modelo de negocio", ids: ["modelo-financiero"] },
-    { marca: "4", nombre: "Concepto Creativo Central", sub: "Desarrollo de marca", ids: ["concepto-creativo"] },
-    { marca: "5", nombre: "Lanzamiento Comercial", sub: "Estrategia y lanzamiento", ids: ["lanzamiento-comercial"] },
-    { marca: "7", nombre: "Dirección y Gerencia Comercial", sub: "Comercialización · Metodología 4S", ids: ["diagnostico-comercial", "direccion-comercial", "gerencia-comercial"] }
+    { marca: "A", nombre: "Preventa Simulada", sub: "Validación de producto", ids: ["preventa-simulada"], portadaImg: "s4s-p16" },
+    { marca: "3", nombre: "Análisis Financiero", sub: "Desarrollo y modelo de negocio", ids: ["modelo-financiero"], portadaImg: "s4s-p21" },
+    { marca: "4", nombre: "Concepto Creativo Central", sub: "Desarrollo de marca", ids: ["concepto-creativo"], portadaImg: "s4s-p24" },
+    { marca: "5", nombre: "Lanzamiento Comercial", sub: "Estrategia y lanzamiento", ids: ["lanzamiento-comercial"], portadaImg: "s4s-p30" },
+    { marca: "7", nombre: "Dirección y Gerencia Comercial", sub: "Comercialización · Metodología 4S", ids: ["diagnostico-comercial", "direccion-comercial", "gerencia-comercial"], portadaImg: "s4s-p69" }
   ],
 
   /* ------------------------------------------------------------------------

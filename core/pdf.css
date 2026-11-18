@@ -231,3 +231,8 @@ td.d-mxn > .d-mxn__txt:only-child { font-size: 15px; color: var(--ink); margin: 
 .d-add__v { position: absolute; left: 1219px; font-family: "Bebas Neue", sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .17em; text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg); line-height: 1; }
 .d-add__v--a { top: 80px; }
 .d-add__v--b { top: 543px; }
+
+/* Gerencia Comercial · Inversión servicios: lámina original (catálogo p. 86); solo se reemplazan inversión y frecuencia */
+.d-invg__c { position: absolute; top: 130px; height: 102px; display: flex; align-items: center; justify-content: center; text-align: center; background: #191a1a; color: #fff; font-weight: 700; font-size: 15px; line-height: 1.33; padding: 0 8px; }
+.d-invg__inv { left: 924px; width: 88px; }
+.d-invg__frec { left: 1016px; width: 131px; }

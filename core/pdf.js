@@ -27,19 +27,30 @@
     "definicion-producto": ["17-definicion-producto-portada", "18-definicion-producto-diagrama", "19-definicion-producto-proceso"],
     "modelo-financiero": ["s4s-p22", "s4s-p23"],
     "preventa-simulada": ["s4s-p17", { si: "presencial", img: ["s4s-p18"] }, { si: "digital", img: ["s4s-p19"] }, "s4s-p20"],
-    "concepto-creativo": ["s4s-p25", "s4s-p26", "s4s-p27"],
+    "concepto-creativo": ["s4s-p25", "s4s-p26", "s4s-p27", "s4s-p28", "s4s-p29"],
     "lanzamiento-comercial": ["s4s-p31", "s4s-p32"],
     "diagnostico-comercial": ["s4s-p70", "s4s-p71", "s4s-p72", "s4s-p73", "s4s-p74"],
     "direccion-comercial": ["s4s-p75", "s4s-p76", "s4s-p77", "s4s-p78", "s4s-p79", "s4s-p80"],
-    "gerencia-comercial": ["s4s-p81", "s4s-p82", "s4s-p83", "s4s-p84", "s4s-p85"]
+    "gerencia-comercial": ["s4s-p81", "s4s-p82", "s4s-p83", "s4s-p84", "s4s-p85", { inversion: true }]
   };
   const intro = (s) => list(INTRO_SERVICIO[s.id], (x) => {
     if (typeof x === "string") return fija(x);
     if (x.estudio) return s.alcanceIds.has(x.estudio) ? estudioLamina(s, x.estudio) : "";
     if (x.si) return s.alcanceIds.has(x.si) ? list(x.img, fija) : "";
     if (x.variante) return s.variante === x.variante ? list(x.img, fija) : "";
+    if (x.inversion) return inversionGerencia(s);
     return "";
   });
+
+  // Gerencia Comercial · "Inversión servicios" (catálogo p. 86): la lámina original con la inversión y frecuencia de la propuesta
+  function inversionGerencia(s) {
+    const t = String(s.inversionTexto || "").trim();
+    const m = t.match(/^([\d.,]+\s*%)\s*(.*)$/);
+    const inv = m ? m[1].replace(/\s+/g, "") : t;
+    const frec = m ? m[2].charAt(0).toUpperCase() + m[2].slice(1) : "";
+    return lamina("d-img d-invg", `<img src="${img("s4s-p86")}" alt="">
+      <span class="d-invg__c d-invg__inv">${esc(inv)}</span><span class="d-invg__c d-invg__frec">${esc(frec)}</span>`);
+  }
 
   // Duración y precio según el tipo de cobro (único, mensual o comisión)
   const duracion = (s) => (s.cobro === "mensual" || s.cobro === "comision" ? `${s.meses} ${s.meses === 1 ? "Mes" : "Meses"}` : `${s.semanas} Semanas`);
@@ -333,7 +344,7 @@
     const porServicio = servicios.map((s) => {
       const l = B.lineaDe(s.id), nueva = !lineaAnt || lineaAnt.nombre !== l.nombre;
       lineaAnt = l;
-      return (nueva && l.portadaPDF !== false ? portadaLinea(l) : "") + intro(s) + alcances(s).join("");
+      return (nueva && l.portadaPDF !== false ? (l.portadaImg ? fija(l.portadaImg) : portadaLinea(l)) : "") + intro(s) + alcances(s).join("");
     }).join("");
     const deck = document.createElement("div");
     deck.id = "deck";
