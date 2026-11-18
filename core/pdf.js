@@ -87,7 +87,7 @@
   function estudioLamina(s, id) {
     const g = s.giro || {};
     // Giros con alcances detallados (Comercial): la lámina muestra la plantilla completa; el resto, lo elegido en el formulario
-    const fuente = g.detalle || !s.giro ? B.alcanceGenerico(s.variante || "comercial") : s.alcances;
+    const fuente = g.detalle || !s.giro ? B.alcanceGenerico(s.variantes?.length ? s.variantes : s.variante || "comercial") : s.alcances;
     const a = (fuente || []).find((x) => x.id === id);
     if (!a) return "";
     const oferta = id === "oferta";

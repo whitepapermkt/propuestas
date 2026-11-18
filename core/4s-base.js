@@ -595,9 +595,33 @@ window.BASE_4S = {
     }
   };
 
+  // Varios giros en un mismo estudio (ej. Industrial + Vivienda Vertical): se juntan giros analizados,
+  // medición de demanda y especificaciones. Con Comercial entre ellos se usan sus alcances detallados.
+  const uniq = (a) => [...new Set(a)];
+  const yJunta = (a) => a.join(", ").replace(/, ([^,]*)$/, " y $1");
+  const claves = (keys) => {
+    const k = uniq([].concat(keys || []).filter((x) => GIROS_ESTUDIO[x]));
+    return k.length ? k : ["comercial"];
+  };
+  const combinado = (keys) => {
+    const k = claves(keys);
+    if (k.length === 1) return GIROS_ESTUDIO[k[0]];
+    const gs = k.map((x) => GIROS_ESTUDIO[x]);
+    const intros = uniq(gs.map((g) => g.ofertaIntro));
+    return {
+      nombre: yJunta(gs.map((g) => g.nombre)),
+      detalle: k.includes("comercial"),
+      giros: uniq(gs.flatMap((g) => g.giros)),
+      ofertaIntro: intros.length === 1 ? intros[0] : "precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros",
+      unidades: `Información actualizada constantemente de las unidades y los m² totales de cada giro (${yJunta(gs.map((g) => g.nombre.toLowerCase()))}), así como la ocupación y los niveles de venta y renta de los proyectos.`,
+      demanda: uniq(gs.flatMap((g) => g.demanda)),
+      especificaciones: uniq(gs.flatMap((g) => g.especificaciones))
+    };
+  };
+
   // Plantilla de Oferta y Demanda (texto de las propuestas de 4S, corregido)
-  const generico = (key) => {
-    const g = GIROS_ESTUDIO[key];
+  const generico = (keys) => {
+    const g = combinado(keys);
     const alc = g.nombre.toLowerCase();
     return [
       { id: "oferta", corto: "Oferta", titulo: `1.1 Estudio de Oferta · Alcance ${alc}`, entregable: "Reporte PDF", grupos: [
@@ -615,6 +639,12 @@ window.BASE_4S = {
   E.giros = GIROS_ESTUDIO;
   Object.keys(GIROS_ESTUDIO).forEach((k) => { if (!GIROS_ESTUDIO[k].detalle) E.alcances[k] = generico(k); });
   window.BASE_4S.alcanceGenerico = generico;
+  window.BASE_4S.giroCombinado = combinado;
+  // Alcances del estudio para uno o varios giros (con Comercial: los detallados de Comercial)
+  window.BASE_4S.alcancesGiros = (keys) => {
+    const k = claves(keys);
+    return k.length === 1 ? E.alcances[k[0]] : k.includes("comercial") ? E.alcances.comercial : generico(k);
+  };
   // Orden de trabajo: junta las mensualidades de un mismo servicio en una fila ("6 mensualidades de $45,000 · Abril – Septiembre")
   window.BASE_4S.agruparPagos = (pagos) => {
     const fmt = (n) => "$" + Number(n).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -645,7 +675,9 @@ window.BASE_4S = {
    s.alcances (opcional) = alcances elegidos en el formulario; si no viene, van todos los del catálogo. */
 window.BASE_4S.resolver = function (s, i) {
   const cat = this.servicios[s.id] || {};
-  const todos = cat.alcances?.[s.variante] || Object.values(cat.alcances || {})[0] || [];
+  // Estudio de mercado: uno o varios giros (s.variantes); el primero también va en s.variante
+  const keysGiro = cat.giros ? (s.variantes?.length ? s.variantes : [s.variante]) : null;
+  const todos = (keysGiro ? this.alcancesGiros(keysGiro) : cat.alcances?.[s.variante]) || Object.values(cat.alcances || {})[0] || [];
   // Sin selección guardada: lo que el catálogo trae marcado (bloques/grupos con inicial: false quedan fuera)
   const porDefecto = todos.filter((a) => a.inicial !== false)
     .map((a) => ({ ...a, grupos: (a.grupos || []).filter((g) => g.inicial !== false) }));
@@ -654,7 +686,7 @@ window.BASE_4S.resolver = function (s, i) {
   const ids = new Set(alcances.map((a) => a.id).filter(Boolean));
   const cortos = todos.filter((a) => a.corto && ids.has(a.id)).map((a) => a.corto);
   const estudios = (cortos.length ? cortos : todos.map((a) => a.corto).filter(Boolean)).join(" y ");
-  const giro = cat.giros && (cat.giros[s.variante] || Object.values(cat.giros)[0]);
+  const giro = keysGiro && this.giroCombinado(keysGiro);
   const vars = giro ? {
     estudios,
     ofertaIntro: `Análisis de oferta formal e informal de la zona, con el fin de identificar los principales indicadores del mercado: ${giro.ofertaIntro}.`,

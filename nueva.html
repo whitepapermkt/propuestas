@@ -99,6 +99,10 @@
     .chk .x { flex: none; width: 36px; height: 36px; margin: -7px -4px -7px 0; display: grid; place-items: center; font-size: 22px; line-height: 1; border-radius: 50%; }
     .alc__nuevo { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 46px; padding: 0 8px; margin-top: 2px; background: none; border: 1.5px dashed var(--gray-l); border-radius: 10px; color: var(--ink); font-size: 14px; font-weight: 600; cursor: pointer; }
     .alc__nuevo b { color: var(--red); font-size: 20px; line-height: 1; }
+    .giros-sel { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+    .giros-sel label { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 9px 14px; border: 1.5px solid var(--gray-l); border-radius: 99px; text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .giros-sel input { margin: 0; width: 18px; height: 18px; accent-color: var(--red); }
+    .giros-sel label:has(input:checked) { border-color: var(--red); background: rgba(190, 47, 44, .06); }
     .alc__campos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 8px 10px; }
     .alc__campos label { margin: 0; font-size: 10px; }
     .alc__campos input { margin-top: 4px; padding: 9px 10px; font-size: 16px; }
@@ -349,8 +353,11 @@
         ${cobro === "mensual" ? `<p class="hint" style="margin:6px 0 0">Cobro mensual: el total es la inversión mensual × meses y se agrega una mensualidad por mes al calendario de pagos.</p>` : ""}
         ${cobro === "comision" ? `<label>Esquema de cobro <small>— sin monto fijo; no suma al total</small></label><input type="text" name="cobroTxt-${id}" value="${esc(s.inversionTexto || "")}">` : ""}
         ${cobro !== "unico" ? `<input type="hidden" name="semanas-${id}" value="${(s.meses || 6) * 4}">` : ""}
-        <label${vars.length > 1 ? "" : " hidden"}>${s.giros ? "Giro del estudio <small>— cambia giros analizados, medición de demanda y alcances</small>" : `${esc(s.varianteEtiqueta || "Variante")}`}</label>
-        <select name="variante-${id}" data-prev="${vars[0] || ""}"${vars.length > 1 ? "" : " hidden"}>${vars.map((v) => `<option value="${v}">${esc(varNombre(s, v))}</option>`).join("")}</select>
+        ${s.giros ? `<label>Giros del estudio <small>— marca uno o varios; cambia giros analizados, medición de demanda y alcances</small></label>
+        <input type="hidden" name="variante-${id}" value="${vars[0] || ""}">
+        <div class="giros-sel" id="giros-${id}" data-prev="${vars[0] || ""}">${Object.keys(s.giros).map((v, k) => `<label><input type="checkbox" value="${v}"${k ? "" : " checked"}> ${esc(varNombre(s, v))}</label>`).join("")}</div>`
+        : `<label${vars.length > 1 ? "" : " hidden"}>${esc(s.varianteEtiqueta || "Variante")}</label>
+        <select name="variante-${id}" data-prev="${vars[0] || ""}"${vars.length > 1 ? "" : " hidden"}>${vars.map((v) => `<option value="${v}">${esc(varNombre(s, v))}</option>`).join("")}</select>`}
         <label>Alcances <small>— activa cada bloque; abre un grupo para quitar o agregar puntos</small></label>
         <div class="alcs" id="alcs-${id}"></div>
         <label>Especificaciones para este cliente <small>— una por línea</small></label>
@@ -382,7 +389,12 @@
 
   /* ---------- Alcances: bloques separados (Oferta / Demanda…), puntos a elegir y puntos propios ---------- */
   const OTROS = "Alcances adicionales";
-  const catAlc = (id) => { const c = B.servicios[id].alcances || {}; return c[$(`variante-${id}`).value] || Object.values(c)[0] || []; };
+  // Giros marcados del estudio de mercado (en el orden del catálogo)
+  const giroKeys = (id) => [...document.querySelectorAll(`#giros-${id} input:checked`)].map((i) => i.value);
+  const catAlc = (id) => {
+    if (B.servicios[id].giros) return B.alcancesGiros(giroKeys(id));
+    const c = B.servicios[id].alcances || {}; return c[$(`variante-${id}`).value] || Object.values(c)[0] || [];
+  };
   const extraHTML = (t) => `<label class="chk chk--extra"><input type="checkbox" value="${esc(t)}" checked><span>${esc(t)}<em>Propio</em></span><button type="button" class="x" aria-label="Quitar">×</button></label>`;
   // campos: tiempo / inversión / nota de un add-on (tabla "Integraciones adicionales" del PDF)
   const camposHTML = (c) => `
@@ -506,10 +518,8 @@
   // Giro del estudio: llena los giros analizados y las especificaciones del giro,
   // salvo que ya los hayas editado a mano (solo se reemplazan si están vacíos o tal cual venían del giro anterior)
   function aplicarGiro(id, antes) {
-    const G = B.servicios[id].giros;
-    if (!G) return;
-    const nuevo = G[$(`variante-${id}`).value], viejo = G[antes];
-    if (!nuevo) return;
+    if (!B.servicios[id].giros) return;
+    const nuevo = B.giroCombinado(giroKeys(id)), viejo = antes ? B.giroCombinado(antes.split(",")) : null;
     const giros = $("giros"), es = $(`espec-${id}`);
     if (!giros.value.trim() || (viejo && giros.value.trim() === viejo.giros.join(", "))) giros.value = nuevo.giros.join(", ");
     const extras = (g) => g.especificaciones.map((e) => B.conCiudad(e, $("ciudad").value)).join("\n");
@@ -526,6 +536,17 @@
       es.value = es.value.split("\n").map((l) => plantillas.some((p) => l === B.conCiudad(p, ciudadAntes)) ? l.replace(ciudadAntes, ahora) : l).join("\n");
     });
     ciudadAntes = ahora;
+  });
+  cont.addEventListener("change", (e) => {
+    const sel = e.target.closest(".giros-sel");
+    if (!sel) return;
+    const id = sel.id.replace(/^giros-/, "");
+    if (!giroKeys(id).length) e.target.checked = true; // siempre al menos un giro
+    const keys = giroKeys(id);
+    $(`variante-${id}`).value = keys[0];
+    pintarAlcances(id);
+    aplicarGiro(id, sel.dataset.prev);
+    sel.dataset.prev = keys.join(",");
   });
   cont.addEventListener("change", (e) => {
     const m = e.target.name && e.target.name.match(/^variante-(.+)$/);
@@ -891,6 +912,7 @@
       inicio: Math.max(1, +$(`inicio-${id}`).value || 1),
       inversion: cobro === "mensual" ? mensual * meses : cobro === "comision" ? 0 : Math.max(0, +$(`inversion-${id}`).value || 0),
       variante: $(`variante-${id}`).value,
+      ...(cat.giros ? { variantes: giroKeys(id) } : {}),
       alcances: leerAlcances(id),
       especificaciones: lineas($(`espec-${id}`).value)
     }; });
@@ -952,7 +974,7 @@
       objetivos: lineas($("objetivos").value),
       giros: $("giros").value.split(",").map((x) => x.trim()).filter(Boolean),
       mapas: mapas.filter((m) => m.src).map((m) => ({ titulo: m.titulo, img: m.src, pie: m.pie })),
-      servicios: sel.map((s) => ({ id: s.id, variante: s.variante, semanas: s.semanas, inversion: s.inversion,
+      servicios: sel.map((s) => ({ id: s.id, variante: s.variante, ...(s.variantes ? { variantes: s.variantes } : {}), semanas: s.semanas, inversion: s.inversion,
         ...(s.cobro === "mensual" ? { meses: s.meses, mensual: s.mensual } : {}),
         ...(s.cobro === "comision" ? { meses: s.meses, inversionTexto: s.inversionTexto } : {}),
         alcances: s.alcances, especificaciones: s.especificaciones })),
@@ -1036,6 +1058,14 @@
       set(`semanas-${s.id}`, s.semanas); set(`inversion-${s.id}`, s.inversion); set(`variante-${s.id}`, s.variante);
       set(`meses-${s.id}`, s.meses); set(`mensual-${s.id}`, s.mensual); set(`cobroTxt-${s.id}`, s.inversionTexto);
       $(`variante-${s.id}`).dataset.prev = $(`variante-${s.id}`).value;
+      const gs = document.getElementById(`giros-${s.id}`);
+      if (gs) {
+        const keys = s.variantes?.length ? s.variantes : [s.variante || gs.dataset.prev];
+        gs.querySelectorAll("input").forEach((i) => { i.checked = keys.includes(i.value); });
+        if (!giroKeys(s.id).length) gs.querySelector("input").checked = true;
+        $(`variante-${s.id}`).value = giroKeys(s.id)[0];
+        gs.dataset.prev = giroKeys(s.id).join(",");
+      }
       set(`espec-${s.id}`, (B.servicios[s.id].giros ? B.especExtras(s, d.ciudad) : s.especificaciones || []).join("\n"));
       pintarAlcances(s.id, s.alcances);
       $(`on-${s.id}`).closest(".lf").classList.add("lf--open");
