@@ -640,10 +640,15 @@ window.BASE_4S = {
   Object.keys(GIROS_ESTUDIO).forEach((k) => { if (!GIROS_ESTUDIO[k].detalle) E.alcances[k] = generico(k); });
   window.BASE_4S.alcanceGenerico = generico;
   window.BASE_4S.giroCombinado = combinado;
-  // Alcances del estudio para uno o varios giros (con Comercial: los detallados de Comercial)
+  // Alcances del estudio para uno o varios giros. Con Comercial + otros: los detallados de Comercial
+  // y, aparte, la Oferta / Demanda del resto de los giros (cada giro una sola vez)
   window.BASE_4S.alcancesGiros = (keys) => {
     const k = claves(keys);
-    return k.length === 1 ? E.alcances[k[0]] : k.includes("comercial") ? E.alcances.comercial : generico(k);
+    if (k.length === 1) return E.alcances[k[0]];
+    if (!k.includes("comercial")) return generico(k);
+    const [ofC, deC] = E.alcances.comercial;
+    const [ofG, deG] = generico(k.filter((x) => x !== "comercial")).map((a) => ({ ...a, id: `${a.id}-giros` }));
+    return [ofC, ofG, deC, deG].map((x, n) => ({ ...x, titulo: x.titulo.replace(/^[\d.]+/, `1.${n + 1}`) }));
   };
   // Orden de trabajo: junta las mensualidades de un mismo servicio en una fila ("6 mensualidades de $45,000 · Abril – Septiembre")
   window.BASE_4S.agruparPagos = (pagos) => {
@@ -683,9 +688,10 @@ window.BASE_4S.resolver = function (s, i) {
     .map((a) => ({ ...a, grupos: (a.grupos || []).filter((g) => g.inicial !== false) }));
   const alcances = (Array.isArray(s.alcances) ? s.alcances : porDefecto)
     .map((a, k) => ({ ...a, titulo: `${i + 1}.${k + 1} ${String(a.titulo || "").replace(/^[\d.]+\s*/, "")}` }));
-  const ids = new Set(alcances.map((a) => a.id).filter(Boolean));
-  const cortos = todos.filter((a) => a.corto && ids.has(a.id)).map((a) => a.corto);
-  const estudios = (cortos.length ? cortos : todos.map((a) => a.corto).filter(Boolean)).join(" y ");
+  // "oferta-giros" / "demanda-giros" (estudio con varios giros) cuentan como "oferta" / "demanda"
+  const ids = new Set(alcances.map((a) => a.id).filter(Boolean).map((x) => String(x).replace(/-giros$/, "")));
+  const cortos = todos.filter((a) => a.corto && ids.has(String(a.id).replace(/-giros$/, ""))).map((a) => a.corto);
+  const estudios = [...new Set(cortos.length ? cortos : todos.map((a) => a.corto).filter(Boolean))].join(" y ");
   const giro = keysGiro && this.giroCombinado(keysGiro);
   const vars = giro ? {
     estudios,
