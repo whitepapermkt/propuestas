@@ -864,6 +864,7 @@
   bRed.onclick = async () => {
     const d = construir();
     if (!$("notas").value.trim()) { estRed.className = "estado err"; estRed.textContent = "Escribe primero las notas."; return; }
+    if (!$("cliente").value.trim()) { estRed.className = "estado err"; estRed.textContent = "Escribe primero el nombre del cliente (arriba, en Datos): el resumen lo usa."; return; }
     if (!d.servicios.length) { estRed.className = "estado err"; estRed.textContent = "Marca al menos un servicio (abajo, en Servicios)."; return; }
     if (($("resumen").value.trim() || $("objetivos").value.trim()) && !confirm("¿Reemplazar el resumen y los objetivos que ya están escritos?")) return;
     const pass = pedirPass();

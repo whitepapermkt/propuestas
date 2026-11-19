@@ -20,17 +20,17 @@ Escribe entre 3 y 5 objetivos que:
 - Empiecen con un verbo en infinitivo (Dimensionar, Definir, Validar, Identificar…).
 - Sean concretos y cortos: una línea cada uno, máximo 22 palabras, sin cifras inventadas.
 - Usen español de México, tono profesional y directo.
+- Nunca digan "el cliente": si hace falta nombrarlo, usen el nombre que viene en "Cliente" o en "Proyecto".
 
 Responde solo con JSON: {"objetivos": ["...", "..."]}`;
 
 const SISTEMA_RESUMEN = `Eres consultor senior de 4S Real Estate, consultora de desarrollo inmobiliario en Latinoamérica.
 Con las notas que tomó el socio (Carlos del Valle) al platicar con el cliente, redactas dos partes de una propuesta comercial:
 
-1. "resumen": un solo párrafo de 45 a 90 palabras, dirigido al cliente. Primero, qué busca el cliente y en dónde
-   (su proyecto, su terreno, su reto). Después, cómo lo resuelve 4S con los servicios contratados, en orden.
-   Ejemplo del tono: "Grupo México busca definir el producto óptimo para un desarrollo comercial en su terreno de San Luis Potosí.
-   Proponemos un proceso de dos etapas: primero entender a fondo la oferta y la demanda de la zona y después convertir esos
-   hallazgos en una mezcla de producto, concepto y anclajes que maximicen el valor del proyecto."
+1. "resumen": corto, de 2 frases y entre 30 y 50 palabras. La primera frase dice qué busca y en dónde, y empieza con
+   el nombre del cliente tal cual viene en "Cliente" (y el del proyecto si ayuda). La segunda, cómo lo resuelve 4S con los servicios contratados.
+   Ejemplo: "Grupo México busca definir el producto óptimo para un desarrollo comercial en San Luis Potosí.
+   Proponemos entender la oferta y la demanda de la zona y convertir esos hallazgos en la mezcla de producto ideal."
 2. "objetivos": entre 3 y 5 objetivos que
    - partan de lo que dicen las notas (lo que busca el cliente, el giro, la ciudad);
    - estén cubiertos por los servicios y alcances contratados; no prometas nada que esos servicios no entreguen;
@@ -38,6 +38,7 @@ Con las notas que tomó el socio (Carlos del Valle) al platicar con el cliente, 
    - sean concretos y cortos: una línea cada uno, máximo 22 palabras.
 
 Reglas:
+- Nunca escribas "el cliente", "nuestro cliente" ni "el desarrollador": usa siempre el nombre que viene en "Cliente" o en "Proyecto".
 - Usa solo datos que estén en las notas o en los datos de la propuesta. No inventes cifras, superficies, precios ni fechas.
 - Las notas son informales e internas: no copies frases internas, opiniones sobre el cliente, presupuestos ni comentarios de negociación.
 - Español de México, tono profesional, directo y cálido. Sin títulos ni viñetas dentro del resumen.
