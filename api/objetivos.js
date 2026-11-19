@@ -3,7 +3,7 @@
    Sugiere los objetivos de la propuesta con Claude, a partir del contexto
    que escribe el socio (notas, resumen, cliente, ciudad, giros) y de los
    servicios y alcances elegidos en el formulario.
-   modo: "resumen" → redacta también el resumen a partir de las notas de Carlos.
+   modo: "resumen" → redacta también el resumen a partir de las notas.
 
    Variables de entorno (Vercel → Settings → Environment Variables):
      ANTHROPIC_API_KEY  llave de la API de Anthropic (console.anthropic.com)
@@ -60,14 +60,14 @@ module.exports = async (req, res) => {
   }).join("\n");
   if (!servicios) return res.status(400).json({ error: "Marca al menos un servicio." });
   const conResumen = body.modo === "resumen";
-  if (conResumen && !String(p.notas || "").trim()) return res.status(400).json({ error: "Escribe primero las notas de Carlos." });
+  if (conResumen && !String(p.notas || "").trim()) return res.status(400).json({ error: "Escribe primero las notas." });
 
   const contexto = [
     `Cliente: ${p.cliente || "—"}`,
     `Proyecto: ${p.proyecto || "—"}`,
     `Ciudad: ${p.ciudad || "—"}`,
     `Giros / usos: ${(p.giros || []).join(", ") || "—"}`,
-    `Notas de Carlos (internas):\n${String(p.notas || "").slice(0, 6000) || "—"}`,
+    `Notas (internas):\n${String(p.notas || "").slice(0, 6000) || "—"}`,
     `Resumen escrito en el formulario:\n${String(p.resumen || "").slice(0, 4000) || "—"}`,
     `Servicios y alcances contratados:\n${servicios}`
   ].join("\n\n");

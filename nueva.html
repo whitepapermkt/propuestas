@@ -198,7 +198,7 @@
 
       <fieldset>
         <h2 class="leg"><span>02</span>Contexto</h2>
-        <label>Notas de Carlos <small>— lo que platicó con el cliente, como salga. No se publica.</small></label>
+        <label>Notas <small>— lo que se platicó con el cliente, como salga. No se publica.</small></label>
         <textarea name="notas" rows="6" placeholder="Qué busca el cliente, cómo es el terreno (ubicación, tamaño, vialidades), qué tiene en mente, dudas que trae, tiempos, presupuesto, competencia que le preocupa…"></textarea>
         <div class="obj-ia">
           <button type="button" class="btn btn--red btn--sm" id="b-redactar">✦ Redactar resumen y objetivos</button>
@@ -850,7 +850,7 @@
     "gerencia-comercial": () => "Operar la comercialización con un equipo exclusivo para maximizar los ingresos del proyecto."
   };
   const estObj = document.getElementById("obj-estado"), bObj = document.getElementById("b-obj");
-  // Lo que se manda a la IA (las notas de Carlos van aquí, pero nunca a la propuesta publicada)
+  // Lo que se manda a la IA (las notas van aquí, pero nunca a la propuesta publicada)
   const datosIA = (d) => ({ cliente: d.cliente, proyecto: d.proyecto, ciudad: d.ciudad, giros: d.giros, resumen: d.resumen, notas: $("notas").value.trim(),
     servicios: d.servicios.map((s) => ({ nombre: B.resolver(s, 0).nombreLargo || B.servicios[s.id].nombre, alcances: s.alcances })) });
   const pedirPass = () => {
@@ -859,11 +859,11 @@
     return pass || prompt("Contraseña (la misma que usas para publicar):") || "";
   };
 
-  /* ---------- Resumen + objetivos desde las notas de Carlos ---------- */
+  /* ---------- Resumen + objetivos desde las notas ---------- */
   const estRed = document.getElementById("red-estado"), bRed = document.getElementById("b-redactar");
   bRed.onclick = async () => {
     const d = construir();
-    if (!$("notas").value.trim()) { estRed.className = "estado err"; estRed.textContent = "Escribe primero las notas de Carlos."; return; }
+    if (!$("notas").value.trim()) { estRed.className = "estado err"; estRed.textContent = "Escribe primero las notas."; return; }
     if (!d.servicios.length) { estRed.className = "estado err"; estRed.textContent = "Marca al menos un servicio (abajo, en Servicios)."; return; }
     if (($("resumen").value.trim() || $("objetivos").value.trim()) && !confirm("¿Reemplazar el resumen y los objetivos que ya están escritos?")) return;
     const pass = pedirPass();
