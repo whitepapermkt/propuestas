@@ -302,7 +302,7 @@
         <h3 class="h3">Orden de trabajo</h3>
       </div>
       <div class="pagos">
-        ${list(B.agruparPagos(P.pagos), (p, i) => `
+        ${list(P.pagos, (p, i) => `
           <div class="pago">
             <span class="pago__n">${i + 1}</span>
             <div><b>${esc(p.servicio)}</b><small>${esc(p.concepto)} · ${esc(p.fecha)}</small></div>

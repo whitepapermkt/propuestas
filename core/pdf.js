@@ -319,10 +319,10 @@
     }).join("");
   }
 
-  // 24 · Orden de trabajo (mensualidades agrupadas; más de 12 filas → varias láminas)
+  // 24 · Orden de trabajo (cada pago y cada mensualidad en su fila; más de 12 filas → varias láminas)
   function ordenTrabajo() {
     if (!P.pagos?.length) return "";
-    const pagos = B.agruparPagos(P.pagos), porLamina = 12, paginas = [];
+    const pagos = P.pagos, porLamina = 12, paginas = [];
     for (let i = 0; i < pagos.length; i += porLamina) paginas.push(pagos.slice(i, i + porLamina));
     return paginas.map((filas, k) => lamina("d-tabla", `
       <div class="d-head">${titulo("De trabajo", "Orden", true)}${cliente}</div>
