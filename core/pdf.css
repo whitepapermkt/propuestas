@@ -236,3 +236,7 @@ td.d-mxn > .d-mxn__txt:only-child { font-size: 15px; color: var(--ink); margin: 
 .d-invg__c { position: absolute; top: 130px; height: 102px; display: flex; align-items: center; justify-content: center; text-align: center; background: #191a1a; color: #fff; font-weight: 700; font-size: 15px; line-height: 1.33; padding: 0 8px; }
 .d-invg__inv { left: 924px; width: 88px; }
 .d-invg__frec { left: 1016px; width: 131px; }
+.d-cards--aparte { margin-top: 8px; }
+.d-cards--aparte .d-card { border-top-color: var(--red); display: grid; grid-template-columns: 150px 1fr; align-items: start; padding: 10px 16px 10px; }
+.d-cards--aparte .d-card h4 { margin: 2px 0 0; }
+.d-cards--aparte .d-card ul { columns: 3 !important; column-gap: 28px; }

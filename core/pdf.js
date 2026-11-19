@@ -202,8 +202,12 @@
       if (cat?.tabla === "addons") return addons(s, a, cat);
       const [nombre, sufijo] = a.titulo.split(" · ");
       const pill = a.entregable ? `<span class="d-pill">Entregable: ${esc(a.entregable)}</span>` : "";
+      // plano: los puntos en una sola lista; los grupos "aparte" (ej. Estimación) en su tarjeta debajo
+      const aparte = (g) => cat?.grupos?.find((x) => x.titulo === g.titulo)?.aparte;
+      const sueltos = (a.grupos || []).filter((g) => aparte(g));
       const cuerpo = a.plano
-        ? `<div class="d-cards d-cards--lista"><div class="d-card"><ul>${list((a.grupos || []).flatMap((g) => g.items), (i) => `<li>${esc(i)}</li>`)}</ul></div></div>`
+        ? `<div class="d-cards d-cards--lista"><div class="d-card"><ul>${list((a.grupos || []).filter((g) => !aparte(g)).flatMap((g) => g.items), (i) => `<li>${esc(i)}</li>`)}</ul></div></div>` +
+          (sueltos.length ? `<div class="d-cards d-cards--rojo d-cards--aparte" style="--cols:${sueltos.length}">${list(sueltos, (g) => `<div class="d-card"><h4>${esc(g.titulo)}</h4><ul>${list(g.items, (i) => `<li>${esc(i)}</li>`)}</ul></div>`)}</div>` : "")
         : tarjetas(a.grupos || []);
 
       // Servicios con ficha (objetivo, antecesor…), como "2. Definición e Innovación de Producto"
