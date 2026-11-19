@@ -627,11 +627,13 @@ window.BASE_4S = {
     return [
       { id: "oferta", corto: "Oferta", titulo: `1.1 Estudio de Oferta · Alcance ${alc}`, entregable: "Reporte PDF", grupos: [
         { titulo: "Análisis de oferta", items: ["Análisis de plaza e infraestructura.", "Análisis demográfico de la zona.", "Análisis de variables clave (número de unidades, segmento, rango, stock, ritmo de venta).", "Análisis de proyectos en venta y renta.", "Tipo de comprador, cliente potencial.", "Comparativa de inventarios y tipos de entrega."] },
-        { titulo: "Benchmark", items: ["Validación de zona / ubicación: determinamos el NSE de la zona y el número de personas en el polígono de influencia.", `Unidades / m² totales y ocupación: ${g.unidades.charAt(0).toLowerCase()}${g.unidades.slice(1)}`, "Precios de referencia de la zona: presentamos los precios totales o por m² de venta/renta de los competidores de interés."] }
+        { titulo: "Benchmark", items: ["Validación de zona / ubicación: determinamos el NSE de la zona y el número de personas en el polígono de influencia.", `Unidades / m² totales y ocupación: ${g.unidades.charAt(0).toLowerCase()}${g.unidades.slice(1)}`, "Precios de referencia de la zona: presentamos los precios totales o por m² de venta/renta de los competidores de interés."] },
+        { titulo: "Big Data", items: ["Mapa de la zona de influencia primaria publicadas online.", "Análisis de rango de metraje y precio.", "Comparativa de oferta formal y oferta informal."] }
       ]},
       { id: "demanda", corto: "Demanda", titulo: `1.2 Estudio de Demanda · Alcance ${alc}`, entregable: "Reporte PDF", nota: g.demanda.join(" "), grupos: [
         { titulo: "Análisis de demanda", items: ["Definición del perfil del cliente.", "Generadores de valor de la ubicación.", "Poder adquisitivo del mercado.", "Usos, preferencias y hábitos del mercado.", "Determinar las necesidades insatisfechas del mercado.", "Conclusiones clave y retroalimentación al proyecto."] },
-        { titulo: "Mercado meta", items: ["Segmentación del mercado: definimos la segmentación apropiada de acuerdo a las personas o giros presentes en la zona.", "Preferencias del mercado: indagamos las preferencias de los distintos segmentos de mercado de acuerdo a las especificaciones del estudio.", "Capacidad de mercado: desarrollamos una metodología para estimar la capacidad del mercado de interés para el alcance del estudio."] }
+        { titulo: "Mercado meta", items: ["Segmentación del mercado: definimos la segmentación apropiada de acuerdo a las personas o giros presentes en la zona.", "Preferencias del mercado: indagamos las preferencias de los distintos segmentos de mercado de acuerdo a las especificaciones del estudio.", "Capacidad de mercado: desarrollamos una metodología para estimar la capacidad del mercado de interés para el alcance del estudio."] },
+        { titulo: "Estimación", items: [`Determinación de la capacidad de mercado de la zona (${alc}).`, "Determinación de giros generales y enfoque del proyecto.", "Determinación general de metros cuadrados por enfoque."] }
       ]}
     ];
   };

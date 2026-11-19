@@ -93,7 +93,8 @@
     const oferta = id === "oferta";
     const principal = oferta ? "Análisis de oferta" : "Análisis de demanda", lateral = oferta ? "Benchmark" : "Mercado meta";
     const grupos = a.grupos || [];
-    const tarjetasE = grupos.filter((x) => x.titulo !== lateral).flatMap((x) => x.items);
+    // Lámina resumen: solo el grupo principal (Big Data / Estimación van en las láminas de alcances)
+    const tarjetasE = grupos.filter((x) => x.titulo === principal).flatMap((x) => x.items);
     const der = (grupos.find((x) => x.titulo === lateral)?.items || []).map((t) => {
       const k = t.indexOf(": ");
       const [tit, txt] = k > 0 ? [t.slice(0, k), t.slice(k + 2)] : ["", t];
@@ -193,7 +194,6 @@
   }
 
   function alcances(s) {
-    if (s.giro && !s.giro.detalle) return [];
     const lista = s.alcances || [];
     const tituloSrv = s.pdf?.titulo || s.nombreLargo || s.nombre;
     const catAlc = Object.values(B.servicios[s.id]?.alcances || {}).flat();
