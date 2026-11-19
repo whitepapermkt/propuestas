@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1011">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Propuesta Estratégica · Héctor Gloria · 4S Real Estate</title>
+  <link rel="icon" href="assets/brand/isotipo-4s-trim-black.png">
+  <link rel="preload" href="assets/fonts/BebasNeue-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="core/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- =====================================================================
+       DATOS DE LA PROPUESTA · lo único que cambia por cliente
+       ===================================================================== -->
+  <script id="datos-propuesta">
+  window.PROPUESTA = {
+    "cliente": "Héctor Gloria",
+    "proyecto": "Carretera Libre a Matehuala",
+    "ciudad": "San Luis Potosí",
+    "fecha": "Noviembre 2026",
+    "vigencia": "30 días naturales a partir de su envío",
+    "tipo": "comercial",
+    "resumen": "Encontrar la vocación del terreno y la mezcla óptima de giros a desarrollar.",
+    "objetivos": [],
+    "giros": [
+      "Industrial",
+      "Comercial",
+      "Vivienda Horizontal"
+    ],
+    "mapas": [
+      {
+        "titulo": "Zona",
+        "img": "assets/clientes/sanluismatehuala/imagen-1-mwmtlmx8.jpg",
+        "pie": "Contexto de la zona"
+      },
+      {
+        "titulo": "Terreno",
+        "img": "assets/clientes/sanluismatehuala/imagen-2-mwmtlmx8.jpg",
+        "pie": "Ubicación del predio · 11.24 ha"
+      }
+    ],
+    "servicios": [
+      {
+        "id": "estudio-mercado",
+        "variante": "comercial",
+        "variantes": [
+          "comercial",
+          "vivienda-horizontal",
+          "industrial"
+        ],
+        "semanas": 5,
+        "inversion": 180000,
+        "alcances": [
+          {
+            "id": "oferta",
+            "corto": "Oferta",
+            "titulo": "1.1 Estudio de Oferta · Alcance comercial",
+            "entregable": "Reporte PDF",
+            "grupos": [
+              {
+                "titulo": "Análisis de la zona",
+                "items": [
+                  "Identificar el nivel socioeconómico de la zona bajo análisis y el total de los hogares de influencia.",
+                  "Identificación de los corredores comerciales y sus principales características.",
+                  "Ubicación de los proyectos activos en la zona de influencia primaria."
+                ]
+              },
+              {
+                "titulo": "Estructura",
+                "items": [
+                  "Mapa de ocupación de la oferta comercial por corredor.",
+                  "Análisis de las principales características de la oferta comercial activa en la zona de influencia primaria.",
+                  "Composición de las plazas comerciales por giro de los proyectos por distancia al predio.",
+                  "Composición del área neta rentable/vendible por plaza comercial.",
+                  "Análisis por tipo de plaza (Fashion Mall, Stripmall, Community center, etc) rango de precio y rango de metraje.",
+                  "Composición detallada por giros de las plazas comerciales bajo análisis."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "demanda",
+            "corto": "Demanda",
+            "titulo": "1.2 Estudio de Demanda · Alcance comercio/equipamiento",
+            "entregable": "Reporte PDF",
+            "nota": "En términos generales se exploran los siguientes objetivos, pero se presenta una propuesta adhoc a las necesidades y requerimientos del cliente o terreno de interés.",
+            "plano": true,
+            "grupos": [
+              {
+                "titulo": "Estimación",
+                "items": [
+                  "Determinación de la capacidad comercial de la zona.",
+                  "Determinación de giros generales y enfoque comercial.",
+                  "Determinación general de metros cuadrados por enfoque."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "oferta-vivienda-horizontal",
+            "corto": "Oferta",
+            "titulo": "1.3 Estudio de Oferta · Alcance vivienda horizontal",
+            "entregable": "Reporte PDF",
+            "grupos": [
+              {
+                "titulo": "Análisis de oferta",
+                "items": [
+                  "Análisis de plaza e infraestructura.",
+                  "Análisis demográfico de la zona.",
+                  "Análisis de variables clave (número de unidades, segmento, rango, stock, ritmo de venta).",
+                  "Análisis de proyectos en venta y renta.",
+                  "Tipo de comprador, cliente potencial.",
+                  "Comparativa de inventarios y tipos de entrega."
+                ]
+              },
+              {
+                "titulo": "Benchmark",
+                "items": [
+                  "Validación de zona / ubicación: determinamos el NSE de la zona y el número de personas en el polígono de influencia.",
+                  "Unidades / m² totales y ocupación: información actualizada constantemente de las unidades y los m² totales de vivienda, así como los niveles de venta de los proyectos del giro.",
+                  "Precios de referencia de la zona: presentamos los precios totales o por m² de venta/renta de los competidores de interés."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "demanda-vivienda-horizontal",
+            "corto": "Demanda",
+            "titulo": "1.4 Estudio de Demanda · Alcance vivienda horizontal",
+            "entregable": "Reporte PDF",
+            "nota": "Se realiza la estimación de demanda para cada uno de los giros analizados.",
+            "grupos": [
+              {
+                "titulo": "Estimación",
+                "items": [
+                  "Determinación de la capacidad de mercado de la zona (vivienda horizontal).",
+                  "Determinación de giros generales y enfoque del proyecto.",
+                  "Determinación general de metros cuadrados por enfoque."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "oferta-industrial",
+            "corto": "Oferta",
+            "titulo": "1.5 Estudio de Oferta · Alcance industrial",
+            "entregable": "Reporte PDF",
+            "grupos": [
+              {
+                "titulo": "Análisis de oferta",
+                "items": [
+                  "Análisis de plaza e infraestructura.",
+                  "Análisis demográfico de la zona.",
+                  "Análisis de variables clave (número de unidades, segmento, rango, stock, ritmo de venta).",
+                  "Análisis de proyectos en venta y renta.",
+                  "Tipo de comprador, cliente potencial.",
+                  "Comparativa de inventarios y tipos de entrega."
+                ]
+              },
+              {
+                "titulo": "Benchmark",
+                "items": [
+                  "Validación de zona / ubicación: determinamos el NSE de la zona y el número de personas en el polígono de influencia.",
+                  "Unidades / m² totales y ocupación: información actualizada constantemente de los m² totales de naves, bodegas y lotes industriales, así como la ocupación de los proyectos en venta y renta del giro.",
+                  "Precios de referencia de la zona: presentamos los precios totales o por m² de venta/renta de los competidores de interés."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "demanda-industrial",
+            "corto": "Demanda",
+            "titulo": "1.6 Estudio de Demanda · Alcance industrial",
+            "entregable": "Reporte PDF",
+            "nota": "Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican en puntos estratégicos del área nuclear del predio.",
+            "grupos": [
+              {
+                "titulo": "Estimación",
+                "items": [
+                  "Determinación de la capacidad de mercado de la zona (industrial).",
+                  "Determinación de giros generales y enfoque del proyecto.",
+                  "Determinación general de metros cuadrados por enfoque."
+                ]
+              }
+            ]
+          }
+        ],
+        "especificaciones": [
+          "Análisis histórico de la evolución de la vivienda en tamaños, precios, preferencias de mercado y desplazamiento."
+        ]
+      }
+    ],
+    "cronograma": {
+      "meses": [
+        {
+          "nombre": "Noviembre",
+          "semanas": 4
+        },
+        {
+          "nombre": "Diciembre",
+          "semanas": 4
+        },
+        {
+          "nombre": "Enero",
+          "semanas": 1
+        }
+      ],
+      "filas": [
+        {
+          "n": 1,
+          "nombre": "Estudio de Mercado",
+          "desde": 3,
+          "hasta": 7,
+          "tipo": "trabajo"
+        },
+        {
+          "n": 1,
+          "nombre": "Presentación Estudio de Mercado",
+          "desde": 8,
+          "hasta": 8,
+          "tipo": "hito"
+        }
+      ],
+      "nota": "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables."
+    },
+    "pagos": [
+      {
+        "servicio": "Estudio de Mercado",
+        "concepto": "Mensualidad 1 de 3",
+        "fecha": "Noviembre",
+        "monto": 60000
+      },
+      {
+        "servicio": "Estudio de Mercado",
+        "concepto": "Mensualidad 2 de 3",
+        "fecha": "Diciembre",
+        "monto": 60000
+      },
+      {
+        "servicio": "Estudio de Mercado",
+        "concepto": "Mensualidad 3 de 3",
+        "fecha": "Enero",
+        "monto": 60000
+      }
+    ],
+    "notaPagos": "Todos los costos están en MXN. No incluyen impuestos en caso de aplicar.",
+    "socio": {
+      "nombre": "Carlos del Valle",
+      "puesto": "Socio Regional Bajío",
+      "foto": "assets/socios/carlos-del-valle.jpg",
+      "email": "carlos.delvalle@grupo4s.com",
+      "telefono": "8112897831",
+      "whatsapp": "8112897831"
+    },
+    "_form": {
+      "mesInicio": 10,
+      "anio": 2026,
+      "semanaInicio": 4,
+      "esquemaPago": "mensual",
+      "inicios": {
+        "estudio-mercado": 1
+      }
+    }
+  };
+  </script>
+
+  <script src="core/4s-base.js"></script>
+  <script src="core/render.js"></script>
+</body>
+</html>
