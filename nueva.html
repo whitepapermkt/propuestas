@@ -198,6 +198,13 @@
 
       <fieldset>
         <h2 class="leg"><span>02</span>Contexto</h2>
+        <label>Notas de Carlos <small>— lo que platicó con el cliente, como salga. No se publica.</small></label>
+        <textarea name="notas" rows="6" placeholder="Qué busca el cliente, cómo es el terreno (ubicación, tamaño, vialidades), qué tiene en mente, dudas que trae, tiempos, presupuesto, competencia que le preocupa…"></textarea>
+        <div class="obj-ia">
+          <button type="button" class="btn btn--red btn--sm" id="b-redactar">✦ Redactar resumen y objetivos</button>
+          <span class="hint" style="margin:0">Con estas notas, los giros y los servicios que marques.</span>
+        </div>
+        <div class="estado" id="red-estado"></div>
         <label>Resumen <small>— qué busca el cliente y cómo lo resolvemos</small></label>
         <textarea name="resumen" rows="5" placeholder="El cliente busca definir el producto óptimo para…"></textarea>
         <label>Objetivos <small>— uno por línea</small></label>
@@ -843,6 +850,41 @@
     "gerencia-comercial": () => "Operar la comercialización con un equipo exclusivo para maximizar los ingresos del proyecto."
   };
   const estObj = document.getElementById("obj-estado"), bObj = document.getElementById("b-obj");
+  // Lo que se manda a la IA (las notas de Carlos van aquí, pero nunca a la propuesta publicada)
+  const datosIA = (d) => ({ cliente: d.cliente, proyecto: d.proyecto, ciudad: d.ciudad, giros: d.giros, resumen: d.resumen, notas: $("notas").value.trim(),
+    servicios: d.servicios.map((s) => ({ nombre: B.resolver(s, 0).nombreLargo || B.servicios[s.id].nombre, alcances: s.alcances })) });
+  const pedirPass = () => {
+    let pass = document.getElementById("pub-pass").value;
+    try { pass = pass || sessionStorage.getItem("p4s") || ""; } catch (_) {}
+    return pass || prompt("Contraseña (la misma que usas para publicar):") || "";
+  };
+
+  /* ---------- Resumen + objetivos desde las notas de Carlos ---------- */
+  const estRed = document.getElementById("red-estado"), bRed = document.getElementById("b-redactar");
+  bRed.onclick = async () => {
+    const d = construir();
+    if (!$("notas").value.trim()) { estRed.className = "estado err"; estRed.textContent = "Escribe primero las notas de Carlos."; return; }
+    if (!d.servicios.length) { estRed.className = "estado err"; estRed.textContent = "Marca al menos un servicio (abajo, en Servicios)."; return; }
+    if (($("resumen").value.trim() || $("objetivos").value.trim()) && !confirm("¿Reemplazar el resumen y los objetivos que ya están escritos?")) return;
+    const pass = pedirPass();
+    if (!pass) return;
+    bRed.disabled = true; estRed.className = "estado"; estRed.textContent = "Redactando el resumen y los objetivos…";
+    try {
+      const r = await fetch("/api/objetivos", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pass, modo: "resumen", propuesta: datosIA(d) }) });
+      const j = await r.json().catch(() => ({}));
+      if (r.status === 501 || r.status === 404) throw new Error("Falta activar la IA: agrega ANTHROPIC_API_KEY en Vercel y haz Redeploy.");
+      if (r.status === 401) { try { sessionStorage.removeItem("p4s"); } catch (_) {} throw new Error("Contraseña incorrecta."); }
+      if (!r.ok) throw new Error(j.error || `Error ${r.status}`);
+      try { sessionStorage.setItem("p4s", pass); } catch (_) {}
+      $("resumen").value = j.resumen || "";
+      $("objetivos").value = (j.objetivos || []).join("\n");
+      actualizar();
+      estRed.className = "estado ok"; estRed.textContent = "✓ Listo. Revisa el resumen y los objetivos y ajústalos si hace falta.";
+    } catch (e) {
+      estRed.className = "estado err"; estRed.textContent = e.message || "No pude redactar el resumen.";
+    } finally { bRed.disabled = false; }
+  };
   const ponerObjetivos = (lista) => {
     const ta = $("objetivos");
     if (ta.value.trim() && !confirm("¿Reemplazar los objetivos que ya escribiste?")) return false;
@@ -851,16 +893,13 @@
   bObj.onclick = async () => {
     const d = construir();
     if (!d.servicios.length) { estObj.className = "estado err"; estObj.textContent = "Marca al menos un servicio."; return; }
-    let pass = document.getElementById("pub-pass").value;
-    try { pass = pass || sessionStorage.getItem("p4s") || ""; } catch (_) {}
-    if (!pass) pass = prompt("Contraseña (la misma que usas para publicar):") || "";
+    const pass = pedirPass();
     if (!pass) return;
     bObj.disabled = true; estObj.className = "estado"; estObj.textContent = "Pensando los objetivos…";
     try {
       const r = await fetch("/api/objetivos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
         password: pass,
-        propuesta: { cliente: d.cliente, proyecto: d.proyecto, ciudad: d.ciudad, giros: d.giros, resumen: d.resumen,
-          servicios: d.servicios.map((s) => ({ nombre: B.resolver(s, 0).nombreLargo || B.servicios[s.id].nombre, alcances: s.alcances })) }
+        propuesta: datosIA(d)
       }) });
       const j = await r.json().catch(() => ({}));
       if (r.status === 501 || r.status === 404) {
@@ -1024,7 +1063,7 @@
       pv.onload = () => { try { pv.contentWindow.scrollTo(0, y); } catch (_) {} };
       pv.srcdoc = armarHTML(d);
     }, 500);
-    try { localStorage.setItem("propuesta-borrador", JSON.stringify({ d, mapas, slug: $("slug").value, slugManual })); } catch (_) {}
+    try { localStorage.setItem("propuesta-borrador", JSON.stringify({ d, mapas, slug: $("slug").value, slugManual, notas: $("notas").value })); } catch (_) {}
   }
   f.addEventListener("input", (e) => { if (e.target.name === "slug") { slugManual = true; e.target.value = slugify(e.target.value); } actualizar(); });
   f.addEventListener("change", actualizar);
@@ -1181,7 +1220,7 @@
     plantilla = txt;
     try {
       const b = JSON.parse(localStorage.getItem("propuesta-borrador") || "null");
-      if (b && b.d) { llenar(b.d); mapas = b.mapas || mapas; pintarMapas(); slugManual = !!b.slugManual; if (b.slug) $("slug").value = b.slug; }
+      if (b && b.d) { llenar(b.d); $("notas").value = b.notas || ""; mapas = b.mapas || mapas; pintarMapas(); slugManual = !!b.slugManual; if (b.slug) $("slug").value = b.slug; }
     } catch (_) {}
     actualizar();
   });
