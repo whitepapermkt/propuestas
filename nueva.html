@@ -99,6 +99,7 @@
     .chk .x { flex: none; width: 36px; height: 36px; margin: -7px -4px -7px 0; display: grid; place-items: center; font-size: 22px; line-height: 1; border-radius: 50%; }
     .alc__nuevo { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 46px; padding: 0 8px; margin-top: 2px; background: none; border: 1.5px dashed var(--gray-l); border-radius: 10px; color: var(--ink); font-size: 14px; font-weight: 600; cursor: pointer; }
     .alc__nuevo b { color: var(--red); font-size: 20px; line-height: 1; }
+    input[readonly] { background: transparent; color: var(--gray); cursor: default; }
     .giros-sel { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
     .giros-sel label { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 9px 14px; border: 1.5px solid var(--gray-l); border-radius: 99px; text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .giros-sel input { margin: 0; width: 18px; height: 18px; accent-color: var(--red); }
@@ -251,17 +252,17 @@
 
       <fieldset>
         <h2 class="leg"><span>06</span>Socio responsable</h2>
-        <p class="hint">Si lo dejas vacío, el botón de WhatsApp va al número general de 4S.</p>
+        <p class="hint">Siempre es el mismo en todas las propuestas (se cambia en core/4s-base.js → socio).</p>
         <div class="row">
-          <div><label>Nombre</label><input type="text" name="socioNombre"></div>
-          <div><label>Puesto</label><input type="text" name="socioPuesto" placeholder="Monterrey-Noreste"></div>
+          <div><label>Nombre</label><input type="text" name="socioNombre" readonly></div>
+          <div><label>Puesto</label><input type="text" name="socioPuesto" readonly></div>
         </div>
         <div class="row">
-          <div><label>Email</label><input type="email" name="socioEmail" placeholder="nombre.apellido@4srealestate.com"></div>
-          <div><label>Teléfono</label><input type="tel" name="socioTelefono"></div>
+          <div><label>Email</label><input type="email" name="socioEmail" readonly></div>
+          <div><label>Teléfono</label><input type="tel" name="socioTelefono" readonly></div>
         </div>
-        <label>WhatsApp <small>— solo dígitos con lada, ej. 5218112345678</small></label>
-        <input type="tel" name="socioWhatsapp" inputmode="numeric">
+        <label>WhatsApp</label>
+        <input type="tel" name="socioWhatsapp" readonly>
       </fieldset>
     </form>
 
@@ -880,7 +881,13 @@
   };
 
   /* ---------- Foto del socio: siempre la misma (assets/socios/carlos-del-valle.jpg) ---------- */
-  const FOTO_SOCIO = "assets/socios/carlos-del-valle.jpg";
+  const FOTO_SOCIO = B.socio.foto;
+  function pintarSocio() {
+    const S = B.socio;
+    $("socioNombre").value = S.nombre; $("socioPuesto").value = S.puesto; $("socioEmail").value = S.email;
+    $("socioTelefono").value = S.telefono; $("socioWhatsapp").value = "+" + S.whatsapp;
+  }
+  pintarSocio();
   const pintarFoto = () => {};
   function recortarCuadrada(file, lado, q) {
     return new Promise((ok, mal) => {
@@ -981,7 +988,7 @@
       cronograma: { meses, filas, nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables." },
       pagos,
       notaPagos: $("notaPagos").value.trim(),
-      socio: { nombre: $("socioNombre").value.trim(), puesto: $("socioPuesto").value.trim(), foto: FOTO_SOCIO, email: $("socioEmail").value.trim(), telefono: $("socioTelefono").value.trim(), whatsapp: $("socioWhatsapp").value.replace(/\D/g, "") },
+      socio: { ...B.socio },
       _form: { mesInicio: mes0, anio: +$("anio").value, semanaInicio: off + 1, esquemaPago: $("esquemaPago").value, inicios: Object.fromEntries(sel.map((s) => [s.id, s.inicio])) }
     };
   }
@@ -1039,9 +1046,8 @@
     ciudadAntes = $("ciudad").value.trim() || "la zona";
     set("objetivos", (d.objetivos || []).join("\n"));
     set("giros", (d.giros || []).join(", "));
-    const a = d.socio || d.asesor || {};
-    set("socioNombre", a.nombre); set("socioPuesto", a.puesto); set("socioEmail", a.email); set("socioTelefono", a.telefono); set("socioWhatsapp", a.whatsapp);
-    socioFoto = a.foto || ""; pintarFoto();
+    pintarSocio(); // el socio siempre es el mismo (B.socio), aunque la propuesta guardada tenga otro
+    socioFoto = B.socio.foto; pintarFoto();
 
     const trabajo = (d.cronograma?.filas || []).filter((x) => x.tipo === "trabajo");
     const off = F.semanaInicio ? F.semanaInicio - 1 : Math.min(3, trabajo.length ? Math.min(...trabajo.map((x) => x.desde)) : 0);

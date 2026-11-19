@@ -67,6 +67,16 @@ window.BASE_4S = {
     "Representaciones": ["Argentina", "Bolivia", "Chile", "Costa Rica", "El Salvador", "Guatemala", "Honduras", "Nicaragua", "Paraguay", "Perú", "República Dominicana", "Uruguay", "USA · Miami", "España · Madrid"]
   },
 
+  // Socio responsable: el mismo en todas las propuestas (también las ya publicadas)
+  socio: {
+    nombre: "Carlos del Valle",
+    puesto: "Socio Regional Bajío",
+    foto: "assets/socios/carlos-del-valle.jpg",
+    email: "carlos.delvalle@4srealestate.com",
+    telefono: "81 1289 7831",
+    whatsapp: "528112897831" // 52 + 10 dígitos, para wa.me
+  },
+
   contactoGeneral: {
     direccion: "Torre San Pedro, Ave. Jiménez No. 465, Piso 6, Col. Centro, San Pedro Garza García, N.L.",
     telefono: "+52 81 8348 4448",

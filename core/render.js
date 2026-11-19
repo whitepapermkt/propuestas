@@ -35,7 +35,7 @@
   const precioLargo = (s) => (s.cobro === "comision" ? `<small>${esc(s.inversionTexto)}</small>`
     : s.cobro === "mensual" ? `${mxn(s.inversion)}<small>${mxn(s.mensual)} mensuales × ${s.meses}</small>` : mxn(s.inversion));
 
-  const socio = P.socio || P.asesor || {};
+  const socio = { ...(P.socio || P.asesor || {}), ...(B.socio || {}) };
   const wa = socio.whatsapp || B.contactoGeneral.whatsapp;
   const waLink = (msg) => `https://wa.me/${wa}?text=${encodeURIComponent(msg)}`;
   const msgAceptar = `Hola, somos ${P.cliente}. Queremos avanzar con la propuesta "${P.proyecto}" (${mxnCorto(total)} MXN + IVA).`;
@@ -403,7 +403,8 @@
   </section>`;
 
   const C = B.contactoGeneral;
-  const tel = (t) => "tel:+" + String(t).replace(/\D/g, "");
+  // 10 dígitos (número mexicano sin lada de país) → +52
+  const tel = (t) => { const d = String(t).replace(/\D/g, ""); return "tel:+" + (d.length === 10 ? "52" + d : d); };
   const icoWa = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>`;
   const contacto = `
   <section class="contacto" id="contacto">
@@ -418,7 +419,7 @@
         <ul class="contacto__lista">
           ${socio.email ? `<li><span>Correo</span><a href="mailto:${esc(socio.email)}">${esc(socio.email)}</a></li>` : ""}
           ${socio.telefono ? `<li><span>Teléfono</span><a href="${tel(socio.telefono)}">${esc(socio.telefono)}</a></li>` : ""}
-          ${socio.whatsapp ? `<li><span>WhatsApp</span><a href="${waLink(msgDudas)}" target="_blank" rel="noopener">+${esc(socio.whatsapp)}</a></li>` : ""}
+          ${socio.whatsapp ? `<li><span>WhatsApp</span><a href="${waLink(msgDudas)}" target="_blank" rel="noopener">${esc(socio.telefono && socio.whatsapp.endsWith(socio.telefono.replace(/\D/g, "")) ? socio.telefono : "+" + socio.whatsapp)}</a></li>` : ""}
           ${!socio.email && !socio.telefono ? `<li><span>Oficina</span><a href="${tel(C.telefono)}">${esc(C.telefono)}</a></li>` : ""}
         </ul>
         <div class="contacto__btns">
