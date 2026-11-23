@@ -433,13 +433,27 @@
   addEventListener("beforeprint", () => { ajustar(armar()); tituloWeb = document.title; document.title = tituloPDF; });
   addEventListener("afterprint", () => { document.title = tituloWeb; });
 
+  // Arma el deck y espera imágenes y fuentes (también lo usa /api/pdf en el servidor)
+  window.prepararDeck = async () => {
+    const deck = armar();
+    await cargadas(deck);
+    ajustar(deck);
+  };
+
+  // Celulares/tablets: su "Imprimir" ignora el tamaño 16:9 y saca carta vertical → PDF hecho en el servidor
+  const esMovil = () => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const slug = location.pathname.replace(/\/+$/, "").split("/").pop().replace(/\.html$/, "");
+
   window.descargarPDF = async (btn) => {
     const texto = btn && btn.textContent;
+    if (esMovil() && /^[a-z0-9-]+$/.test(slug) && location.protocol.startsWith("http")) {
+      if (btn) { btn.disabled = true; btn.textContent = "Generando PDF…"; setTimeout(() => { btn.disabled = false; btn.textContent = texto; }, 15000); }
+      location.href = `/api/pdf?p=${slug}`;
+      return;
+    }
     if (btn) { btn.disabled = true; btn.textContent = "Preparando PDF…"; }
     try {
-      const deck = armar();
-      await cargadas(deck);
-      ajustar(deck);
+      await window.prepararDeck();
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = texto; }
     }

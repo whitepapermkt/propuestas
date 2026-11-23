@@ -1,6 +1,8 @@
 {
   "private": true,
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.10.0"
+    "@anthropic-ai/sdk": "^1.10.0",
+    "@sparticuz/chromium": "153.0.0",
+    "puppeteer-core": "25.18.1"
   }
 }

@@ -1,5 +1,8 @@
 {
   "cleanUrls": true,
+  "functions": {
+    "api/pdf.js": { "maxDuration": 60, "includeFiles": "node_modules/@sparticuz/chromium/bin/**" }
+  },
   "headers": [
     { "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
   ]
