@@ -173,7 +173,7 @@
   <header class="top">
     <img src="assets/brand/logo-4s-trim-white.png" alt="4S">
     <h1>Nueva propuesta</h1>
-    <button type="button" class="btn btn--ghost solo-escritorio" id="b-cargar">Cargar existente</button>
+    <button type="button" class="btn btn--ghost" id="b-cargar">Editar</button>
     <button type="button" class="btn btn--ghost solo-escritorio" id="b-descargar">Descargar HTML</button>
     <button type="button" class="btn btn--ghost solo-movil" id="b-preview">Vista previa</button>
     <button type="button" class="btn btn--red" id="b-publicar">Publicar</button>
@@ -296,10 +296,10 @@
   </dialog>
 
   <dialog id="dlg-cargar">
-    <h2>Cargar propuesta</h2>
-    <p class="hint">Escribe el link de una propuesta publicada para editarla o usarla como base.</p>
+    <h2>Editar una propuesta</h2>
+    <p class="hint">Pega el link de una propuesta publicada (o solo el final, p. ej. <b>sanluismatehuala</b>). Se abre el formulario completo con todo lo que tenía: cambia lo que necesites y vuelve a Publicar.</p>
     <label>Link</label>
-    <div class="slug"><span>/</span><input type="text" id="cargar-slug" placeholder="grupo-mexico-la-minera"></div>
+    <div class="slug"><span>/</span><input type="text" id="cargar-slug" placeholder="www.4srealestatebajio.com/sanluismatehuala"></div>
     <label class="check"><input type="checkbox" id="cargar-dup"> Usar como base para un cliente nuevo (no edita la original)</label>
     <div class="estado" id="cargar-estado"></div>
     <div class="acciones">
@@ -1127,8 +1127,10 @@
   const estC = document.getElementById("cargar-estado");
   document.getElementById("b-cargar").onclick = () => { estC.textContent = ""; dlgC.showModal(); };
   document.getElementById("cargar-cancelar").onclick = () => dlgC.close();
-  document.getElementById("cargar-ok").onclick = async () => {
-    const slug = slugify(document.getElementById("cargar-slug").value);
+  const slugDe = (v) => slugify(String(v || "").trim().replace(/[?#].*$/, "").replace(/\.html$/, "").replace(/\/+$/, "").split("/").pop());
+  document.getElementById("cargar-ok").onclick = () => cargarPropuesta(slugDe(document.getElementById("cargar-slug").value), document.getElementById("cargar-dup").checked);
+  async function cargarPropuesta(slug, dup) {
+    if (!slug) { estC.className = "estado err"; estC.textContent = "Escribe el link de la propuesta."; return; }
     estC.className = "estado"; estC.textContent = "Cargando…";
     try {
       const r = await fetch(`${slug}.html`, { cache: "no-store" });
@@ -1138,14 +1140,16 @@
       if (!m) throw new Error("Esa página no tiene datos de propuesta.");
       const w = {}; new Function("window", m[1])(w);
       llenar(w.PROPUESTA);
-      const dup = document.getElementById("cargar-dup").checked;
+      $("notas").value = "";
       slugManual = !dup;
       if (dup) { $("cliente").value = ""; $("proyecto").value = ""; mapas = []; pintarMapas(); }
       else { $("slug").value = slug; document.getElementById("pub-sobre").checked = true; }
       actualizar();
       dlgC.close();
-    } catch (e) { estC.className = "estado err"; estC.textContent = e.message; }
-  };
+      return true;
+    } catch (e) { estC.className = "estado err"; estC.textContent = e.message; if (!dlgC.open) dlgC.showModal(); }
+  }
+  window.cargarPropuesta = cargarPropuesta;
 
   /* ---------- Descargar HTML (sin publicar) ---------- */
   document.getElementById("b-descargar").onclick = () => {
@@ -1224,6 +1228,8 @@
       if (b && b.d) { llenar(b.d); $("notas").value = b.notas || ""; mapas = b.mapas || mapas; pintarMapas(); slugManual = !!b.slugManual; if (b.slug) $("slug").value = b.slug; }
     } catch (_) {}
     actualizar();
+    const ed = new URLSearchParams(location.search).get("editar");
+    if (ed) { document.getElementById("cargar-slug").value = ed; window.cargarPropuesta(slugify(ed), false); }
   });
 })();
 </script>
