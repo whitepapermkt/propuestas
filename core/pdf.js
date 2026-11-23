@@ -444,11 +444,47 @@
   const esMovil = () => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const slug = location.pathname.replace(/\/+$/, "").split("/").pop().replace(/\.html$/, "");
 
+  // Hoja inferior en el celular: Compartir (WhatsApp, correo, AirDrop, Archivos…) o Abrir
+  function hojaPDF(file) {
+    document.getElementById("hoja-pdf")?.remove();
+    const url = URL.createObjectURL(file);
+    const puedeCompartir = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+    const h = document.createElement("div");
+    h.id = "hoja-pdf";
+    h.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(15,16,17,.55);display:flex;align-items:flex-end;justify-content:center;font-family:inherit";
+    const bs = "display:block;width:100%;padding:15px;border-radius:999px;font:inherit;font-size:14px;letter-spacing:.12em;text-transform:uppercase;text-align:center;text-decoration:none;cursor:pointer;";
+    h.innerHTML = `<div style="background:#fff;color:#0f1011;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));display:grid;gap:10px">
+        <p style="margin:0 0 6px;font-size:15px;text-align:center">PDF listo · ${file.name.replace(/[&<>"]/g, "")}</p>
+        ${puedeCompartir ? `<button type="button" data-a="compartir" style="${bs}border:0;background:#e5383b;color:#fff">Compartir PDF</button>` : ""}
+        <a href="${url}" download="${file.name.replace(/"/g, "")}" target="_blank" rel="noopener" style="${bs}border:1.5px solid #0f1011;color:#0f1011">${puedeCompartir ? "Abrir PDF" : "Abrir / guardar PDF"}</a>
+        <button type="button" data-a="cerrar" style="${bs}border:0;background:none;color:#55575a">Cerrar</button>
+      </div>`;
+    const cerrar = () => { h.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000); };
+    h.addEventListener("click", async (e) => {
+      const a = e.target.closest("[data-a]")?.dataset.a;
+      if (e.target === h || a === "cerrar") return cerrar();
+      if (a === "compartir") {
+        try { await navigator.share({ files: [file], title: file.name.replace(/\.pdf$/, "") }); cerrar(); }
+        catch (err) { if (err.name !== "AbortError") location.href = url; }
+      }
+    });
+    document.body.appendChild(h);
+  }
+
   window.descargarPDF = async (btn) => {
     const texto = btn && btn.textContent;
     if (esMovil() && /^[a-z0-9-]+$/.test(slug) && location.protocol.startsWith("http")) {
-      if (btn) { btn.disabled = true; btn.textContent = "Generando PDF…"; setTimeout(() => { btn.disabled = false; btn.textContent = texto; }, 15000); }
-      location.href = `/api/pdf?p=${slug}`;
+      if (btn) { btn.disabled = true; btn.textContent = "Generando PDF…"; }
+      try {
+        const r = await fetch(`/api/pdf?p=${slug}`);
+        if (!r.ok) throw new Error(await r.text());
+        const nombre = `${tituloPDF.replace(/[\\/:*?"<>|]+/g, " ").trim()}.pdf`;
+        hojaPDF(new File([await r.blob()], nombre, { type: "application/pdf" }));
+      } catch (e) {
+        location.href = `/api/pdf?p=${slug}`; // respaldo: descarga directa
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = texto; }
+      }
       return;
     }
     if (btn) { btn.disabled = true; btn.textContent = "Preparando PDF…"; }
