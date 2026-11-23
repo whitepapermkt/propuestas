@@ -287,7 +287,7 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
 .pasos span { color: var(--gray-l); font-size: 14px; }
 /* Contacto del socio (visible en todas las pestañas) */
 .contacto { background: var(--white); border-top: 1px solid var(--line); padding: 72px 0; }
-.contacto__inner { display: grid; grid-template-columns: 220px 1fr 260px; gap: 48px; align-items: center; }
+.contacto__inner { display: grid; grid-template-columns: 220px 1fr; gap: 48px; align-items: center; max-width: 920px; }
 .contacto__foto { width: 220px; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--ink); box-shadow: 0 0 0 4px var(--white), 0 0 0 6px var(--red); }
 .contacto__foto img { width: 100%; height: 100%; object-fit: cover; }
 .contacto__foto .contacto__iso { object-fit: contain; padding: 50px; }

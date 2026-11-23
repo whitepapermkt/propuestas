@@ -428,12 +428,6 @@
           ${socio.email ? `<a class="btn btn--line" href="mailto:${esc(socio.email)}?subject=${encodeURIComponent(`Propuesta ${P.proyecto}`)}">Correo</a>` : ""}
         </div>
       </div>
-      <div class="contacto__oficina">
-        <h5>Oficina central</h5>
-        <p>${esc(C.direccion)}</p>
-        <p><a href="${tel(C.telefono)}">${esc(C.telefono)}</a></p>
-        <p><a href="https://${B.marca.web}" target="_blank" rel="noopener">${B.marca.web}</a></p>
-      </div>
     </div>
   </section>`;
 
