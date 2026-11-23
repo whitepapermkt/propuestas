@@ -297,8 +297,10 @@
 
   <dialog id="dlg-cargar">
     <h2>Editar una propuesta</h2>
-    <p class="hint">Pega el link de una propuesta publicada (o solo el final, p. ej. <b>sanluismatehuala</b>). Se abre el formulario completo con todo lo que tenía: cambia lo que necesites y vuelve a Publicar.</p>
-    <label>Link</label>
+    <p class="hint">Elige la propuesta: se abre el formulario completo con todo lo que tenía. Cambia lo que necesites y vuelve a Publicar.</p>
+    <label>Propuesta</label>
+    <select id="cargar-lista"><option value="">Cargando lista…</option></select>
+    <label>O pega el link <small>(opcional)</small></label>
     <div class="slug"><span>/</span><input type="text" id="cargar-slug" placeholder="www.4srealestatebajio.com/sanluismatehuala"></div>
     <label class="check"><input type="checkbox" id="cargar-dup"> Usar como base para un cliente nuevo (no edita la original)</label>
     <div class="estado" id="cargar-estado"></div>
@@ -1125,7 +1127,28 @@
   /* ---------- Cargar existente ---------- */
   const dlgC = document.getElementById("dlg-cargar");
   const estC = document.getElementById("cargar-estado");
-  document.getElementById("b-cargar").onclick = () => { estC.textContent = ""; dlgC.showModal(); };
+  const selC = document.getElementById("cargar-lista");
+  let listaLista = false;
+  async function traerLista() {
+    const pass = pedirPass();
+    if (!pass) { selC.innerHTML = '<option value="">Escribe la contraseña para ver la lista</option>'; return; }
+    selC.innerHTML = '<option value="">Cargando lista…</option>';
+    try {
+      const r = await fetch("/api/lista", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pass }) });
+      const j = await r.json().catch(() => ({}));
+      if (r.status === 401) { try { sessionStorage.removeItem("p4s"); } catch (_) {} throw new Error("Contraseña incorrecta."); }
+      if (!r.ok) throw new Error(j.error || "No pude leer la lista.");
+      try { sessionStorage.setItem("p4s", pass); } catch (_) {}
+      selC.innerHTML = '<option value="">— Elige una propuesta —</option>' + j.propuestas.map((p) =>
+        `<option value="${esc(p.slug)}">${esc(p.cliente || p.slug)}${p.proyecto ? " · " + esc(p.proyecto) : ""}  (/${esc(p.slug)})</option>`).join("");
+      listaLista = true;
+    } catch (e) {
+      selC.innerHTML = '<option value="">No se pudo cargar la lista</option>';
+      estC.className = "estado err"; estC.textContent = e.message + " Puedes pegar el link abajo.";
+    }
+  }
+  selC.onchange = () => { if (selC.value) document.getElementById("cargar-slug").value = selC.value; };
+  document.getElementById("b-cargar").onclick = () => { estC.textContent = ""; dlgC.showModal(); if (!listaLista) traerLista(); };
   document.getElementById("cargar-cancelar").onclick = () => dlgC.close();
   const slugDe = (v) => slugify(String(v || "").trim().replace(/[?#].*$/, "").replace(/\.html$/, "").replace(/\/+$/, "").split("/").pop());
   document.getElementById("cargar-ok").onclick = () => cargarPropuesta(slugDe(document.getElementById("cargar-slug").value), document.getElementById("cargar-dup").checked);
