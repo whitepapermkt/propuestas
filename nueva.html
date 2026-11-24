@@ -176,7 +176,7 @@
     <button type="button" class="btn btn--ghost" id="b-cargar">Editar</button>
     <button type="button" class="btn btn--ghost solo-escritorio" id="b-descargar">Descargar HTML</button>
     <button type="button" class="btn btn--ghost solo-movil" id="b-preview">Vista previa</button>
-    <button type="button" class="btn btn--red" id="b-publicar">Publicar</button>
+    <button type="button" class="btn btn--red" id="b-publicar">Guardar</button>
   </header>
 
   <div class="layout">
@@ -198,7 +198,7 @@
 
       <fieldset>
         <h2 class="leg"><span>02</span>Contexto</h2>
-        <label>Notas <small>— lo que se platicó con el cliente, como salga. No se publica.</small></label>
+        <label>Notas <small>— lo que se platicó con el cliente, como salga. No sale en la propuesta.</small></label>
         <textarea name="notas" rows="6" placeholder="Qué busca el cliente, cómo es el terreno (ubicación, tamaño, vialidades), qué tiene en mente, dudas que trae, tiempos, presupuesto, competencia que le preocupa…"></textarea>
         <div class="obj-ia">
           <button type="button" class="btn btn--red btn--sm" id="b-redactar">✦ Redactar resumen y objetivos</button>
@@ -283,7 +283,7 @@
   </div>
 
   <dialog id="dlg-publicar">
-    <h2>Publicar propuesta</h2>
+    <h2>Guardar propuesta</h2>
     <p class="hint" id="pub-link"></p>
     <label>Contraseña</label>
     <input type="password" id="pub-pass" autocomplete="current-password">
@@ -291,13 +291,13 @@
     <div class="estado" id="pub-estado"></div>
     <div class="acciones">
       <button type="button" class="btn btn--line" id="pub-cancelar">Cerrar</button>
-      <button type="button" class="btn btn--red" id="pub-ok">Publicar</button>
+      <button type="button" class="btn btn--red" id="pub-ok">Guardar</button>
     </div>
   </dialog>
 
   <dialog id="dlg-cargar">
     <h2>Editar una propuesta</h2>
-    <p class="hint">Elige la propuesta: se abre el formulario completo con todo lo que tenía. Cambia lo que necesites y vuelve a Publicar.</p>
+    <p class="hint">Elige la propuesta: se abre el formulario completo con todo lo que tenía. Cambia lo que necesites y dale Guardar.</p>
     <label>Propuesta</label>
     <select id="cargar-lista"><option value="">Cargando lista…</option></select>
     <label>O pega el link <small>(opcional)</small></label>
@@ -858,7 +858,7 @@
   const pedirPass = () => {
     let pass = document.getElementById("pub-pass").value;
     try { pass = pass || sessionStorage.getItem("p4s") || ""; } catch (_) {}
-    return pass || prompt("Contraseña (la misma que usas para publicar):") || "";
+    return pass || prompt("Contraseña (la misma que usas para guardar):") || "";
   };
 
   /* ---------- Resumen + objetivos desde las notas ---------- */
@@ -1196,7 +1196,7 @@
     estP.className = faltan.length ? "estado err" : "estado";
     estP.textContent = faltan.length ? "Falta: " + faltan.join(", ") + "." : "";
     bOk.disabled = !!faltan.length;
-    document.getElementById("pub-link").innerHTML = `Se publicará en <b>${esc(location.host)}/${esc($("slug").value)}</b>`;
+    document.getElementById("pub-link").innerHTML = `Se guardará en <b>${esc(location.host)}/${esc($("slug").value)}</b>`;
     dlgP.showModal();
   };
   document.getElementById("pub-cancelar").onclick = () => dlgP.close();
@@ -1219,7 +1219,7 @@
       d.socio.foto = ruta;
     }
     bOk.disabled = true;
-    estP.className = "estado"; estP.textContent = "Publicando…";
+    estP.className = "estado"; estP.textContent = "Guardando…";
     try {
       const r = await fetch("api/publicar", {
         method: "POST",
@@ -1230,7 +1230,7 @@
       if (!r.ok) throw new Error(j.error || `Error ${r.status}`);
       const url = `${location.origin}${j.ruta}`;
       estP.className = "estado ok";
-      estP.innerHTML = `✓ ${j.actualizada ? "Actualizada" : "Publicada"}. Estará en línea en ~1 minuto:<br><a href="${url}" target="_blank" rel="noopener">${url}</a>
+      estP.innerHTML = `✓ ${j.actualizada ? "Cambios guardados" : "Propuesta guardada"}. El link estará listo en ~1 minuto:<br><a href="${url}" target="_blank" rel="noopener">${url}</a>
         <br><button type="button" class="btn btn--line btn--sm" style="margin-top:10px" id="copiar">Copiar link</button>`;
       document.getElementById("copiar").onclick = (e) => { navigator.clipboard.writeText(url); e.target.textContent = "¡Copiado!"; };
       // Las imágenes ya quedaron en el repo: usar sus rutas de aquí en adelante

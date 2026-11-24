@@ -113,6 +113,6 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({ ok: true, ruta: `/${slug}`, commit: commit.sha.slice(0, 7), actualizada: existe.status === 200 });
   } catch (err) {
-    return res.status(500).json({ error: "No se pudo publicar: " + err.message });
+    return res.status(500).json({ error: "No se pudo guardar: " + err.message });
   }
 };
