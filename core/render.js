@@ -22,15 +22,22 @@
   const list = (arr, fn) => (arr || []).map(fn).join("");
 
   // Servicios de la propuesta enriquecidos con el catálogo
-  const servicios = P.servicios.map((s, i) => B.resolver(s, i));
+  // Multiproyecto: cada servicio lleva "proyecto" y se numera dentro de su proyecto
+  const nPorProy = {};
+  const servicios = P.servicios.map((s, i) => (s.proyecto == null ? B.resolver(s, i) : B.resolver(s, (nPorProy[s.proyecto] = (nPorProy[s.proyecto] ?? -1) + 1))));
   const subtotal = servicios.reduce((a, s) => a + s.inversion, 0);
   const desc = P.descuento?.monto > 0 ? P.descuento : null;
   const total = subtotal - (desc?.monto || 0);
   // Multiproyecto: cada proyecto con su precio por servicio
   const proys = P.proyectos?.length ? P.proyectos : null;
-  const subProy = (p) => (p.servicios || []).reduce((a, x) => a + (+x.inversion || 0), 0);
-  const nombreSrv = (id) => servicios.find((s) => s.id === id)?.nombre || id;
-  const generales = proys ? servicios.filter((s) => !(proys[0].servicios || []).some((x) => x.id === s.id)) : [];
+  const srvDe = (k) => servicios.filter((s) => s.proyecto === k);
+  const subProy = (k) => srvDe(k).reduce((a, s) => a + s.inversion, 0);
+  const generales = proys ? servicios.filter((s) => s.proyecto == null) : [];
+  const proyDe = (s) => (proys && s.proyecto != null ? proys[s.proyecto] : null);
+  const girosDe = (s) => proyDe(s)?.giros || P.giros;
+  const ciudadDe = (s) => proyDe(s)?.ciudad || P.ciudad;
+  const sid = (s) => (s.proyecto != null ? `srv-${s.proyecto}-${s.id}` : `srv-${s.id}`);
+  const dosDig = (n) => String(n).padStart(2, "0");
   const semanasTotales = P.cronograma?.filas?.length
     ? Math.max(...P.cronograma.filas.map((f) => f.hasta)) - Math.min(...P.cronograma.filas.map((f) => f.desde)) + 1
     : servicios.reduce((a, s) => a + s.semanas, 0);
@@ -106,10 +113,10 @@
           ${P.objetivos ? `<h3 class="h4">Lo que vamos a resolver</h3><ul class="checks">${list(P.objetivos, (o) => `<li>${esc(o)}</li>`)}</ul>` : ""}
           ${P.giros ? `<div class="tags">${list(P.giros, (g) => `<span class="tag">${esc(g)}</span>`)}</div>` : ""}
           ${proys ? `<h3 class="h4" style="margin-top:28px">Proyectos incluidos</h3><ol class="proys">${list(proys, (p, i) => `
-            <li><span>${String(i + 1).padStart(2, "0")}</span><div><b>${esc(p.nombre)}</b><small>${esc([p.ciudad, ...(p.giros || [])].filter(Boolean).join(" · "))}</small></div></li>`)}</ol>` : ""}
+            <li><a href="#proy-${i}"><span>${dosDig(i + 1)}</span><div><b>${esc(p.nombre)}</b><small>${esc([p.ciudad, ...(p.giros || [])].filter(Boolean).join(" · "))}</small></div></a></li>`)}</ol>` : ""}
         </div>
         <div class="mapas">
-          ${list(P.mapas, (m) => `
+          ${list(proys ? (P.mapas || []).filter((m) => m.proyecto == null || m.proyecto === 0).slice(0, 2) : P.mapas, (m) => `
             <figure class="mapa" data-zoom="${esc(m.img)}">
               <img src="${esc(m.img)}" alt="${esc(m.titulo)}" loading="lazy">
               <figcaption><b>${proys && proys[m.proyecto] ? `${esc(proys[m.proyecto].nombre)} · ` : ""}${esc(m.titulo)}</b>${m.pie ? ` · ${esc(m.pie)}` : ""}</figcaption>
@@ -155,8 +162,8 @@
     </details>`;
 
   // Especificaciones: en el estudio de mercado, los giros analizados + las extras del giro
-  const espec = (s) => (s.pdf?.especGiros && P.giros?.length
-    ? [`${s.pdf.especIntro.replace(/:\s*$/, "")}: ${P.giros.join(", ")}.`, ...B.especExtras(s, P.ciudad)]
+  const espec = (s) => (s.pdf?.especGiros && girosDe(s)?.length
+    ? [`${s.pdf.especIntro.replace(/:\s*$/, "")}: ${girosDe(s).join(", ")}.`, ...B.especExtras(s, ciudadDe(s))]
     : s.especificaciones || []);
 
   // Panel diseñado para los servicios sin foto: etapa, título, cifras del catálogo y pasos en línea de tiempo
@@ -170,7 +177,7 @@
     </div>`;
 
   const servicioHTML = (s) => `
-    <article class="srv" id="srv-${s.id}">
+    <article class="srv" id="${sid(s)}">
       <div class="srv__top">
         <div class="srv__num">${s.num}</div>
         <div>
@@ -217,11 +224,36 @@
     </article>`;
 
   // Servicios agrupados por línea (como el catálogo): cada línea abre con su portada
-  const porLinea = [];
-  servicios.forEach((s) => {
-    const l = B.lineaDe(s.id), ult = porLinea[porLinea.length - 1];
-    if (ult && ult.l.nombre === l.nombre) ult.srv.push(s); else porLinea.push({ l, srv: [s] });
-  });
+  const agrupar = (lista) => {
+    const out = [];
+    lista.forEach((s) => {
+      const l = B.lineaDe(s.id), ult = out[out.length - 1];
+      if (ult && ult.l.nombre === l.nombre) ult.srv.push(s); else out.push({ l, srv: [s] });
+    });
+    return out;
+  };
+  const porLinea = agrupar(servicios);
+  // Multiproyecto: cada proyecto abre con su encabezado y sus imágenes, y luego sus servicios
+  const bloqueProyecto = (p, k) => {
+    const mp = (P.mapas || []).filter((m) => m.proyecto === k);
+    return `
+    <div class="pblk" id="proy-${k}">
+      <div class="pblk__head">
+        <span class="pblk__n">${dosDig(k + 1)}</span>
+        <div>
+          <p class="eyebrow eyebrow--red">Proyecto ${k + 1} de ${proys.length}</p>
+          <h3 class="pblk__tit">${esc(p.nombre)}</h3>
+          <p class="pblk__sub">${esc([p.ciudad, ...(p.giros || [])].filter(Boolean).join(" · "))}</p>
+        </div>
+        <div class="pblk__monto"><span>Inversión</span><b>${mxnCorto(subProy(k))}</b></div>
+      </div>
+      ${mp.length ? `<div class="mapas mapas--fila">${list(mp, (m) => `
+        <figure class="mapa" data-zoom="${esc(m.img)}">
+          <img src="${esc(m.img)}" alt="${esc(m.titulo)}" loading="lazy">
+          <figcaption><b>${esc(m.titulo)}</b>${m.pie ? ` · ${esc(m.pie)}` : ""}</figcaption>
+        </figure>`)}</div>` : ""}
+    </div>` + list(agrupar(srvDe(k)), (g) => portadaLinea(g) + list(g.srv, servicioHTML));
+  };
   const tituloLinea = (n) => { const [a, ...r] = n.split(" "); return `${esc(a)}${r.length ? ` <span class="linea__out">${esc(r.join(" "))}</span>` : ""}`; };
   const portadaLinea = ({ l, srv }) => `
     <div class="linea">
@@ -240,9 +272,12 @@
       <div class="sec__head">
         <p class="eyebrow eyebrow--red">03 · Servicios propuestos</p>
         <h2 class="h2"><span class="outline">Nuestra</span> propuesta</h2>
-        <div class="srv__tabs">${list(servicios, (s) => `<a href="#srv-${s.id}" class="chip"><b>${s.num}</b> ${esc(s.nombre)}</a>`)}</div>
+        <div class="srv__tabs">${proys
+          ? list(proys, (p, k) => `<a href="#proy-${k}" class="chip"><b>${dosDig(k + 1)}</b> ${esc(p.nombre)}</a>`)
+          : list(servicios, (s) => `<a href="#${sid(s)}" class="chip"><b>${s.num}</b> ${esc(s.nombre)}</a>`)}</div>
       </div>
-      ${list(porLinea, (g) => portadaLinea(g) + list(g.srv, servicioHTML))}
+      ${proys ? list(proys, bloqueProyecto) + list(agrupar(generales), (g) => portadaLinea(g) + list(g.srv, servicioHTML))
+        : list(porLinea, (g) => portadaLinea(g) + list(g.srv, servicioHTML))}
     </div>
   </section>`;
 
@@ -261,7 +296,8 @@
       </div>
       <div class="tabla">
         <div class="tabla__row tabla__row--head"><span>#</span><span>Servicio</span><span>Entrega</span><span>Especificaciones</span><span>Inversión MXN</span></div>
-        ${list(servicios, (s) => `
+        ${list(servicios, (s, i) => `${proys && s.proyecto != null && servicios[i - 1]?.proyecto !== s.proyecto ? `
+          <div class="tabla__proy"><b>${dosDig(s.proyecto + 1)} · ${esc(proys[s.proyecto].nombre)}</b><span>${esc(proys[s.proyecto].ciudad || "")}</span></div>` : ""}
           <div class="tabla__row">
             <span class="tabla__n">${s.num}</span>
             <span><b>${esc(s.nombreLargo)}</b></span>
@@ -280,11 +316,11 @@
         <div class="tabla__row tabla__row--head"><span>#</span><span>Proyecto</span><span>Ubicación</span><span>Servicios</span><span>Inversión MXN</span></div>
         ${list(proys, (p, i) => `
           <div class="tabla__row">
-            <span class="tabla__n">${String(i + 1).padStart(2, "0")}</span>
+            <span class="tabla__n">${dosDig(i + 1)}</span>
             <span><b>${esc(p.nombre)}</b>${p.giros?.length ? `<small class="tabla__giro">${esc(p.giros.join(" · "))}</small>` : ""}</span>
             <span>${esc(p.ciudad)}</span>
-            <span><ul>${list(p.servicios, (x) => `<li>${esc(nombreSrv(x.id))}: ${mxn(x.inversion)}</li>`)}</ul></span>
-            <span class="tabla__monto">${mxn(subProy(p))}</span>
+            <span><ul>${list(srvDe(i), (x) => `<li>${esc(x.nombre)}: ${x.cobro === "comision" ? esc(x.inversionTexto) : mxn(x.inversion)}</li>`)}</ul></span>
+            <span class="tabla__monto">${mxn(subProy(i))}</span>
           </div>`)}
         ${generales.length ? `
           <div class="tabla__row">

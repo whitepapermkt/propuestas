@@ -607,3 +607,23 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
   .linea__txt { max-width: 100%; }
   .linea__marca { font-size: 220px; right: -10px; top: auto; bottom: -26px; transform: none; -webkit-text-stroke-color: rgba(255, 255, 255, .22); }
 }
+
+/* Multiproyecto: bloque de cada proyecto dentro de "Nuestra propuesta" */
+.pblk { margin: 64px 0 8px; padding: 28px 0 0; border-top: 3px solid var(--ink); }
+.pblk__head { display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: end; }
+.pblk__n { font-family: var(--display); font-size: 96px; line-height: .8; color: transparent; -webkit-text-stroke: 1.5px var(--red); }
+.pblk__tit { font-family: var(--display); font-weight: 400; font-size: clamp(40px, 5vw, 64px); line-height: .95; text-transform: uppercase; }
+.pblk__sub { margin-top: 6px; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--gray); }
+.pblk__monto { text-align: right; }
+.pblk__monto span { display: block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--gray); }
+.pblk__monto b { font-family: var(--display); font-weight: 400; font-size: 40px; }
+.mapas--fila { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 24px; }
+.tabla__proy { display: flex; justify-content: space-between; gap: 12px; padding: 12px 28px; background: var(--red); color: var(--white); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
+.proys a { display: flex; gap: 14px; align-items: center; color: inherit; text-decoration: none; width: 100%; }
+.proys li:hover { border-color: var(--red); }
+@media (max-width: 640px) {
+  .pblk__head { grid-template-columns: auto 1fr; }
+  .pblk__monto { grid-column: 1 / -1; text-align: left; }
+  .pblk__n { font-size: 64px; }
+  .tabla__proy { padding: 12px 18px; }
+}

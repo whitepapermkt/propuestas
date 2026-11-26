@@ -242,10 +242,10 @@ td.d-mxn > .d-mxn__txt:only-child { font-size: 15px; color: var(--ink); margin: 
 .d-cards--aparte .d-card ul { columns: 3 !important; column-gap: 28px; }
 
 /* Multiproyecto y descuento */
-.d-total--sub { background: var(--card-2); color: var(--ink); padding: 6px 14px 3px; margin-bottom: 3px; }
-.d-total--sub span { font-size: 22px; }
-.d-total--sub b { font-size: 32px; }
-.d-total__sep { flex: 0 0 26px; }
-.d-total__desc { color: var(--red); }
+.d-total__det { margin-right: auto; font-size: 22px !important; letter-spacing: .04em; color: #c9c9c9; }
+.d-total__det i { display: inline-block; width: 22px; }
+.d-total__det em { font-style: normal; color: #ff6b6e; }
 .d-srv__sub { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 500; letter-spacing: .08em; color: var(--gray); }
 .d-tb--proy td { padding-top: 18px; padding-bottom: 18px; font-size: 18px; }
+.d-tb tbody tr.d-tb__proy td { background: var(--red) !important; color: #fff; padding: 7px 14px; font-weight: 600; font-size: 15px; letter-spacing: .14em; text-transform: uppercase; }
+.d-tb tr.d-tb__proy span { float: right; font-weight: 500; }

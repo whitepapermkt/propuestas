@@ -33,7 +33,8 @@
     "direccion-comercial": ["s4s-p75", "s4s-p76", "s4s-p77", "s4s-p78", "s4s-p79", "s4s-p80"],
     "gerencia-comercial": ["s4s-p81", "s4s-p82", "s4s-p83", "s4s-p84", "s4s-p85", { inversion: true }]
   };
-  const intro = (s) => list(INTRO_SERVICIO[s.id], (x) => {
+  const intro = (s, repetido) => list(INTRO_SERVICIO[s.id], (x) => {
+    if (repetido && (typeof x === "string" || x.si || x.variante)) return ""; // en multiproyecto, la metodología fija va una vez
     if (typeof x === "string") return fija(x);
     if (x.estudio) return s.alcanceIds.has(x.estudio) ? estudioLamina(s, x.estudio) : "";
     if (x.si) return s.alcanceIds.has(x.si) ? list(x.img, fija) : "";
@@ -57,16 +58,21 @@
   const precio = (s) => (s.cobro === "comision" ? `<span class="d-mxn__txt">${esc(s.inversionTexto)}</span>`
     : s.cobro === "mensual" ? `${mxn(s.inversion)}<span class="d-mxn__txt d-mxn__txt--mes">${mxn(s.mensual)} × ${s.meses} meses</span>` : mxn(s.inversion));
 
-  const servicios = P.servicios.map((s, i) => B.resolver(s, i));
+  // Multiproyecto: cada servicio lleva "proyecto" y se numera dentro de su proyecto
+  const nPorProy = {};
+  const servicios = P.servicios.map((s, i) => (s.proyecto == null ? B.resolver(s, i) : B.resolver(s, (nPorProy[s.proyecto] = (nPorProy[s.proyecto] ?? -1) + 1))));
   const subtotal = servicios.reduce((a, s) => a + s.inversion, 0);
   const desc = P.descuento?.monto > 0 ? P.descuento : null;
   const total = subtotal - (desc?.monto || 0);
   const proys = P.proyectos?.length ? P.proyectos : null;
-  const subProy = (p) => (p.servicios || []).reduce((a, x) => a + (+x.inversion || 0), 0);
-  const generales = proys ? servicios.filter((s) => !(proys[0].servicios || []).some((x) => x.id === s.id)) : [];
+  const srvDe = (k) => servicios.filter((s) => s.proyecto === k);
+  const subProy = (k) => srvDe(k).reduce((a, s) => a + s.inversion, 0);
+  const generales = proys ? servicios.filter((s) => s.proyecto == null) : [];
+  const proyDe = (s) => (proys && s.proyecto != null ? proys[s.proyecto] : null);
+  const girosDe = (s) => proyDe(s)?.giros || P.giros || [];
+  const ciudadDe = (s) => proyDe(s)?.ciudad || P.ciudad;
   // Subtotal y descuento (si hay) + total, al pie de las tablas de inversión
-  const totales = () => (desc ? `<div class="d-total d-total--sub"><span>Subtotal</span><b>${mxn(subtotal)}</b><span class="d-total__sep"></span><span>${esc(desc.concepto)}</span><b class="d-total__desc">−${mxn(desc.monto)}</b></div>` : "") +
-    `<div class="d-total"><span>Total</span><b>${mxn(total)}</b></div>`;
+  const totales = () => `<div class="d-total">${desc ? `<span class="d-total__det">Subtotal ${mxn(subtotal)}<i></i>${esc(desc.concepto)} <em>−${mxn(desc.monto)}</em></span>` : ""}<span>Total</span><b>${mxn(total)}</b></div>`;
 
   const pie = `<p class="d-pie">4SREALESTATE.COM · REAL ESTATE FORESIGHT</p>`;
   const lamina = (cls, html) => `<section class="d-slide ${cls}">${html}</section>`;
@@ -78,8 +84,7 @@
   // 09 · Portada del proyecto con los mapas
   function portada() {
     const conImg = (P.mapas || []).filter((m) => m.img);
-    const generalesImg = conImg.filter((m) => m.proyecto == null);
-    const mapas = (proys && generalesImg.length ? generalesImg : conImg).slice(0, 2);
+    const mapas = (proys ? conImg.filter((m) => !m.proyecto) : conImg).slice(0, 2);
     const ciudadCorta = { "San Luis Potosí": "SLP", "Ciudad de México": "CDMX" }[P.ciudad] || P.ciudad;
     if (proys) return lamina("d-portada", `
       <div class="d-mapas d-mapas--${mapas.length}">
@@ -108,9 +113,20 @@
         <tbody>${list(proys, (p, i) => `<tr><td class="d-num">#${i + 1}</td><td class="d-srv">${esc(p.nombre)}</td><td>${esc(p.ciudad)}</td><td>${esc((p.giros || []).join(", "))}</td></tr>`)}</tbody>
       </table>
       ${pie}`);
-    const porProyecto = proys.map((p, i) => {
+    return lista;
+  }
+  // Portada de cada proyecto: sus imágenes (si tiene) o una portada tipográfica
+  function portadaProyecto(p, i) {
       const mp = (P.mapas || []).filter((m) => m.img && m.proyecto === i).slice(0, 2);
-      if (!mp.length) return "";
+      if (!mp.length) return lamina("d-linea", `
+        <div class="d-linea__txt">
+          <p class="d-linea__sup">Proyecto ${i + 1} de ${proys.length}</p>
+          <h2 class="d-tit d-linea__tit">${esc(p.nombre)}</h2>
+          <p class="d-linea__sub">${esc([p.ciudad, ...(p.giros || [])].filter(Boolean).join(" | "))}</p>
+          <ul class="d-linea__srv">${list(srvDe(i), (s) => `<li><b>${s.num}</b>${esc(s.nombreLargo?.split(":")[0] || s.nombre)}</li>`)}</ul>
+        </div>
+        <span class="d-linea__marca">${String(i + 1).padStart(2, "0")}</span>
+        ${pie}`);
       return lamina("d-portada", `
         <div class="d-mapas d-mapas--${mp.length}">
           ${list(mp, (m) => `<figure><img src="${esc(m.img)}" alt=""><figcaption>${esc(m.titulo)}</figcaption></figure>`)}
@@ -119,17 +135,15 @@
           <h1 class="d-tit d-tit--xl">Proyecto <span class="d-out">${String(i + 1).padStart(2, "0")}</span></h1>
           <p><b>${esc(p.nombre)}</b><br>${esc([p.ciudad, ...(p.giros || [])].filter(Boolean).join(" | "))}</p>
         </div>`);
-    }).join("");
-    return lista + porProyecto;
   }
 
   // Multiproyecto · Inversión por proyecto (después de la propuesta de servicios)
   function inversionProyectos() {
     if (!proys) return "";
     const filas = proys.map((p, i) => ({ n: `#${i + 1}`, nombre: p.nombre, sub: [p.ciudad, ...(p.giros || [])].filter(Boolean).join(" · "),
-      items: (p.servicios || []).map((x) => `${servicios.find((s) => s.id === x.id)?.nombre || x.id}: ${mxn(x.inversion)}`), monto: mxn(subProy(p)) }));
+      items: srvDe(i).map((x) => `${x.nombre}: ${x.cobro === "comision" ? x.inversionTexto : mxn(x.inversion)}`), monto: mxn(subProy(i)) }));
     if (generales.length) filas.push({ n: "+", nombre: "Servicios generales", sub: "Para todos los proyectos", items: generales.map((s) => s.nombre), monto: generales.map(precio).join("<br>") });
-    const paginas = trozos(filas, (f) => Math.max(72, 30 + f.items.length * 21), desc ? 380 : 440);
+    const paginas = trozos(filas, (f) => Math.max(72, 30 + f.items.length * 21), 440);
     return paginas.map((grupo, k) => lamina("d-tabla", `
       <div class="d-head">${titulo("Inversión por", "Proyecto")}${cliente}</div>
       <table class="d-tb">
@@ -162,7 +176,7 @@
       const ico = Object.entries(ICONOS).find(([p]) => tit.toLowerCase().startsWith(p));
       return `<div class="d-est__ico">${ico ? `<img src="assets/deck/icons/${ico[1]}.png" alt="">` : "<i></i>"}<div>${tit ? `<h5>${esc(tit)}</h5>` : ""}<p>${esc(txt.charAt(0).toUpperCase() + txt.slice(1))}</p></div></div>`;
     });
-    const giros = (P.giros || []).length ? `<h4>Giros</h4><p class="d-est__giros">${list(P.giros, (x) => `${esc(x)}<br>`)}</p>` : "";
+    const giros = girosDe(s).length ? `<h4>Giros</h4><p class="d-est__giros">${list(girosDe(s), (x) => `${esc(x)}<br>`)}</p>` : "";
     const medio = oferta
       ? `${giros}<h4>Benchmark</h4><p>Determinar las condiciones generales de la oferta directa e indirecta del producto en cuestión a analizar.</p><p>El análisis se complementa con Big Data (reventa y producto informal) de los giros anteriormente señalados.</p>`
       : `${list(g.demanda || [], (t) => `<p>${esc(t)}</p>`)}${giros}`;
@@ -199,9 +213,9 @@
   }
 
   // Portada de línea de servicio: título en Bebas (sólido + contorno), número o letra en contorno y servicios incluidos
-  function portadaLinea(l) {
+  function portadaLinea(l, lista = servicios) {
     const [p1, ...resto] = l.nombre.split(" ");
-    const incl = servicios.filter((s) => l.ids.includes(s.id));
+    const incl = lista.filter((s) => l.ids.includes(s.id));
     return lamina("d-linea", `
       <div class="d-linea__txt">
         <p class="d-linea__sup">Línea de servicio</p>
@@ -311,9 +325,9 @@
   function propuestaServicios() {
     const espec = (s) => {
       // Estudio de mercado: giros analizados + especificaciones extra ("Se considera:")
-      if (s.pdf?.especGiros && P.giros?.length) {
-        const extras = B.especExtras(s, P.ciudad);
-        return `<p>${esc(s.pdf.especIntro)}</p><ul>${list(P.giros, (e) => `<li>${esc(e)}</li>`)}</ul>` +
+      if (s.pdf?.especGiros && girosDe(s).length) {
+        const extras = B.especExtras(s, ciudadDe(s));
+        return `<p>${esc(s.pdf.especIntro)}</p><ul>${list(girosDe(s), (e) => `<li>${esc(e)}</li>`)}</ul>` +
           (extras.length ? `<p class="d-esp__sub">Se considera:</p><ul>${list(extras, (e) => `<li>${esc(e)}</li>`)}</ul>` : "");
       }
       const items = s.especificaciones || [];
@@ -323,13 +337,16 @@
       return `${intro ? `<p>${esc(intro)}</p>` : ""}<ul>${list(items, (e) => `<li>${esc(e)}</li>`)}</ul>`;
     };
     // Varias láminas si no caben: alto estimado por fila según sus líneas de especificaciones (el total va en la última)
-    const lineas = (s) => (s.pdf?.especGiros && P.giros?.length ? P.giros.length + B.especExtras(s, P.ciudad).length + 2 : (s.especificaciones || []).length + 1);
-    const paginas = trozos(servicios, (s) => Math.max(72, 26 + lineas(s) * 16), desc ? 410 : 470);
+    const lineas = (s) => (s.pdf?.especGiros && girosDe(s).length ? girosDe(s).length + B.especExtras(s, ciudadDe(s)).length + 2 : (s.especificaciones || []).length + 1);
+    // Multiproyecto: una fila con el nombre del proyecto antes de sus servicios
+    const filasT = proys ? servicios.flatMap((s, i) => (s.proyecto != null && servicios[i - 1]?.proyecto !== s.proyecto ? [{ hdr: s.proyecto }, s] : [s])) : servicios;
+    const paginas = trozos(filasT, (s) => (s.hdr != null ? 38 : Math.max(72, 26 + lineas(s) * 16)), proys ? 420 : 470);
     return paginas.map((filas, k) => lamina("d-tabla", `
       <div class="d-head">${titulo("Propuesta de", "Servicios")}${cliente}</div>
       <table class="d-tb">
         <thead><tr><th>#</th><th>Servicio</th><th>Entrega</th><th>Especificaciones generales</th><th class="r">Inversión MXN</th></tr></thead>
-        <tbody>${list(filas, (s) => `
+        <tbody>${list(filas, (s) => s.hdr != null ? `
+          <tr class="d-tb__proy"><td colspan="5">${String(s.hdr + 1).padStart(2, "0")} · ${esc(proys[s.hdr].nombre)}<span>${esc(proys[s.hdr].ciudad || "")}</span></td></tr>` : `
           <tr><td class="d-num">#${s.num}</td><td class="d-srv">${esc(s.pdf?.titulo || s.nombreLargo || s.nombre)}</td><td>${duracion(s)}</td><td class="d-esp">${espec(s)}</td><td class="d-mxn">${precio(s)}</td></tr>`)}
         </tbody>
       </table>
@@ -405,12 +422,18 @@
   function armar() {
     if (document.getElementById("deck")) return document.getElementById("deck");
     // Cada línea de servicio (Servicios Digitales, Dirección y Gerencia Comercial…) abre con su portada
-    let lineaAnt = null;
-    const porServicio = servicios.map((s) => {
-      const l = B.lineaDe(s.id), nueva = !lineaAnt || lineaAnt.nombre !== l.nombre;
-      lineaAnt = l;
-      return (nueva && l.portadaPDF !== false ? (l.portadaImg ? fija(l.portadaImg) : portadaLinea(l)) : "") + intro(s) + alcances(s).join("");
-    }).join("");
+    const vistos = new Set();
+    const bloque = (lista) => {
+      let lineaAnt = null;
+      return lista.map((s) => {
+        const l = B.lineaDe(s.id), nueva = !lineaAnt || lineaAnt.nombre !== l.nombre, repetido = vistos.has(s.id);
+        lineaAnt = l; vistos.add(s.id);
+        return (nueva && l.portadaPDF !== false && !repetido ? (l.portadaImg ? fija(l.portadaImg) : portadaLinea(l, lista)) : "") + intro(s, repetido) + alcances(s).join("");
+      }).join("");
+    };
+    const porServicio = proys
+      ? proys.map((p, k) => portadaProyecto(p, k) + bloque(srvDe(k))).join("") + bloque(generales)
+      : bloque(servicios);
     const deck = document.createElement("div");
     deck.id = "deck";
     deck.innerHTML =
