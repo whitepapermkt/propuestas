@@ -237,8 +237,8 @@
   const bloqueProyecto = (p, k) => {
     const mp = (P.mapas || []).filter((m) => m.proyecto === k);
     return `
-    <div class="pblk" id="proy-${k}">
-      <div class="pblk__head">
+    <details class="pblk" id="proy-${k}">
+      <summary class="pblk__head">
         <span class="pblk__n">${dosDig(k + 1)}</span>
         <div>
           <p class="eyebrow eyebrow--red">Proyecto ${k + 1} de ${proys.length}</p>
@@ -246,13 +246,17 @@
           <p class="pblk__sub">${esc([p.ciudad, ...(p.giros || [])].filter(Boolean).join(" · "))}</p>
         </div>
         <div class="pblk__monto"><span>Inversión</span><b>${mxnCorto(subProy(k))}</b></div>
-      </div>
+        <span class="pblk__ver" aria-hidden="true"></span>
+      </summary>
+      <div class="pblk__body">
       ${mp.length ? `<div class="mapas mapas--fila">${list(mp, (m) => `
         <figure class="mapa" data-zoom="${esc(m.img)}">
           <img src="${esc(m.img)}" alt="${esc(m.titulo)}" loading="lazy">
           <figcaption><b>${esc(m.titulo)}</b>${m.pie ? ` · ${esc(m.pie)}` : ""}</figcaption>
         </figure>`)}</div>` : ""}
-    </div>` + list(agrupar(srvDe(k)), (g) => portadaLinea(g) + list(g.srv, servicioHTML));
+      ${list(agrupar(srvDe(k)), (g) => portadaLinea(g) + list(g.srv, servicioHTML))}
+      </div>
+    </details>`;
   };
   const tituloLinea = (n) => { const [a, ...r] = n.split(" "); return `${esc(a)}${r.length ? ` <span class="linea__out">${esc(r.join(" "))}</span>` : ""}`; };
   const portadaLinea = ({ l, srv }) => `
@@ -587,6 +591,8 @@
       ? document.querySelector(`.view[data-view="${id}"]`)
       : document.getElementById(id);
     if (!destino) return;
+    // Multiproyecto: si el destino está dentro de un proyecto cerrado, abrirlo
+    for (let d = destino.closest("details.pblk"); d; d = d.parentElement?.closest("details.pblk")) d.open = true;
     // Elementos fuera de las pestañas (contacto, footer): quedarse en la pestaña actual
     const vista = destino.closest(".view") || document.querySelector(`.view[data-view="${vistaActual}"]`);
     const cambia = vista.dataset.view !== vistaActual;
