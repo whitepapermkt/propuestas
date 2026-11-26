@@ -680,6 +680,28 @@ window.BASE_4S = {
         fecha: `${f[0].fecha} – ${f[n - 1].fecha}`, monto: f.reduce((a, x) => a + x.monto, 0) };
     });
   };
+  // Pagos por mes: suma lo que se paga en cada mes ("Noviembre", "Noviembre 2026"…), en orden cronológico.
+  // Sin año, los meses se cuentan desde el mes del primer pago (Nov → Dic → Ene…).
+  window.BASE_4S.pagosPorMes = (pagos) => {
+    const M = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const grupos = new Map();
+    (pagos || []).forEach((p, i) => {
+      if (!(+p.monto > 0)) return;
+      const fecha = String(p.fecha || "Sin fecha").trim();
+      if (!grupos.has(fecha)) grupos.set(fecha, { mes: fecha, monto: 0, pagos: [], i });
+      const g = grupos.get(fecha); g.monto += +p.monto; g.pagos.push(p);
+    });
+    const lista = [...grupos.values()];
+    const parte = (f) => { const t = f.toLowerCase().split(/\s+/); return { m: M.indexOf(t[0]), y: +t[1] || null }; };
+    const pz = lista.map((g) => parte(g.mes));
+    if (pz.every((x) => x.m >= 0)) {
+      // Con año: orden absoluto; sin año: meses contados desde el mes del primer pago (la propuesta dura menos de un año)
+      const conAnio = pz.every((x) => x.y);
+      lista.forEach((g, k) => (g.k = conAnio ? pz[k].y * 12 + pz[k].m : (pz[k].m - pz[0].m + 12) % 12));
+      lista.sort((a, b) => a.k - b.k || a.i - b.i);
+    }
+    return lista.map(({ mes, monto, pagos }) => ({ mes, monto: Math.round(monto * 100) / 100, pagos }));
+  };
   // Especificaciones extra del estudio (sin la línea vieja "Oferta y demanda para los giros…", que ahora sale de los giros)
   // {ciudad} = ciudad de la propuesta (si no hay, "la zona")
   window.BASE_4S.conCiudad = (t, ciudad) => String(t).replace(/\{ciudad\}/g, String(ciudad || "").trim() || "la zona");

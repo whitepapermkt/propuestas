@@ -419,6 +419,24 @@
       ${pie}`)).join("");
   }
 
+  // Pagos por mes (después de la orden de trabajo): cuánto se paga en cada mes, con el detalle de los pagos
+  function pagosMes() {
+    const meses = B.pagosPorMes ? B.pagosPorMes(P.pagos) : [];
+    if (meses.length < 2) return "";
+    const filas = meses.map((m) => ({ ...m, items: m.pagos.map((p) => `${p.servicio}${p.concepto ? ` · ${p.concepto}` : ""}: ${mxn(p.monto)}`) }));
+    const paginas = trozos(filas, (f) => Math.max(58, 22 + f.items.length * 21), 440);
+    return paginas.map((grupo, k) => lamina("d-tabla", `
+      <div class="d-head">${titulo("Por mes", "Pagos", true)}${cliente}</div>
+      <table class="d-tb d-tb--mes">
+        <thead><tr><th>Mes</th><th>Detalle</th><th class="r">A pagar MXN</th></tr></thead>
+        <tbody>${list(grupo, (f) => `
+          <tr><td class="d-srv">${esc(f.mes)}</td><td class="d-esp"><ul>${list(f.items, (t) => `<li>${esc(t)}</li>`)}</ul></td><td class="d-mxn">${mxn(f.monto)}</td></tr>`)}
+        </tbody>
+      </table>
+      ${k === paginas.length - 1 ? `<div class="d-total"><span>Total</span><b>${mxn(meses.reduce((a, m) => a + m.monto, 0))}</b></div>` : `<p class="d-sigue">Continúa en la siguiente lámina →</p>`}
+      ${pie}`)).join("");
+  }
+
   function armar() {
     if (document.getElementById("deck")) return document.getElementById("deck");
     // Cada línea de servicio (Servicios Digitales, Dirección y Gerencia Comercial…) abre con su portada
@@ -445,6 +463,7 @@
       inversionProyectos() +
       tiempos() +
       ordenTrabajo() +
+      pagosMes() +
       fija("25-venues") +
       fija("26-cierre");
     document.body.appendChild(deck);

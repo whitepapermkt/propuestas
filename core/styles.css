@@ -638,3 +638,12 @@ h5 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-wei
   .pblk__n { font-size: 64px; }
   .tabla__proy { padding: 12px 18px; }
 }
+
+/* Pagos por mes */
+.pmes { margin-top: 36px; }
+.pmes__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-top: 14px; }
+.pmes__item { background: var(--white); border-radius: 14px; border-top: 3px solid var(--red); padding: 16px 18px; box-shadow: 0 10px 30px rgba(0,0,0,.05); }
+.pmes__item span { display: block; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--gray); }
+.pmes__item b { display: block; font-family: var(--display); font-weight: 400; font-size: 32px; margin-top: 6px; line-height: 1; }
+.pmes__item small { display: block; margin-top: 6px; font-size: 12px; color: var(--gray); }
+@media (max-width: 640px) { .pmes__grid { grid-template-columns: 1fr 1fr; } .pmes__item b { font-size: 26px; } }

@@ -340,6 +340,7 @@
     </div>
   </section>`;
 
+  const porMes = B.pagosPorMes ? B.pagosPorMes(P.pagos) : [];
   const crono = P.cronograma;
   const totalSemanas = crono.meses.reduce((a, m) => a + m.semanas, 0);
   const semLabel = (idx) => {
@@ -389,6 +390,16 @@
           </div>`)}
         <div class="tabla__total"><span>Total</span><span>${mxn(P.pagos.reduce((a, p) => a + p.monto, 0))}</span></div>
       </div>
+      ${porMes.length > 1 ? `
+      <div class="pmes">
+        <h4 class="h4">Pagos por mes</h4>
+        <div class="pmes__grid">${list(porMes, (m) => `
+          <div class="pmes__item">
+            <span>${esc(m.mes)}</span>
+            <b>${mxn(m.monto)}</b>
+            <small>${m.pagos.length} pago${m.pagos.length > 1 ? "s" : ""}</small>
+          </div>`)}</div>
+      </div>` : ""}
       <p class="fine">${esc(P.notaPagos)}</p>
     </div>
   </section>`;

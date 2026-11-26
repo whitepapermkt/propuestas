@@ -1337,6 +1337,10 @@
   }
 
   /* ---------- Vista previa + resumen ---------- */
+  const porMesHTML = (pagos) => {
+    const m = B.pagosPorMes(pagos);
+    return m.length > 1 ? `<br><b>Por mes:</b> ${m.map((x) => `${esc(x.mes)} <b>${mxn(x.monto)}</b>`).join(" · ")}` : "";
+  };
   const pv = document.getElementById("pv");
   let t = null;
   function actualizar() {
@@ -1353,7 +1357,8 @@
       ? `<b>${d.servicios.length} servicio${d.servicios.length > 1 ? "s" : ""} · <span class="r">${mxn(total)} MXN</span></b><br>
          ${d.descuento ? `${esc(d.descuento.concepto)}: −${mxn(d.descuento.monto)}<br>` : ""}${d.proyectos ? `${d.proyectos.map((p, k) => `${esc(p.nombre)}: ${mxn(d.servicios.filter((x) => x.proyecto === k).reduce((a, x) => a + x.inversion, 0))}`).join(" · ")}<br>` : ""}
          ${periodo} · ${semanas} semanas<br>
-         ${d.pagos.map((p) => `${p.concepto} ${esc(p.servicio)}: ${p.montoTexto ? esc(p.montoTexto) : mxn(p.monto)} (${esc(p.fecha)})`).join("<br>")}`
+         ${d.pagos.map((p) => `${p.concepto} ${esc(p.servicio)}: ${p.montoTexto ? esc(p.montoTexto) : mxn(p.monto)} (${esc(p.fecha)})`).join("<br>")}
+         ${porMesHTML(d.pagos)}`
       : "Marca al menos un servicio para calcular calendario y pagos.";
     boxPM.hidden = $("esquemaPago").value !== "manual";
     if (!boxPM.hidden) pintarGen();
@@ -1362,7 +1367,7 @@
       const est = document.getElementById("pm-estado");
       est.className = "estado " + (dif ? "err" : "ok");
       est.innerHTML = `Suma de los pagos: <b>${mxn(suma)}</b> · Total de la propuesta: <b>${mxn(total)}</b>` +
-        (dif ? `<br>${dif > 0 ? `Faltan ${mxn(dif)} por asignar.` : `Los pagos pasan el total por ${mxn(-dif)}.`}` : " ✓");
+        (dif ? `<br>${dif > 0 ? `Faltan ${mxn(dif)} por asignar.` : `Los pagos pasan el total por ${mxn(-dif)}.`}` : " ✓") + porMesHTML(d.pagos);
     }
     if (d.proyectos) contP.querySelectorAll(".proy").forEach((el, k) => {
       const ss = d.servicios.filter((x) => x.proyecto === k), im = d.mapas.filter((m) => m.proyecto === k).length;
