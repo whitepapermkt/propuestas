@@ -58,7 +58,15 @@
     : s.cobro === "mensual" ? `${mxn(s.inversion)}<span class="d-mxn__txt d-mxn__txt--mes">${mxn(s.mensual)} × ${s.meses} meses</span>` : mxn(s.inversion));
 
   const servicios = P.servicios.map((s, i) => B.resolver(s, i));
-  const total = servicios.reduce((a, s) => a + s.inversion, 0);
+  const subtotal = servicios.reduce((a, s) => a + s.inversion, 0);
+  const desc = P.descuento?.monto > 0 ? P.descuento : null;
+  const total = subtotal - (desc?.monto || 0);
+  const proys = P.proyectos?.length ? P.proyectos : null;
+  const subProy = (p) => (p.servicios || []).reduce((a, x) => a + (+x.inversion || 0), 0);
+  const generales = proys ? servicios.filter((s) => !(proys[0].servicios || []).some((x) => x.id === s.id)) : [];
+  // Subtotal y descuento (si hay) + total, al pie de las tablas de inversión
+  const totales = () => (desc ? `<div class="d-total d-total--sub"><span>Subtotal</span><b>${mxn(subtotal)}</b><span class="d-total__sep"></span><span>${esc(desc.concepto)}</span><b class="d-total__desc">−${mxn(desc.monto)}</b></div>` : "") +
+    `<div class="d-total"><span>Total</span><b>${mxn(total)}</b></div>`;
 
   const pie = `<p class="d-pie">4SREALESTATE.COM · REAL ESTATE FORESIGHT</p>`;
   const lamina = (cls, html) => `<section class="d-slide ${cls}">${html}</section>`;
@@ -69,8 +77,18 @@
 
   // 09 · Portada del proyecto con los mapas
   function portada() {
-    const mapas = (P.mapas || []).filter((m) => m.img).slice(0, 2);
+    const conImg = (P.mapas || []).filter((m) => m.img);
+    const generalesImg = conImg.filter((m) => m.proyecto == null);
+    const mapas = (proys && generalesImg.length ? generalesImg : conImg).slice(0, 2);
     const ciudadCorta = { "San Luis Potosí": "SLP", "Ciudad de México": "CDMX" }[P.ciudad] || P.ciudad;
+    if (proys) return lamina("d-portada", `
+      <div class="d-mapas d-mapas--${mapas.length}">
+        ${list(mapas, (m) => `<figure><img src="${esc(m.img)}" alt=""><figcaption>${esc(m.titulo)}</figcaption></figure>`)}
+      </div>
+      <div class="d-portada__txt">
+        <h1 class="d-tit d-tit--xl">Propuesta <span class="d-out">Estratégica</span></h1>
+        <p><b>${esc(P.cliente)}</b><br>${esc(P.proyecto)} - ${proys.length} proyectos | ${esc(P.fecha)}</p>
+      </div>`) + proyectosLaminas();
     return lamina("d-portada", `
       <div class="d-mapas d-mapas--${mapas.length}">
         ${list(mapas, (m) => `<figure><img src="${esc(m.img)}" alt=""><figcaption>${esc(m.titulo)}</figcaption></figure>`)}
@@ -79,6 +97,49 @@
         <h1 class="d-tit d-tit--xl">Propuesta <span class="d-out">Estratégica</span></h1>
         <p><b>${esc(P.cliente)}</b><br>${esc(P.proyecto)} - ${esc(ciudadCorta)} | ${esc(P.fecha)}</p>
       </div>`);
+  }
+
+  // Multiproyecto: lámina con la lista de proyectos + una portada por proyecto que tenga imágenes
+  function proyectosLaminas() {
+    const lista = lamina("d-tabla", `
+      <div class="d-head">${titulo("Proyectos", "Incluidos")}${cliente}</div>
+      <table class="d-tb d-tb--proy">
+        <thead><tr><th>#</th><th>Proyecto</th><th>Ubicación</th><th>Giros</th></tr></thead>
+        <tbody>${list(proys, (p, i) => `<tr><td class="d-num">#${i + 1}</td><td class="d-srv">${esc(p.nombre)}</td><td>${esc(p.ciudad)}</td><td>${esc((p.giros || []).join(", "))}</td></tr>`)}</tbody>
+      </table>
+      ${pie}`);
+    const porProyecto = proys.map((p, i) => {
+      const mp = (P.mapas || []).filter((m) => m.img && m.proyecto === i).slice(0, 2);
+      if (!mp.length) return "";
+      return lamina("d-portada", `
+        <div class="d-mapas d-mapas--${mp.length}">
+          ${list(mp, (m) => `<figure><img src="${esc(m.img)}" alt=""><figcaption>${esc(m.titulo)}</figcaption></figure>`)}
+        </div>
+        <div class="d-portada__txt">
+          <h1 class="d-tit d-tit--xl">Proyecto <span class="d-out">${String(i + 1).padStart(2, "0")}</span></h1>
+          <p><b>${esc(p.nombre)}</b><br>${esc([p.ciudad, ...(p.giros || [])].filter(Boolean).join(" | "))}</p>
+        </div>`);
+    }).join("");
+    return lista + porProyecto;
+  }
+
+  // Multiproyecto · Inversión por proyecto (después de la propuesta de servicios)
+  function inversionProyectos() {
+    if (!proys) return "";
+    const filas = proys.map((p, i) => ({ n: `#${i + 1}`, nombre: p.nombre, sub: [p.ciudad, ...(p.giros || [])].filter(Boolean).join(" · "),
+      items: (p.servicios || []).map((x) => `${servicios.find((s) => s.id === x.id)?.nombre || x.id}: ${mxn(x.inversion)}`), monto: mxn(subProy(p)) }));
+    if (generales.length) filas.push({ n: "+", nombre: "Servicios generales", sub: "Para todos los proyectos", items: generales.map((s) => s.nombre), monto: generales.map(precio).join("<br>") });
+    const paginas = trozos(filas, (f) => Math.max(72, 30 + f.items.length * 21), desc ? 380 : 440);
+    return paginas.map((grupo, k) => lamina("d-tabla", `
+      <div class="d-head">${titulo("Inversión por", "Proyecto")}${cliente}</div>
+      <table class="d-tb">
+        <thead><tr><th>#</th><th>Proyecto</th><th>Servicios</th><th class="r">Inversión MXN</th></tr></thead>
+        <tbody>${list(grupo, (f) => `
+          <tr><td class="d-num">${f.n}</td><td class="d-srv">${esc(f.nombre)}${f.sub ? `<small class="d-srv__sub">${esc(f.sub)}</small>` : ""}</td><td class="d-esp"><ul>${list(f.items, (t) => `<li>${esc(t)}</li>`)}</ul></td><td class="d-mxn">${f.monto}</td></tr>`)}
+        </tbody>
+      </table>
+      ${k === paginas.length - 1 ? totales() : `<p class="d-sigue">Continúa en la siguiente lámina →</p>`}
+      ${pie}`)).join("");
   }
 
   // 13/14 · Estudio de Oferta / Demanda con los giros, la medición de demanda y los puntos elegidos
@@ -263,7 +324,7 @@
     };
     // Varias láminas si no caben: alto estimado por fila según sus líneas de especificaciones (el total va en la última)
     const lineas = (s) => (s.pdf?.especGiros && P.giros?.length ? P.giros.length + B.especExtras(s, P.ciudad).length + 2 : (s.especificaciones || []).length + 1);
-    const paginas = trozos(servicios, (s) => Math.max(72, 26 + lineas(s) * 16), 470);
+    const paginas = trozos(servicios, (s) => Math.max(72, 26 + lineas(s) * 16), desc ? 410 : 470);
     return paginas.map((filas, k) => lamina("d-tabla", `
       <div class="d-head">${titulo("Propuesta de", "Servicios")}${cliente}</div>
       <table class="d-tb">
@@ -272,7 +333,7 @@
           <tr><td class="d-num">#${s.num}</td><td class="d-srv">${esc(s.pdf?.titulo || s.nombreLargo || s.nombre)}</td><td>${duracion(s)}</td><td class="d-esp">${espec(s)}</td><td class="d-mxn">${precio(s)}</td></tr>`)}
         </tbody>
       </table>
-      ${k === paginas.length - 1 ? `<div class="d-total"><span>Total</span><b>${mxn(total)}</b></div>` : `<p class="d-sigue">Continúa en la siguiente lámina →</p>`}
+      ${k === paginas.length - 1 ? totales() : `<p class="d-sigue">Continúa en la siguiente lámina →</p>`}
       ${pie}`)).join("");
   }
 
@@ -358,6 +419,7 @@
       cadena() +
       porServicio +
       propuestaServicios() +
+      inversionProyectos() +
       tiempos() +
       ordenTrabajo() +
       fija("25-venues") +

@@ -23,7 +23,14 @@
 
   // Servicios de la propuesta enriquecidos con el catálogo
   const servicios = P.servicios.map((s, i) => B.resolver(s, i));
-  const total = servicios.reduce((a, s) => a + s.inversion, 0);
+  const subtotal = servicios.reduce((a, s) => a + s.inversion, 0);
+  const desc = P.descuento?.monto > 0 ? P.descuento : null;
+  const total = subtotal - (desc?.monto || 0);
+  // Multiproyecto: cada proyecto con su precio por servicio
+  const proys = P.proyectos?.length ? P.proyectos : null;
+  const subProy = (p) => (p.servicios || []).reduce((a, x) => a + (+x.inversion || 0), 0);
+  const nombreSrv = (id) => servicios.find((s) => s.id === id)?.nombre || id;
+  const generales = proys ? servicios.filter((s) => !(proys[0].servicios || []).some((x) => x.id === s.id)) : [];
   const semanasTotales = P.cronograma?.filas?.length
     ? Math.max(...P.cronograma.filas.map((f) => f.hasta)) - Math.min(...P.cronograma.filas.map((f) => f.desde)) + 1
     : servicios.reduce((a, s) => a + s.semanas, 0);
@@ -72,7 +79,7 @@
     <div class="hero__inner wrap">
       <p class="eyebrow">Propuesta estratégica · ${esc(P.fecha)}</p>
       <h1 class="hero__title"><span class="outline">Preparada para</span><br>${esc(P.cliente)}</h1>
-      <p class="hero__project">${esc(P.proyecto)} <span>·</span> ${esc(P.ciudad)}</p>
+      <p class="hero__project">${esc(P.proyecto)} <span>·</span> ${proys ? `${proys.length} proyectos` : esc(P.ciudad)}</p>
       <div class="hero__kpis">
         <div><b>${servicios.length}</b><span>Servicio${servicios.length > 1 ? "s" : ""}</span></div>
         <div><b>${semanasTotales}</b><span>Semanas</span></div>
@@ -98,12 +105,14 @@
           <p class="lead">${esc(P.resumen)}</p>
           ${P.objetivos ? `<h3 class="h4">Lo que vamos a resolver</h3><ul class="checks">${list(P.objetivos, (o) => `<li>${esc(o)}</li>`)}</ul>` : ""}
           ${P.giros ? `<div class="tags">${list(P.giros, (g) => `<span class="tag">${esc(g)}</span>`)}</div>` : ""}
+          ${proys ? `<h3 class="h4" style="margin-top:28px">Proyectos incluidos</h3><ol class="proys">${list(proys, (p, i) => `
+            <li><span>${String(i + 1).padStart(2, "0")}</span><div><b>${esc(p.nombre)}</b><small>${esc([p.ciudad, ...(p.giros || [])].filter(Boolean).join(" · "))}</small></div></li>`)}</ol>` : ""}
         </div>
         <div class="mapas">
           ${list(P.mapas, (m) => `
             <figure class="mapa" data-zoom="${esc(m.img)}">
               <img src="${esc(m.img)}" alt="${esc(m.titulo)}" loading="lazy">
-              <figcaption><b>${esc(m.titulo)}</b>${m.pie ? ` · ${esc(m.pie)}` : ""}</figcaption>
+              <figcaption><b>${proys && proys[m.proyecto] ? `${esc(proys[m.proyecto].nombre)} · ` : ""}${esc(m.titulo)}</b>${m.pie ? ` · ${esc(m.pie)}` : ""}</figcaption>
             </figure>`)}
         </div>
       </div>
@@ -237,6 +246,11 @@
     </div>
   </section>`;
 
+  const totales = `${desc ? `
+        <div class="tabla__sub"><span>Subtotal</span><span>${mxn(subtotal)}</span></div>
+        <div class="tabla__sub tabla__sub--desc"><span>${esc(desc.concepto)}</span><span>−${mxn(desc.monto)}</span></div>` : ""}
+        <div class="tabla__total"><span>Total</span><span>${mxn(total)}</span></div>`;
+
   const inversion = `
   <section class="sec sec--cream" id="inversion">
     <div class="wrap">
@@ -255,8 +269,33 @@
             <span><ul>${list(espec(s), (e) => `<li>${esc(e)}</li>`)}</ul></span>
             <span class="tabla__monto">${precioLargo(s)}</span>
           </div>`)}
-        <div class="tabla__total"><span>Total</span><span>${mxn(total)}</span></div>
+        ${totales}
       </div>
+      ${proys ? `
+      <div class="sec__head sec__head--sub">
+        <p class="eyebrow eyebrow--red">Desglose</p>
+        <h3 class="h3">Inversión por proyecto</h3>
+      </div>
+      <div class="tabla tabla--proy">
+        <div class="tabla__row tabla__row--head"><span>#</span><span>Proyecto</span><span>Ubicación</span><span>Servicios</span><span>Inversión MXN</span></div>
+        ${list(proys, (p, i) => `
+          <div class="tabla__row">
+            <span class="tabla__n">${String(i + 1).padStart(2, "0")}</span>
+            <span><b>${esc(p.nombre)}</b>${p.giros?.length ? `<small class="tabla__giro">${esc(p.giros.join(" · "))}</small>` : ""}</span>
+            <span>${esc(p.ciudad)}</span>
+            <span><ul>${list(p.servicios, (x) => `<li>${esc(nombreSrv(x.id))}: ${mxn(x.inversion)}</li>`)}</ul></span>
+            <span class="tabla__monto">${mxn(subProy(p))}</span>
+          </div>`)}
+        ${generales.length ? `
+          <div class="tabla__row">
+            <span class="tabla__n">+</span>
+            <span><b>Servicios generales</b><small class="tabla__giro">Para todos los proyectos</small></span>
+            <span></span>
+            <span><ul>${list(generales, (s) => `<li>${esc(s.nombre)}</li>`)}</ul></span>
+            <span class="tabla__monto">${list(generales, (s) => `<div>${precioLargo(s)}</div>`)}</span>
+          </div>` : ""}
+        ${totales}
+      </div>` : ""}
       <p class="fine">${esc(P.notaPagos)}</p>
     </div>
   </section>`;

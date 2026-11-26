@@ -118,6 +118,12 @@
     .mapa { display: grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items: start; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; margin-top: 12px; }
     .mapa__img { width: 96px; height: 72px; border-radius: 8px; background: var(--cream) center/cover; border: 1px dashed var(--gray-l); display: grid; place-items: center; font-size: 11px; color: var(--gray); text-align: center; cursor: pointer; }
     .mapa input[type=text] { padding: 8px 10px; margin-bottom: 6px; }
+    .mapa select { padding: 7px 10px; font-size: 13px; }
+    .proy { position: relative; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px 14px; margin-top: 12px; }
+    .proy__n { display: block; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
+    .proy .x { position: absolute; top: 8px; right: 8px; }
+    .proy__precios { margin-top: 10px; padding-top: 4px; border-top: 1px dashed var(--line); }
+    .proy__sub { margin-top: 8px; font-size: 14px; text-align: right; }
     .mapas-acc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .obj-ia { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
     .x { background: none; border: 0; font-size: 20px; color: var(--gray); cursor: pointer; padding: 0 4px; }
@@ -194,6 +200,12 @@
         <label>Vigencia</label><input type="text" name="vigencia" value="30 días naturales a partir de su envío">
         <label>Link de la propuesta <small>(se genera solo; puedes editarlo)</small></label>
         <div class="slug"><span id="dominio">/</span><input type="text" name="slug" placeholder="cliente-proyecto"></div>
+        <label class="check"><input type="checkbox" name="multi"> Propuesta multiproyecto <small>— varios proyectos del cliente en una sola propuesta</small></label>
+        <div id="proyectos-box" hidden>
+          <p class="hint" style="margin:8px 0 0">Arriba, en <b>Proyecto</b>, pon el nombre general (ej. "Portafolio Bajío"). Aquí, cada proyecto con su precio por servicio; los servicios y alcances se eligen una vez en la sección 04 y aplican a todos.</p>
+          <div id="proyectos"></div>
+          <div class="mapas-acc"><button type="button" class="btn btn--line btn--sm" id="b-proyecto">+ Agregar proyecto</button></div>
+        </div>
       </fieldset>
 
       <fieldset>
@@ -252,6 +264,10 @@
           <option value="mensual">Pago mensual hasta la entrega</option>
           <option value="100">100% anticipo</option>
         </select>
+        <div class="row">
+          <div><label>Descuento MXN <small>— opcional</small></label><input type="number" name="descuento" min="0" step="1000" placeholder="0"></div>
+          <div><label>Concepto del descuento</label><input type="text" name="descuentoTxt" value="Descuento por paquete"></div>
+        </div>
         <label>Nota de costos</label>
         <input type="text" name="notaPagos" value="Todos los costos están en MXN. No incluyen impuestos en caso de aplicar.">
         <div class="resumen" id="resumen"></div>
@@ -322,6 +338,9 @@
   const slugify = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 70);
 
   let mapas = [];
+  let proyectos = [];   // multiproyecto: { nombre, ciudad, giros, precios: { [idServicio]: monto } }
+  let firmaP = null;
+  const multiOn = () => $("multi").checked && proyectos.length > 0;
   let socioFoto = "assets/socios/carlos-del-valle.jpg";        // data URL (nueva) o ruta (existente)            // { titulo, pie, src, nuevo }
   let slugManual = false;
   let plantilla = "";
@@ -591,6 +610,7 @@
         <div>
           <input type="text" data-k="titulo" value="${esc(m.titulo)}" placeholder="Título (Zona, Terreno…)">
           <input type="text" data-k="pie" value="${esc(m.pie)}" placeholder="Descripción corta">
+          ${multiOn() ? `<select data-k="proyecto"><option value="">General (todos)</option>${proyectos.map((p, k) => `<option value="${k}"${String(m.proyecto ?? "") === String(k) ? " selected" : ""}>${esc(p.nombre || `Proyecto ${k + 1}`)}</option>`).join("")}</select>` : ""}
         </div>
         <button type="button" class="x" data-del="${i}" aria-label="Quitar">×</button>
       </div>`).join("");
@@ -601,6 +621,9 @@
   listaMapas.addEventListener("click", (e) => {
     const d = e.target.closest("[data-del]"); if (d) { mapas.splice(+d.dataset.del, 1); pintarMapas(); actualizar(); return; }
     const p = e.target.closest("[data-pick]"); if (p) { pickIndex = +p.dataset.pick; fileInput.click(); }
+  });
+  listaMapas.addEventListener("change", (e) => {
+    if (e.target.dataset.k === "proyecto") mapas[+e.target.closest(".mapa").dataset.i].proyecto = e.target.value;
   });
   listaMapas.addEventListener("input", (e) => {
     const k = e.target.dataset.k; if (!k) return;
@@ -946,6 +969,69 @@
     });
   }
 
+  /* ---------- Multiproyecto: cada proyecto con su nombre, ciudad, giros y precio por servicio ---------- */
+  const boxP = document.getElementById("proyectos-box"), contP = document.getElementById("proyectos");
+  const unicosOn = () => ids.filter((id) => srvOn(id) && (B.servicios[id].cobro || "unico") === "unico");
+  const nuevoProyecto = (p = {}) => ({ nombre: "", ciudad: "", giros: "", precios: {}, ...p });
+  function pintarProyectos() {
+    const srvs = unicosOn();
+    contP.innerHTML = proyectos.map((p, i) => `
+      <div class="proy" data-p="${i}">
+        <span class="proy__n">Proyecto ${i + 1}</span>
+        ${proyectos.length > 1 ? `<button type="button" class="x" data-pdel="${i}" aria-label="Quitar proyecto">×</button>` : ""}
+        <div class="row">
+          <div><label>Nombre</label><input type="text" data-pk="nombre" value="${esc(p.nombre)}" placeholder="Santa Rosa 2"></div>
+          <div><label>Ciudad / ubicación</label><input type="text" data-pk="ciudad" value="${esc(p.ciudad)}" placeholder="Querétaro"></div>
+        </div>
+        <label>Giro(s) <small>— separados por coma</small></label><input type="text" data-pk="giros" value="${esc(p.giros)}" placeholder="Industrial">
+        <div class="proy__precios">
+          ${srvs.length ? `<div class="row3">${srvs.map((id) => `<div><label>${esc(B.servicios[id].nombre)} · MXN</label><input type="number" min="0" step="1000" data-precio="${id}" value="${p.precios[id] ?? ""}" placeholder="0"></div>`).join("")}</div>
+          <p class="proy__sub">Subtotal: <b>${mxn(srvs.reduce((a, id) => a + (+p.precios[id] || 0), 0))}</b></p>`
+          : `<p class="hint" style="margin:8px 0 0">Marca los servicios en la sección 04 para ponerle precio a este proyecto.</p>`}
+        </div>
+      </div>`).join("");
+    pintarMapas();
+  }
+  function syncProyectos() {
+    const on = $("multi").checked;
+    if (on && !proyectos.length) {
+      // Al activar: el proyecto actual como el primero (con sus precios) + uno vacío
+      const precios = Object.fromEntries(unicosOn().map((id) => [id, +$(`inversion-${id}`).value || ""]));
+      proyectos = [nuevoProyecto({ nombre: $("proyecto").value.trim(), ciudad: $("ciudad").value.trim(), giros: $("giros").value.trim(), precios }), nuevoProyecto()];
+      firmaP = null;
+    }
+    boxP.hidden = !on;
+    const srvs = unicosOn(), firma = `${on}|${proyectos.length}|${srvs.join()}`;
+    if (firma !== firmaP) { firmaP = firma; pintarProyectos(); }
+    // Con proyectos, la inversión de cada servicio es la suma de sus precios por proyecto
+    ids.forEach((id) => {
+      const inp = $(`inversion-${id}`); if (!inp) return;
+      const auto = multiOn() && srvs.includes(id);
+      inp.readOnly = auto;
+      if (auto) inp.value = proyectos.reduce((a, p) => a + (+p.precios[id] || 0), 0);
+    });
+  }
+  contP.addEventListener("input", (e) => {
+    const el = e.target, p = proyectos[+el.closest(".proy")?.dataset.p];
+    if (!p) return;
+    if (el.dataset.pk) p[el.dataset.pk] = el.value;
+    if (el.dataset.precio) {
+      p.precios[el.dataset.precio] = el.value === "" ? "" : Math.max(0, +el.value || 0);
+      const sub = el.closest(".proy").querySelector(".proy__sub b");
+      if (sub) sub.textContent = mxn(unicosOn().reduce((a, id) => a + (+p.precios[id] || 0), 0));
+    }
+  });
+  contP.addEventListener("change", (e) => { if (e.target.dataset.pk === "nombre") pintarMapas(); });
+  contP.addEventListener("click", (e) => {
+    const d = e.target.closest("[data-pdel]"); if (!d) return;
+    const k = +d.dataset.pdel;
+    if (!confirm(`¿Quitar ${proyectos[k].nombre || `el proyecto ${k + 1}`}?`)) return;
+    proyectos.splice(k, 1);
+    mapas.forEach((m) => { if (m.proyecto !== "" && m.proyecto != null) { if (+m.proyecto === k) m.proyecto = ""; else if (+m.proyecto > k) m.proyecto = String(+m.proyecto - 1); } });
+    firmaP = null; actualizar();
+  });
+  document.getElementById("b-proyecto").onclick = () => { proyectos.push(nuevoProyecto()); firmaP = null; actualizar(); contP.lastElementChild?.querySelector("input")?.focus(); };
+
   /* ---------- Construir los datos de la propuesta ---------- */
   function construir() {
     const off = +$("semanaInicio").value - 1;
@@ -988,21 +1074,30 @@
     const inicioDe = (s) => filas[filaTrabajo.get(s)].desde, entregaDe = (s) => filas[filaHito.get(s) ?? filaTrabajo.get(s)].desde;
     const unicos = sel.filter((s) => s.cobro === "unico");
     const esquema = $("esquemaPago").value;
+    // Descuento: se reparte proporcionalmente entre los servicios de pago único (los pagos suman el total con descuento)
+    const subU = unicos.reduce((a, s) => a + s.inversion, 0);
+    const descuento = Math.min(Math.max(0, +$("descuento").value || 0), subU);
+    const netos = new Map(); let resto = subU - descuento;
+    unicos.forEach((s, k) => {
+      const n = k === unicos.length - 1 ? resto : Math.round(s.inversion * (1 - descuento / (subU || 1)) * 100) / 100;
+      netos.set(s, Math.round(n * 100) / 100); resto -= n;
+    });
+    const neto = (s) => netos.get(s) ?? s.inversion;
     if (esquema === "100") {
-      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Pago 100%", fecha: mesDe(inicioDe(s)), monto: s.inversion }));
+      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: "Pago 100%", fecha: mesDe(inicioDe(s)), monto: neto(s) }));
     } else if (esquema === "mensual") {
       // Una mensualidad por mes, desde el arranque del servicio hasta el mes de su entrega (presentación)
       const lista = [];
       unicos.forEach((s) => {
         const i = sel.indexOf(s), m0 = Math.floor(inicioDe(s) / 4), m1 = Math.floor(entregaDe(s) / 4), n = m1 - m0 + 1;
-        const base = Math.floor(s.inversion / n);
-        for (let k = 0; k < n; k++) lista.push({ mes: m0 + k, i, p: { servicio: s.cat.nombre, concepto: n > 1 ? `Mensualidad ${k + 1} de ${n}` : "Pago 100%", fecha: MESES[(mes0 + m0 + k) % 12], monto: k < n - 1 ? base : s.inversion - base * (n - 1) } });
+        const inv = neto(s), base = Math.floor(inv / n);
+        for (let k = 0; k < n; k++) lista.push({ mes: m0 + k, i, p: { servicio: s.cat.nombre, concepto: n > 1 ? `Mensualidad ${k + 1} de ${n}` : "Pago 100%", fecha: MESES[(mes0 + m0 + k) % 12], monto: k < n - 1 ? base : Math.round((inv - base * (n - 1)) * 100) / 100 } });
       });
       lista.sort((a, b) => a.mes - b.mes || a.i - b.i).forEach((x) => pagos.push(x.p));
     } else {
       const [a, f] = esquema === "70-30" ? [70, 30] : [50, 50];
-      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: `Anticipo ${a}%`, fecha: mesDe(inicioDe(s)), monto: s.inversion * a / 100 }));
-      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: `Finiquito ${f}%`, fecha: mesDe(entregaDe(s)), monto: s.inversion - s.inversion * a / 100 }));
+      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: `Anticipo ${a}%`, fecha: mesDe(inicioDe(s)), monto: Math.round(neto(s) * a) / 100 }));
+      unicos.forEach((s) => pagos.push({ servicio: s.cat.nombre, concepto: `Finiquito ${f}%`, fecha: mesDe(entregaDe(s)), monto: Math.round((neto(s) - Math.round(neto(s) * a) / 100) * 100) / 100 }));
     }
 
     // Servicios mensuales: una mensualidad por mes desde su arranque; comisión: una fila informativa sin monto
@@ -1022,7 +1117,14 @@
       resumen: $("resumen").value.trim(),
       objetivos: lineas($("objetivos").value),
       giros: $("giros").value.split(",").map((x) => x.trim()).filter(Boolean),
-      mapas: mapas.filter((m) => m.src).map((m) => ({ titulo: m.titulo, img: m.src, pie: m.pie })),
+      mapas: mapas.filter((m) => m.src).map((m) => ({ titulo: m.titulo, img: m.src, pie: m.pie,
+        ...(multiOn() && m.proyecto !== "" && m.proyecto != null && proyectos[+m.proyecto] ? { proyecto: +m.proyecto } : {}) })),
+      ...(multiOn() ? { proyectos: proyectos.map((p) => ({
+        nombre: p.nombre.trim() || "Proyecto", ciudad: p.ciudad.trim(),
+        giros: p.giros.split(",").map((x) => x.trim()).filter(Boolean),
+        servicios: unicos.map((s) => ({ id: s.id, inversion: Math.max(0, +p.precios[s.id] || 0) }))
+      })) } : {}),
+      ...(descuento > 0 ? { descuento: { concepto: $("descuentoTxt").value.trim() || "Descuento", monto: descuento } } : {}),
       servicios: sel.map((s) => ({ id: s.id, variante: s.variante, ...(s.variantes ? { variantes: s.variantes } : {}), semanas: s.semanas, inversion: s.inversion,
         ...(s.cobro === "mensual" ? { meses: s.meses, mensual: s.mensual } : {}),
         ...(s.cobro === "comision" ? { meses: s.meses, inversionTexto: s.inversionTexto } : {}),
@@ -1047,15 +1149,17 @@
   let t = null;
   function actualizar() {
     syncSrv();
+    syncProyectos();
     if (!slugManual) $("slug").value = slugify(`${$("cliente").value} ${$("proyecto").value}`);
     const d = construir();
-    const total = d.servicios.reduce((a, s) => a + s.inversion, 0);
+    const total = d.servicios.reduce((a, s) => a + s.inversion, 0) - (d.descuento?.monto || 0);
     const off = +$("semanaInicio").value - 1, mes0 = +$("mesInicio").value, anio = +$("anio").value;
     const semanas = d.cronograma.meses.reduce((a, m) => a + m.semanas, 0) - off;
     const anioFin = anio + Math.floor((mes0 + d.cronograma.meses.length - 1) / 12);
     const periodo = `${d.cronograma.meses[0].nombre} ${anio} → ${d.cronograma.meses.at(-1).nombre} ${anioFin}`;
     document.getElementById("resumen").innerHTML = d.servicios.length
       ? `<b>${d.servicios.length} servicio${d.servicios.length > 1 ? "s" : ""} · <span class="r">${mxn(total)} MXN</span></b><br>
+         ${d.descuento ? `${esc(d.descuento.concepto)}: −${mxn(d.descuento.monto)}<br>` : ""}${d.proyectos ? `${d.proyectos.map((p) => `${esc(p.nombre)}: ${mxn(p.servicios.reduce((a, x) => a + x.inversion, 0))}`).join(" · ")}<br>` : ""}
          ${periodo} · ${semanas} semanas<br>
          ${d.pagos.map((p) => `${p.concepto} ${esc(p.servicio)}: ${p.montoTexto ? esc(p.montoTexto) : mxn(p.monto)} (${esc(p.fecha)})`).join("<br>")}`
       : "Marca al menos un servicio para calcular calendario y pagos.";
@@ -1066,7 +1170,7 @@
       pv.onload = () => { try { pv.contentWindow.scrollTo(0, y); } catch (_) {} };
       pv.srcdoc = armarHTML(d);
     }, 500);
-    try { localStorage.setItem("propuesta-borrador", JSON.stringify({ d, mapas, slug: $("slug").value, slugManual, notas: $("notas").value })); } catch (_) {}
+    try { localStorage.setItem("propuesta-borrador", JSON.stringify({ d, mapas, proyectos, slug: $("slug").value, slugManual, notas: $("notas").value })); } catch (_) {}
   }
   f.addEventListener("input", (e) => { if (e.target.name === "slug") { slugManual = true; e.target.value = slugify(e.target.value); } actualizar(); });
   f.addEventListener("change", actualizar);
@@ -1120,7 +1224,12 @@
       const ini = F.inicios?.[s.id] ?? (trabajo.find((x) => x.n === i + 1)?.desde ?? off) - off + 1;
       set(`inicio-${s.id}`, Math.max(1, ini));
     });
-    mapas = (d.mapas || []).map((m) => ({ titulo: m.titulo || "", pie: m.pie || "", src: m.img, nuevo: /^data:/.test(m.img) }));
+    set("descuento", d.descuento?.monto || ""); set("descuentoTxt", d.descuento?.concepto || "Descuento por paquete");
+    proyectos = (d.proyectos || []).map((p) => nuevoProyecto({ nombre: p.nombre || "", ciudad: p.ciudad || "", giros: (p.giros || []).join(", "),
+      precios: Object.fromEntries((p.servicios || []).map((x) => [x.id, x.inversion])) }));
+    $("multi").checked = proyectos.length > 0;
+    firmaP = null;
+    mapas = (d.mapas || []).map((m) => ({ titulo: m.titulo || "", pie: m.pie || "", src: m.img, nuevo: /^data:/.test(m.img), proyecto: m.proyecto ?? "" }));
     pintarMapas();
   }
 
