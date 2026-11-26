@@ -122,6 +122,11 @@
     .proy { position: relative; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px 14px; margin-top: 12px; }
     .proy__n { display: block; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
     .proy .x { position: absolute; top: 8px; right: 8px; }
+    .pm-head, .pm-fila { display: grid; grid-template-columns: 1.5fr 1.1fr 1fr 1fr 28px; gap: 8px; align-items: center; }
+    .pm-head { margin-top: 12px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gray); }
+    .pm-fila { margin-top: 6px; }
+    .pm-fila input { padding: 8px 10px; }
+    @media (max-width: 700px) { .pm-head { display: none; } .pm-fila { grid-template-columns: 1fr 1fr 28px; padding: 8px 0; border-bottom: 1px solid var(--line); } }
     .proy-tabs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 6px; padding: 10px; border-radius: 12px; background: var(--cream-2); }
     .proy-tabs .ptab { border: 1.5px solid var(--line); border-radius: 999px; padding: 8px 14px; background: #fff; font-size: 14px; cursor: pointer; }
     .proy-tabs .ptab.on { background: var(--ink); color: #fff; border-color: var(--ink); }
@@ -269,7 +274,18 @@
           <option value="70-30">70% anticipo / 30% finiquito</option>
           <option value="mensual">Pago mensual hasta la entrega</option>
           <option value="100">100% anticipo</option>
+          <option value="manual">Manual: capturo cada pago</option>
         </select>
+        <div id="pagos-man" hidden>
+          <p class="hint" style="margin:8px 0 0">Escribe cada pago como lo quieras presentar: por mes, por proyecto o mezclando proyectos. Así sale en la web y en la Orden de trabajo del PDF.</p>
+          <div class="pm-head"><span>Servicio / proyecto</span><span>Concepto</span><span>Fecha</span><span>Monto MXN</span><span></span></div>
+          <div id="pm-filas"></div>
+          <div class="mapas-acc">
+            <button type="button" class="btn btn--line btn--sm" id="b-pago">+ Agregar pago</button>
+            <button type="button" class="btn btn--line btn--sm" id="b-pago-auto">Volver a llenar con el cálculo automático</button>
+          </div>
+          <div class="estado" id="pm-estado"></div>
+        </div>
         <div class="row">
           <div><label>Descuento MXN <small>— opcional</small></label><input type="number" name="descuento" min="0" step="1000" placeholder="0"></div>
           <div><label>Concepto del descuento</label><input type="text" name="descuentoTxt" value="Descuento por paquete"></div>
@@ -1063,6 +1079,46 @@
     });
   });
 
+  /* ---------- Pagos manuales ---------- */
+  let pagosMan = [];      // { servicio, concepto, fecha, monto }
+  let ultimosAuto = [];   // los pagos del cálculo automático (para prellenar el modo manual)
+  let esqAnt = "50-50";   // último esquema automático elegido
+  const boxPM = document.getElementById("pagos-man"), filasPM = document.getElementById("pm-filas");
+  const copiaPagos = (arr) => arr.map((p) => ({ servicio: p.servicio || "", concepto: p.concepto || "", fecha: p.fecha || "", monto: p.montoTexto ? "" : p.monto ?? "" }));
+  function pintarPagosMan() {
+    filasPM.innerHTML = pagosMan.map((p, i) => `
+      <div class="pm-fila" data-i="${i}">
+        <input type="text" data-k="servicio" value="${esc(p.servicio)}" placeholder="Santa Rosa 2 + La Cañada">
+        <input type="text" data-k="concepto" value="${esc(p.concepto)}" placeholder="Anticipo">
+        <input type="text" data-k="fecha" value="${esc(p.fecha)}" placeholder="Enero 2027">
+        <input type="number" data-k="monto" min="0" step="0.01" value="${p.monto}" placeholder="0">
+        <button type="button" class="x" data-pmdel="${i}" aria-label="Quitar pago">×</button>
+      </div>`).join("");
+  }
+  filasPM.addEventListener("input", (e) => {
+    const k = e.target.dataset.k, p = pagosMan[+e.target.closest(".pm-fila")?.dataset.i];
+    if (p && k) p[k] = k === "monto" ? (e.target.value === "" ? "" : +e.target.value) : e.target.value;
+  });
+  filasPM.addEventListener("click", (e) => {
+    const d = e.target.closest("[data-pmdel]"); if (!d) return;
+    pagosMan.splice(+d.dataset.pmdel, 1); pintarPagosMan(); actualizar();
+  });
+  document.getElementById("b-pago").onclick = () => {
+    const ult = pagosMan[pagosMan.length - 1];
+    pagosMan.push({ servicio: ult?.servicio || "", concepto: "", fecha: "", monto: "" });
+    pintarPagosMan(); actualizar();
+    filasPM.lastElementChild?.querySelector("input")?.focus();
+  };
+  document.getElementById("b-pago-auto").onclick = () => {
+    if (pagosMan.length && !confirm("¿Reemplazar los pagos escritos por el cálculo automático?")) return;
+    pagosMan = copiaPagos(ultimosAuto); pintarPagosMan(); actualizar();
+  };
+  $("esquemaPago").addEventListener("change", () => {
+    const v = $("esquemaPago").value;
+    if (v !== "manual") { esqAnt = v; return; }
+    if (!pagosMan.length) { pagosMan = copiaPagos(ultimosAuto); pintarPagosMan(); }
+  });
+
   /* ---------- Servicios de la sección 04 ⇄ datos ---------- */
   const selToOut = (s) => ({ id: s.id, variante: s.variante, ...(s.variantes ? { variantes: s.variantes } : {}), semanas: s.semanas, inversion: s.inversion,
     ...(s.cobro === "mensual" ? { meses: s.meses, mensual: s.mensual } : {}),
@@ -1148,7 +1204,8 @@
     const pagos = [];
     const inicioDe = (s) => filas[filaTrabajo.get(s)].desde, entregaDe = (s) => filas[filaHito.get(s) ?? filaTrabajo.get(s)].desde;
     const unicos = sel.filter((s) => s.cobro === "unico");
-    const esquema = $("esquemaPago").value;
+    const manual = $("esquemaPago").value === "manual";
+    const esquema = manual ? esqAnt : $("esquemaPago").value;
     // Descuento: se reparte proporcionalmente entre los servicios de pago único (los pagos suman el total con descuento)
     const subU = unicos.reduce((a, s) => a + s.inversion, 0);
     const descuento = Math.min(Math.max(0, +$("descuento").value || 0), subU);
@@ -1182,6 +1239,7 @@
     });
     sel.filter((s) => s.cobro === "comision").forEach((s) => pagos.push({ servicio: nom(s), concepto: "Comisión", fecha: `Desde ${mesDe(inicioDe(s))}`, monto: 0, montoTexto: s.inversionTexto }));
 
+    ultimosAuto = pagos;
     return {
       cliente: $("cliente").value.trim() || "Cliente",
       proyecto: $("proyecto").value.trim() || "Proyecto",
@@ -1200,10 +1258,10 @@
       ...(descuento > 0 ? { descuento: { concepto: $("descuentoTxt").value.trim() || "Descuento", monto: descuento } } : {}),
       servicios: sel.map((s) => ({ ...selToOut(s), ...(s.proyecto != null ? { proyecto: s.proyecto } : {}) })),
       cronograma: { meses, filas, nota: "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables." },
-      pagos,
+      pagos: manual ? pagosMan.filter((p) => p.servicio || p.concepto || p.monto !== "").map((p) => ({ servicio: p.servicio.trim(), concepto: p.concepto.trim(), fecha: p.fecha.trim(), monto: +p.monto || 0 })) : pagos,
       notaPagos: $("notaPagos").value.trim(),
       socio: { ...B.socio },
-      _form: { mesInicio: mes0, anio: +$("anio").value, semanaInicio: off + 1, esquemaPago: $("esquemaPago").value, inicios: Object.fromEntries(sel.map((s) => [s.id, s.inicio])) }
+      _form: { mesInicio: mes0, anio: +$("anio").value, semanaInicio: off + 1, esquemaPago: $("esquemaPago").value, ...(manual ? { esquemaBase: esqAnt } : {}), inicios: Object.fromEntries(sel.map((s) => [s.id, s.inicio])) }
     };
   }
 
@@ -1233,6 +1291,14 @@
          ${periodo} · ${semanas} semanas<br>
          ${d.pagos.map((p) => `${p.concepto} ${esc(p.servicio)}: ${p.montoTexto ? esc(p.montoTexto) : mxn(p.monto)} (${esc(p.fecha)})`).join("<br>")}`
       : "Marca al menos un servicio para calcular calendario y pagos.";
+    boxPM.hidden = $("esquemaPago").value !== "manual";
+    if (!boxPM.hidden) {
+      const suma = d.pagos.reduce((a, p) => a + p.monto, 0), dif = Math.round((total - suma) * 100) / 100;
+      const est = document.getElementById("pm-estado");
+      est.className = "estado " + (dif ? "err" : "ok");
+      est.innerHTML = `Suma de los pagos: <b>${mxn(suma)}</b> · Total de la propuesta: <b>${mxn(total)}</b>` +
+        (dif ? `<br>${dif > 0 ? `Faltan ${mxn(dif)} por asignar.` : `Los pagos pasan el total por ${mxn(-dif)}.`}` : " ✓");
+    }
     if (d.proyectos) contP.querySelectorAll(".proy").forEach((el, k) => {
       const ss = d.servicios.filter((x) => x.proyecto === k), im = d.mapas.filter((m) => m.proyecto === k).length;
       el.querySelector(".proy__sub").innerHTML = `${ss.length} servicio${ss.length === 1 ? "" : "s"} · ${im} imagen${im === 1 ? "" : "es"} · <b>${mxn(ss.reduce((a, x) => a + x.inversion, 0))}</b>`;
@@ -1275,6 +1341,9 @@
     set("mesInicio", mesIdx >= 0 ? mesIdx : hoy.getMonth());
     set("anio", F.anio || (String(d.fecha || "").match(/\d{4}/) || [hoy.getFullYear()])[0]);
     set("semanaInicio", off + 1);
+    esqAnt = F.esquemaBase || (F.esquemaPago !== "manual" && F.esquemaPago) || "50-50";
+    pagosMan = F.esquemaPago === "manual" ? copiaPagos(d.pagos || []) : [];
+    pintarPagosMan();
     set("esquemaPago", F.esquemaPago || ((d.pagos || []).some((p) => /Mensualidad/.test(p.concepto)) ? "mensual" : (d.pagos || []).some((p) => /70%/.test(p.concepto)) ? "70-30" : (d.pagos || []).some((p) => /100/.test(p.concepto)) ? "100" : "50-50"));
 
     const espec = (s, ciudad) => (B.servicios[s.id]?.giros ? B.especExtras(s, ciudad) : s.especificaciones || []);
