@@ -122,6 +122,8 @@
     .proy { position: relative; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px 14px; margin-top: 12px; }
     .proy__n { display: block; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
     .proy .x { position: absolute; top: 8px; right: 8px; }
+    .pm-gen { margin-top: 12px; padding: 12px 14px 14px; border: 1.5px dashed var(--line); border-radius: 12px; }
+    .pm-gen > b { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
     .pm-head, .pm-fila { display: grid; grid-template-columns: 1.5fr 1.1fr 1fr 1fr 28px; gap: 8px; align-items: center; }
     .pm-head { margin-top: 12px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gray); }
     .pm-fila { margin-top: 6px; }
@@ -278,6 +280,18 @@
         </select>
         <div id="pagos-man" hidden>
           <p class="hint" style="margin:8px 0 0">Escribe cada pago como lo quieras presentar: por mes, por proyecto o mezclando proyectos. Así sale en la web y en la Orden de trabajo del PDF.</p>
+          <div class="pm-gen">
+            <b>Agregar mensualidades</b>
+            <div class="row3">
+              <div><label>Servicio</label><select id="pg-srv"></select></div>
+              <div><label>Nombre en la orden</label><input type="text" id="pg-nom" placeholder="Santa Rosa 2 · Estudio de Mercado"></div>
+              <div><label>Primer mes</label><select id="pg-mes"></select></div>
+              <div><label>Número de meses</label><input type="number" id="pg-n" min="1" max="60" value="3"></div>
+              <div><label>Monto mensual MXN</label><input type="number" id="pg-monto" min="0" step="0.01" placeholder="0"></div>
+              <div><label>&nbsp;</label><button type="button" class="btn btn--red btn--sm" id="pg-ok" style="width:100%">Agregar mensualidades</button></div>
+            </div>
+            <p class="hint" id="pg-hint" style="margin:6px 0 0"></p>
+          </div>
           <div class="pm-head"><span>Servicio / proyecto</span><span>Concepto</span><span>Fecha</span><span>Monto MXN</span><span></span></div>
           <div id="pm-filas"></div>
           <div class="mapas-acc">
@@ -1113,6 +1127,52 @@
     if (pagosMan.length && !confirm("¿Reemplazar los pagos escritos por el cálculo automático?")) return;
     pagosMan = copiaPagos(ultimosAuto); pintarPagosMan(); actualizar();
   };
+  // Generador de mensualidades: N meses seguidos con el mismo monto (si viene de un servicio, la última ajusta el redondeo)
+  let ultimosSrv = [], firmaGen = "";
+  const pgSrv = document.getElementById("pg-srv"), pgNom = document.getElementById("pg-nom"), pgMes = document.getElementById("pg-mes"),
+    pgN = document.getElementById("pg-n"), pgMonto = document.getElementById("pg-monto"), pgHint = document.getElementById("pg-hint");
+  function pintarGen() {
+    const mes0 = +$("mesInicio").value, anio = +$("anio").value;
+    const firma = `${mes0}|${anio}|${ultimosSrv.map((x) => x.nombre + x.total).join(",")}`;
+    if (firma === firmaGen) return;
+    firmaGen = firma;
+    const antesMes = pgMes.value, antesSrv = pgSrv.value;
+    pgMes.innerHTML = Array.from({ length: 24 }, (_, k) => `<option value="${k}">${MESES[(mes0 + k) % 12]} ${anio + Math.floor((mes0 + k) / 12)}</option>`).join("");
+    pgSrv.innerHTML = `<option value="">Otro (escribir nombre)</option>` + ultimosSrv.map((x, i) => `<option value="${i}">${esc(x.nombre)}</option>`).join("");
+    if (antesMes) pgMes.value = antesMes;
+    if (antesSrv && ultimosSrv[+antesSrv]) pgSrv.value = antesSrv;
+  }
+  const textoMes = (k) => pgMes.querySelector(`option[value="${k}"]`)?.textContent || "";
+  const hintGen = () => {
+    const n = Math.max(1, +pgN.value || 1), m = +pgMonto.value || 0, x = ultimosSrv[+pgSrv.value];
+    pgHint.textContent = m ? `${n} mensualidad${n > 1 ? "es" : ""} de ${mxn(m)} = ${mxn(m * n)}${x && pgSrv.value !== "" ? ` (el servicio cuesta ${mxn(x.total)})` : ""}` : "";
+  };
+  pgSrv.addEventListener("change", () => {
+    const x = ultimosSrv[+pgSrv.value];
+    if (pgSrv.value === "" || !x) { pgNom.value = ""; hintGen(); return; }
+    const n = Math.max(1, x.meses);
+    pgNom.value = x.nombre; pgN.value = n; pgMes.value = String(x.mesOff);
+    pgMonto.value = Math.round((x.total / n) * 100) / 100;
+    hintGen();
+  });
+  pgN.addEventListener("input", () => {
+    const x = ultimosSrv[+pgSrv.value];
+    if (pgSrv.value !== "" && x) pgMonto.value = Math.round((x.total / Math.max(1, +pgN.value || 1)) * 100) / 100;
+    hintGen();
+  });
+  pgMonto.addEventListener("input", hintGen);
+  document.getElementById("pg-ok").onclick = () => {
+    const n = Math.min(60, Math.max(1, +pgN.value || 1)), m = +pgMonto.value || 0, k0 = +pgMes.value || 0;
+    const nombre = pgNom.value.trim() || ultimosSrv[+pgSrv.value]?.nombre || "";
+    if (!nombre) { pgHint.textContent = "Escribe el nombre que saldrá en la orden de trabajo."; pgNom.focus(); return; }
+    if (!m) { pgHint.textContent = "Escribe el monto mensual."; pgMonto.focus(); return; }
+    const x = pgSrv.value !== "" ? ultimosSrv[+pgSrv.value] : null;
+    // Si viene de un servicio y el total casi cuadra (redondeo), la última mensualidad ajusta la diferencia
+    const ajuste = x && Math.abs(x.total - m * n) < n ? Math.round((x.total - m * (n - 1)) * 100) / 100 : m;
+    for (let k = 0; k < n; k++) pagosMan.push({ servicio: nombre, concepto: n > 1 ? `Mensualidad ${k + 1} de ${n}` : "Pago único", fecha: textoMes(k0 + k), monto: k === n - 1 ? ajuste : m });
+    pintarPagosMan(); actualizar();
+    pgHint.textContent = `✓ Se agregaron ${n} mensualidad${n > 1 ? "es" : ""} de ${nombre}.`;
+  };
   $("esquemaPago").addEventListener("change", () => {
     const v = $("esquemaPago").value;
     if (v !== "manual") { esqAnt = v; return; }
@@ -1240,6 +1300,10 @@
     sel.filter((s) => s.cobro === "comision").forEach((s) => pagos.push({ servicio: nom(s), concepto: "Comisión", fecha: `Desde ${mesDe(inicioDe(s))}`, monto: 0, montoTexto: s.inversionTexto }));
 
     ultimosAuto = pagos;
+    ultimosSrv = sel.filter((s) => s.cobro !== "comision").map((s) => ({
+      nombre: nom(s), total: s.cobro === "unico" ? neto(s) : s.inversion,
+      meses: s.cobro === "mensual" ? s.meses : Math.floor(entregaDe(s) / 4) - Math.floor(inicioDe(s) / 4) + 1,
+      mesOff: Math.floor(inicioDe(s) / 4) }));
     return {
       cliente: $("cliente").value.trim() || "Cliente",
       proyecto: $("proyecto").value.trim() || "Proyecto",
@@ -1292,6 +1356,7 @@
          ${d.pagos.map((p) => `${p.concepto} ${esc(p.servicio)}: ${p.montoTexto ? esc(p.montoTexto) : mxn(p.monto)} (${esc(p.fecha)})`).join("<br>")}`
       : "Marca al menos un servicio para calcular calendario y pagos.";
     boxPM.hidden = $("esquemaPago").value !== "manual";
+    if (!boxPM.hidden) pintarGen();
     if (!boxPM.hidden) {
       const suma = d.pagos.reduce((a, p) => a + p.monto, 0), dif = Math.round((total - suma) * 100) / 100;
       const est = document.getElementById("pm-estado");
