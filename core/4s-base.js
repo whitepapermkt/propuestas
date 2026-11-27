@@ -571,6 +571,47 @@ window.BASE_4S = {
       demanda: ["Se realiza la estimación de demanda para cada uno de los giros analizados."],
       especificaciones: ["Análisis histórico de la evolución de la vivienda en tamaños, precios, preferencias de mercado y desplazamiento."]
     },
+    "lotes-residenciales": {
+      nombre: "Lotes Residenciales",
+      giros: ["Lotes Residenciales", "Macrolotes Residenciales", "Vivienda Horizontal"],
+      ofertaIntro: "precios por m² de lote, superficies y frentes, absorción, amenidades, esquemas de financiamiento y fraccionamientos presentes, entre otros",
+      unidades: "Información actualizada constantemente del número de lotes y los m² totales de lotes residenciales, así como los niveles de venta y el inventario disponible de los fraccionamientos del giro.",
+      demanda: [
+        "Se realiza la estimación de demanda de lotes residenciales por segmento: comprador para construir vivienda propia y comprador inversionista (plusvalía).",
+        "Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican a compradores potenciales de lotes y a asesores inmobiliarios de la zona."
+      ],
+      especificaciones: [
+        "Análisis histórico de la evolución de los lotes residenciales en superficies, precios por m², plusvalía, preferencias de mercado y desplazamiento.",
+        "Precio de venta estimado por m² de lote, con premios por ubicación (esquina, frente a área verde, vista).",
+        "Velocidad de ventas (proyección de absorción de lotes por mes).",
+        "Mezcla recomendada de superficies y frentes de lote.",
+        "Recomendación de amenidades y equipamiento del fraccionamiento.",
+        "Esquemas de pago y financiamiento recomendados (enganche, plazo, meses sin intereses).",
+        "Benchmark de fraccionamientos y lotes comparables en {ciudad}."
+      ],
+      // Textos de las tarjetas de la web (por título de la tarjeta del catálogo)
+      bloques: {
+        "Validación de zona / ubicación": { texto: "Determinamos NSE de la zona, número de personas en el polígono de influencia y tendencia de crecimiento urbano." },
+        "Unidades / m² totales y ocupación": { titulo: "Lotes / m² totales y absorción" },
+        "Precios de referencia": { texto: "Precios totales y por m² de lote de los fraccionamientos competidores, con su plusvalía histórica y esquemas de pago." },
+        "Segmentación del mercado": { texto: "Definimos la segmentación de compradores de lotes residenciales presentes en la zona: uso propio e inversión." },
+        "Preferencias del mercado": { texto: "Indagamos las preferencias de cada segmento en superficie, frente, amenidades, esquemas de pago y reglamento." },
+        "Capacidad de mercado": { texto: "Metodología propia para estimar la capacidad de absorción de lotes residenciales en la zona." }
+      },
+      // Alcances propios: la plantilla de Oferta y Demanda, con todo enfocado a lotes residenciales
+      alcances: [
+        { id: "oferta", corto: "Oferta", titulo: "1.1 Estudio de Oferta · Alcance lotes residenciales", entregable: "Reporte PDF", grupos: [
+          { titulo: "Análisis de oferta", items: ["Análisis de plaza e infraestructura (vialidades, servicios y factibilidades de agua, drenaje y energía).", "Análisis demográfico de la zona.", "Análisis de variables clave de lotes residenciales (número de lotes, superficie, frente, segmento, rango de precio, inventario, ritmo de venta).", "Análisis de fraccionamientos y desarrollos de lotes residenciales en venta.", "Tipo de comprador de lotes: para construir vivienda propia o inversionista.", "Comparativa de inventarios, etapas, amenidades y condiciones de entrega (urbanización, servicios, escrituración)."] },
+          { titulo: "Benchmark", items: ["Validación de zona / ubicación: determinamos el NSE de la zona, el número de personas en el polígono de influencia y la tendencia de crecimiento urbano.", "Lotes / m² totales y absorción: información actualizada constantemente del número de lotes y los m² totales de lotes residenciales, así como los niveles de venta y el inventario disponible de los fraccionamientos.", "Precios de referencia de la zona: presentamos los precios totales y por m² de lote de los fraccionamientos competidores, con su plusvalía histórica y esquemas de pago."] },
+          { titulo: "Big Data", items: ["Mapa de la zona de influencia primaria con los lotes residenciales publicados online.", "Análisis de rango de superficie y precio por m² de lote.", "Comparativa de oferta formal (fraccionamientos) y oferta informal (lotes de reventa y particulares)."] }
+        ]},
+        { id: "demanda", corto: "Demanda", titulo: "1.2 Estudio de Demanda · Alcance lotes residenciales", entregable: "Reporte PDF", nota: "Se realiza la estimación de demanda de lotes residenciales por segmento: comprador para construir vivienda propia y comprador inversionista (plusvalía). Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican a compradores potenciales de lotes y a asesores inmobiliarios de la zona.", grupos: [
+          { titulo: "Análisis de demanda", items: ["Definición del perfil del comprador de lotes residenciales.", "Generadores de valor de la ubicación (accesos, escuelas, comercio, empleo, seguridad).", "Poder adquisitivo del mercado y capacidad de pago (contado, enganche y plazo).", "Usos, preferencias y hábitos del mercado: superficie y frente de lote, amenidades, seguridad y tiempo para construir.", "Determinar las necesidades insatisfechas del mercado de lotes residenciales.", "Conclusiones clave y retroalimentación al proyecto (lotificación, precios y esquemas de venta)."] },
+          { titulo: "Mercado meta", items: ["Segmentación del mercado: definimos la segmentación apropiada de compradores de lotes residenciales (uso propio e inversión) presentes en la zona.", "Preferencias del mercado: indagamos las preferencias de los distintos segmentos en superficie, frente, amenidades, esquemas de pago y reglamento del fraccionamiento.", "Capacidad de mercado: desarrollamos una metodología para estimar la capacidad de absorción de lotes residenciales en la zona."] },
+          { titulo: "Estimación", items: ["Determinación de la capacidad de mercado de la zona (lotes residenciales).", "Determinación del enfoque del proyecto y mezcla de superficies de lote.", "Determinación general de lotes y metros cuadrados por superficie y precio."] }
+        ]}
+      ]
+    },
     industrial: {
       nombre: "Industrial",
       giros: ["Parques Industriales", "Microparques", "Bodegas", "Lotes Industriales", "Macrolotes"],
@@ -632,6 +673,8 @@ window.BASE_4S = {
 
   // Plantilla de Oferta y Demanda (texto de las propuestas de 4S, corregido)
   const generico = (keys) => {
+    const k = claves(keys);
+    if (k.length === 1 && GIROS_ESTUDIO[k[0]].alcances) return GIROS_ESTUDIO[k[0]].alcances; // giro con alcances propios (Lotes Residenciales)
     const g = combinado(keys);
     const alc = g.nombre.toLowerCase();
     return [
@@ -740,7 +783,10 @@ window.BASE_4S.resolver = function (s, i) {
     nombreLargo: t(cat.nombreLargo),
     giro, variante: s.variante || (cat.giros ? Object.keys(cat.giros)[0] : s.variante),
     bloques: (cat.bloques || []).filter((b) => !b.alcance || ids.has(b.alcance))
-      .map((b) => ({ ...b, texto: t(b.texto), items: (b.items || []).map((it) => ({ ...it, texto: t(it.texto) })) })),
+      .map((b) => ({ ...b, texto: t(b.texto), items: (b.items || []).map((it) => {
+        const o = giro?.bloques?.[it.titulo] || {}; // textos propios del giro (ej. Lotes Residenciales)
+        return { ...it, ...o, texto: t(o.texto ?? it.texto) };
+      }) })),
     pdf: cat.pdf && { ...cat.pdf, titulo: t(cat.pdf.titulo), especIntro: t(cat.pdf.especIntro) }
   };
 };

@@ -157,7 +157,7 @@
   }
 
   // 13/14 · Estudio de Oferta / Demanda con los giros, la medición de demanda y los puntos elegidos
-  const ICONOS = { "validación de zona": "s13-validacion-zona-mapa", "unidades": "s13-unidades-m2-ocupacion", "precios de referencia": "s13-precios-referencia",
+  const ICONOS = { "validación de zona": "s13-validacion-zona-mapa", "unidades": "s13-unidades-m2-ocupacion", "lotes": "s13-unidades-m2-ocupacion", "precios de referencia": "s13-precios-referencia",
     "segmentación": "s14-segmentacion-mercado", "preferencias": "s14-preferencias-mercado", "capacidad": "s14-capacidad-mercado" };
   function estudioLamina(s, id) {
     const g = s.giro || {};
