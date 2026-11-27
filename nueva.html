@@ -1210,7 +1210,9 @@
         gs.dataset.prev = giroKeys(s.id).join(",");
       }
       set(`espec-${s.id}`, (opts.espec ? opts.espec(s) : s.especificaciones || []).join("\n"));
-      pintarAlcances(s.id, s.alcances);
+      // Formato viejo de varios giros (un Oferta/Demanda por giro: ids "oferta-industrial"…) → se arma con el formato nuevo (una sola Oferta y Demanda)
+      const viejo = (s.alcances || []).some((a) => /^(oferta|demanda)-/.test(a.id || ""));
+      pintarAlcances(s.id, viejo ? undefined : s.alcances);
       $(`on-${s.id}`).closest(".lf").classList.add("lf--open");
       set(`inicio-${s.id}`, Math.max(1, opts.inicio ? opts.inicio(s, i) : s.inicio || 1));
     });

@@ -545,7 +545,14 @@ window.BASE_4S = {
         "Se determina la necesidad de demanda por giro, estimando la capacidad de mercado de cada uno.",
         "Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican en puntos estratégicos del área nuclear del predio."
       ],
-      especificaciones: []
+      especificaciones: [],
+      // Con otros giros: sus puntos clave se suman a la plantilla común
+      focoMulti: {
+        extraOferta: ["Análisis de corredores comerciales: ocupación por corredor y composición de las plazas por giro, tipo (Fashion Mall, Stripmall, Community center) y área rentable."],
+        usos: ["hábitos de consumo", "plazas que visita", "gasto promedio"],
+        prefs: ["tiendas", "negocios y amenidades deseadas en la plaza"],
+        retro: ["mezcla de giros comerciales y anclas"]
+      }
     },
     oficinas: {
       nombre: "Oficinas",
@@ -578,7 +585,7 @@ window.BASE_4S = {
       unidades: "Información actualizada constantemente del número de lotes y los m² totales de lotes residenciales, así como los niveles de venta y el inventario disponible de los fraccionamientos del giro.",
       demanda: [
         "Se realiza la estimación de demanda de lotes residenciales por segmento: comprador para construir vivienda propia y comprador inversionista (plusvalía).",
-        "Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican a compradores potenciales de lotes y a asesores inmobiliarios de la zona."
+        "Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican en puntos estratégicos del área nuclear del predio."
       ],
       especificaciones: [
         "Análisis histórico de la evolución de los lotes residenciales en superficies, precios por m², plusvalía, preferencias de mercado y desplazamiento.",
@@ -598,19 +605,28 @@ window.BASE_4S = {
         "Preferencias del mercado": { texto: "Indagamos las preferencias de cada segmento en superficie, frente, amenidades, esquemas de pago y reglamento." },
         "Capacidad de mercado": { texto: "Metodología propia para estimar la capacidad de absorción de lotes residenciales en la zona." }
       },
-      // Alcances propios: la plantilla de Oferta y Demanda, con todo enfocado a lotes residenciales
-      alcances: [
-        { id: "oferta", corto: "Oferta", titulo: "1.1 Estudio de Oferta · Alcance lotes residenciales", entregable: "Reporte PDF", grupos: [
-          { titulo: "Análisis de oferta", items: ["Análisis de plaza e infraestructura (vialidades, servicios y factibilidades de agua, drenaje y energía).", "Análisis demográfico de la zona.", "Análisis de variables clave de lotes residenciales (número de lotes, superficie, frente, segmento, rango de precio, inventario, ritmo de venta).", "Análisis de fraccionamientos y desarrollos de lotes residenciales en venta.", "Tipo de comprador de lotes: para construir vivienda propia o inversionista.", "Comparativa de inventarios, etapas, amenidades y condiciones de entrega (urbanización, servicios, escrituración)."] },
-          { titulo: "Benchmark", items: ["Validación de zona / ubicación: determinamos el NSE de la zona, el número de personas en el polígono de influencia y la tendencia de crecimiento urbano.", "Lotes / m² totales y absorción: información actualizada constantemente del número de lotes y los m² totales de lotes residenciales, así como los niveles de venta y el inventario disponible de los fraccionamientos.", "Precios de referencia de la zona: presentamos los precios totales y por m² de lote de los fraccionamientos competidores, con su plusvalía histórica y esquemas de pago."] },
-          { titulo: "Big Data", items: ["Mapa de la zona de influencia primaria con los lotes residenciales publicados online.", "Análisis de rango de superficie y precio por m² de lote.", "Comparativa de oferta formal (fraccionamientos) y oferta informal (lotes de reventa y particulares)."] }
-        ]},
-        { id: "demanda", corto: "Demanda", titulo: "1.2 Estudio de Demanda · Alcance lotes residenciales", entregable: "Reporte PDF", nota: "Se realiza la estimación de demanda de lotes residenciales por segmento: comprador para construir vivienda propia y comprador inversionista (plusvalía). Se diseñan una encuesta y una entrevista de acuerdo a las necesidades del proyecto, que se aplican a compradores potenciales de lotes y a asesores inmobiliarios de la zona.", grupos: [
-          { titulo: "Análisis de demanda", items: ["Definición del perfil del comprador de lotes residenciales.", "Generadores de valor de la ubicación (accesos, escuelas, comercio, empleo, seguridad).", "Poder adquisitivo del mercado y capacidad de pago (contado, enganche y plazo).", "Usos, preferencias y hábitos del mercado: superficie y frente de lote, amenidades, seguridad y tiempo para construir.", "Determinar las necesidades insatisfechas del mercado de lotes residenciales.", "Conclusiones clave y retroalimentación al proyecto (lotificación, precios y esquemas de venta)."] },
-          { titulo: "Mercado meta", items: ["Segmentación del mercado: definimos la segmentación apropiada de compradores de lotes residenciales (uso propio e inversión) presentes en la zona.", "Preferencias del mercado: indagamos las preferencias de los distintos segmentos en superficie, frente, amenidades, esquemas de pago y reglamento del fraccionamiento.", "Capacidad de mercado: desarrollamos una metodología para estimar la capacidad de absorción de lotes residenciales en la zona."] },
-          { titulo: "Estimación", items: ["Determinación de la capacidad de mercado de la zona (lotes residenciales).", "Determinación del enfoque del proyecto y mezcla de superficies de lote.", "Determinación general de lotes y metros cuadrados por superficie y precio."] }
-        ]}
-      ]
+      // Detalles de lotes dentro de cada punto de la plantilla (con varios giros se suman a los de los demás)
+      foco: {
+        infra: ["vialidades", "servicios y factibilidades de agua, drenaje y energía"],
+        variables: ["número de lotes", "superficie", "frente", "segmento", "rango", "stock", "ritmo de venta"],
+        enVenta: ["fraccionamientos de lotes residenciales en venta"],
+        comprador: ["para construir vivienda propia o inversionista"],
+        entrega: ["etapas", "amenidades", "urbanización, servicios y escrituración"],
+        validacion: ["la tendencia de crecimiento urbano"],
+        unidadesTit: ["Lotes / m² totales y absorción"],
+        precios: ["los precios totales y por m² de lote de los fraccionamientos competidores, con su plusvalía histórica y esquemas de pago"],
+        rango: ["superficie"],
+        informal: ["fraccionamientos vs. lotes de reventa y particulares"],
+        perfil: ["comprador de lotes residenciales"],
+        generadores: ["accesos", "escuelas", "comercio", "empleo", "seguridad"],
+        poder: ["capacidad de pago de contado, enganche y plazo"],
+        usos: ["superficie y frente de lote", "amenidades", "seguridad", "tiempo para construir"],
+        retro: ["lotificación", "precios", "esquemas de venta"],
+        segmentos: ["compradores para uso propio e inversión"],
+        prefs: ["superficie", "frente", "amenidades", "esquemas de pago", "reglamento del fraccionamiento"],
+        enfoque: ["mezcla de superficies de lote"],
+        m2: ["número de lotes por superficie y precio"]
+      }
     },
     industrial: {
       nombre: "Industrial",
@@ -662,7 +678,7 @@ window.BASE_4S = {
     const intros = uniq(gs.map((g) => g.ofertaIntro));
     return {
       nombre: yJunta(gs.map((g) => g.nombre)),
-      detalle: true, // varios giros: cada uno con sus láminas de alcances
+      detalle: true, // varios giros: la lámina resumen usa la plantilla combinada
       giros: uniq(gs.flatMap((g) => g.giros)),
       ofertaIntro: intros.length === 1 ? intros[0] : "precios por m² en renta/venta, ocupación, estacionamientos y giros presentes, entre otros",
       unidades: `Información actualizada constantemente de las unidades y los m² totales de cada giro (${yJunta(gs.map((g) => g.nombre.toLowerCase()))}), así como la ocupación y los niveles de venta y renta de los proyectos.`,
@@ -671,22 +687,50 @@ window.BASE_4S = {
     };
   };
 
-  // Plantilla de Oferta y Demanda (texto de las propuestas de 4S, corregido)
+  // Plantilla de Oferta y Demanda (texto de las propuestas de 4S, corregido).
+  // Uno o varios giros dan UNA sola Oferta y UNA sola Demanda: cada punto es común a todos los giros y
+  // los detalles de cada giro (foco) se suman dentro del mismo punto, sin repetirse.
+  const DEF = {
+    variables: ["número de unidades", "segmento", "rango", "stock", "ritmo de venta"],
+    enVenta: ["proyectos en venta y renta"],
+    unidadesTit: ["Unidades / m² totales y ocupación"],
+    precios: ["los precios totales o por m² de venta/renta de los competidores de interés"],
+    rango: ["metraje"],
+    perfil: ["cliente"]
+  };
   const generico = (keys) => {
-    const k = claves(keys);
-    if (k.length === 1 && GIROS_ESTUDIO[k[0]].alcances) return GIROS_ESTUDIO[k[0]].alcances; // giro con alcances propios (Lotes Residenciales)
-    const g = combinado(keys);
+    const k = claves(keys), multi = k.length > 1;
+    const g = combinado(k);
     const alc = g.nombre.toLowerCase();
+    const focos = k.map((x) => ({ ...GIROS_ESTUDIO[x].foco, ...(multi ? GIROS_ESTUDIO[x].focoMulti : {}) }));
+    const nombres = k.map((x) => GIROS_ESTUDIO[x].nombre.toLowerCase());
+    // Detalles de todos los giros juntos; si un giro no trae, cuenta el texto base (DEF)
+    const de = (c) => focos.map((o) => o[c] || DEF[c] || []);
+    const f = (c) => uniq(de(c).flat());
+    const lista = (a) => (a.length < 2 ? a[0] || "" : `${a.slice(0, -1).join(", ")} y ${a[a.length - 1]}`);
+    // (detalles): lo que comparten todos los giros va sin etiqueta; lo de solo algunos, con el nombre de esos giros
+    const par = (c) => {
+      const por = de(c), comun = [], etiq = new Map();
+      f(c).forEach((it) => {
+        const quien = nombres.filter((_, i) => por[i].includes(it));
+        if (quien.length === nombres.length) return comun.push(it);
+        const l = lista(quien);
+        etiq.set(l, [...(etiq.get(l) || []), it]);
+      });
+      const partes = [comun.join(", "), ...[...etiq].map(([l, its]) => `${l}: ${its.join(", ")}`)].filter(Boolean);
+      return partes.length ? ` (${partes.join("; ")})` : "";
+    };
+    const uTit = f("unidadesTit");
     return [
       { id: "oferta", corto: "Oferta", titulo: `1.1 Estudio de Oferta · Alcance ${alc}`, entregable: "Reporte PDF", grupos: [
-        { titulo: "Análisis de oferta", items: ["Análisis de plaza e infraestructura.", "Análisis demográfico de la zona.", "Análisis de variables clave (número de unidades, segmento, rango, stock, ritmo de venta).", "Análisis de proyectos en venta y renta.", "Tipo de comprador, cliente potencial.", "Comparativa de inventarios y tipos de entrega."] },
-        { titulo: "Benchmark", items: ["Validación de zona / ubicación: determinamos el NSE de la zona y el número de personas en el polígono de influencia.", `Unidades / m² totales y ocupación: ${g.unidades.charAt(0).toLowerCase()}${g.unidades.slice(1)}`, "Precios de referencia de la zona: presentamos los precios totales o por m² de venta/renta de los competidores de interés."] },
-        { titulo: "Big Data", items: ["Mapa de la zona de influencia primaria publicadas online.", "Análisis de rango de metraje y precio.", "Comparativa de oferta formal y oferta informal."] }
+        { titulo: "Análisis de oferta", items: [`Análisis de plaza e infraestructura${par("infra")}.`, "Análisis demográfico de la zona.", `Análisis de variables clave${par("variables")}.`, `Análisis de ${f("enVenta").join(", y de ")}.`, `Tipo de comprador, cliente potencial${par("comprador")}.`, `Comparativa de inventarios y tipos de entrega${par("entrega")}.`, ...f("extraOferta")] },
+        { titulo: "Benchmark", items: [`Validación de zona / ubicación: determinamos ${yJunta(["el NSE de la zona", "el número de personas en el polígono de influencia", ...f("validacion")])}.`, `${uTit.length === 1 ? uTit[0] : DEF.unidadesTit[0]}: ${g.unidades.charAt(0).toLowerCase()}${g.unidades.slice(1)}`, `Precios de referencia de la zona: presentamos ${lista(f("precios"))}.`] },
+        { titulo: "Big Data", items: ["Mapa de la zona de influencia primaria publicadas online.", `Análisis de rango de ${f("rango").join(", ")} y precio.`, `Comparativa de oferta formal y oferta informal${par("informal")}.`] }
       ]},
       { id: "demanda", corto: "Demanda", titulo: `1.2 Estudio de Demanda · Alcance ${alc}`, entregable: "Reporte PDF", nota: g.demanda.join(" "), grupos: [
-        { titulo: "Análisis de demanda", items: ["Definición del perfil del cliente.", "Generadores de valor de la ubicación.", "Poder adquisitivo del mercado.", "Usos, preferencias y hábitos del mercado.", "Determinar las necesidades insatisfechas del mercado.", "Conclusiones clave y retroalimentación al proyecto."] },
-        { titulo: "Mercado meta", items: ["Segmentación del mercado: definimos la segmentación apropiada de acuerdo a las personas o giros presentes en la zona.", "Preferencias del mercado: indagamos las preferencias de los distintos segmentos de mercado de acuerdo a las especificaciones del estudio.", "Capacidad de mercado: desarrollamos una metodología para estimar la capacidad del mercado de interés para el alcance del estudio."] },
-        { titulo: "Estimación", items: [`Determinación de la capacidad de mercado de la zona (${alc}).`, "Determinación de giros generales y enfoque del proyecto.", "Determinación general de metros cuadrados por enfoque."] }
+        { titulo: "Análisis de demanda", items: [`Definición del perfil del ${lista(f("perfil"))}.`, `Generadores de valor de la ubicación${par("generadores")}.`, `Poder adquisitivo del mercado${par("poder")}.`, `Usos, preferencias y hábitos del mercado${par("usos")}.`, "Determinar las necesidades insatisfechas del mercado.", `Conclusiones clave y retroalimentación al proyecto${par("retro")}.`] },
+        { titulo: "Mercado meta", items: [`Segmentación del mercado: definimos la segmentación apropiada de acuerdo a las personas o giros presentes en la zona${par("segmentos")}.`, `Preferencias del mercado: indagamos las preferencias de los distintos segmentos de mercado de acuerdo a las especificaciones del estudio${par("prefs")}.`, "Capacidad de mercado: desarrollamos una metodología para estimar la capacidad del mercado de interés para el alcance del estudio."] },
+        { titulo: "Estimación", items: [`Determinación de la capacidad de mercado de la zona (${alc}).`, `Determinación de giros generales y enfoque del proyecto${par("enfoque")}.`, `Determinación general de metros cuadrados por enfoque${par("m2")}.`] }
       ]}
     ];
   };
@@ -696,14 +740,11 @@ window.BASE_4S = {
   Object.keys(GIROS_ESTUDIO).forEach((k) => { if (!GIROS_ESTUDIO[k].detalle) E.alcances[k] = generico(k); });
   window.BASE_4S.alcanceGenerico = generico;
   window.BASE_4S.giroCombinado = combinado;
-  // Alcances del estudio para uno o varios giros: cada giro con su propia Oferta y Demanda, independientes
-  // (Comercial con sus alcances detallados). Ids: "oferta"/"demanda" para el primero, "oferta-<giro>" para el resto.
+  // Alcances del estudio: un giro → los suyos (Comercial con sus alcances detallados);
+  // varios giros → una sola Oferta y una sola Demanda con lo de todos los giros junto (sin repetir)
   window.BASE_4S.alcancesGiros = (keys) => {
     const k = claves(keys);
-    if (k.length === 1) return E.alcances[k[0]];
-    let n = 0;
-    return k.flatMap((g, gi) => E.alcances[g].map((a) => ({ ...a, id: gi ? `${a.id}-${g}` : a.id })))
-      .map((x) => ({ ...x, titulo: x.titulo.replace(/^[\d.]+/, `1.${++n}`) }));
+    return k.length === 1 ? E.alcances[k[0]] : generico(k);
   };
   // Orden de trabajo: junta las mensualidades de un mismo servicio en una fila ("6 mensualidades de $45,000 · Abril – Septiembre")
   window.BASE_4S.agruparPagos = (pagos) => {
