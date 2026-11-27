@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1011">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Propuesta Estratégica · GRUPO EBOR · 4S Real Estate</title>
+  <link rel="icon" href="assets/brand/isotipo-4s-trim-black.png">
+  <link rel="preload" href="assets/fonts/BebasNeue-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="core/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- =====================================================================
+       DATOS DE LA PROPUESTA · lo único que cambia por cliente
+       ===================================================================== -->
+  <script id="datos-propuesta">
+  window.PROPUESTA = {
+    "cliente": "GRUPO EBOR",
+    "proyecto": "JURIQUILLA / ASTURIAS / TEQUISQUIAPAN",
+    "ciudad": "QUERÉTARO",
+    "fecha": "Noviembre 2026",
+    "vigencia": "30 días naturales a partir de su envío",
+    "tipo": "comercial",
+    "resumen": "",
+    "objetivos": [],
+    "giros": [
+      "Vivienda Vertical"
+    ],
+    "mapas": [],
+    "proyectos": [
+      {
+        "nombre": "DISTRITO JURIQUILLA",
+        "ciudad": "QUERÉTARO",
+        "giros": [
+          "MASTERPLAN"
+        ]
+      },
+      {
+        "nombre": "ASTURIAS",
+        "ciudad": "BERNAL",
+        "giros": [
+          "MASTERPLAN"
+        ]
+      },
+      {
+        "nombre": "MP TEQUIS",
+        "ciudad": "TEQUISQUIAPAN",
+        "giros": [
+          "MASTERPLAN"
+        ]
+      }
+    ],
+    "servicios": [
+      {
+        "id": "definicion-producto",
+        "variante": "comercial",
+        "semanas": 5,
+        "inversion": 90000,
+        "alcances": [
+          {
+            "id": "analisis",
+            "titulo": "2.1 Análisis y mercado meta",
+            "entregable": "Documento PDF",
+            "grupos": [
+              {
+                "titulo": "Análisis estratégico",
+                "items": [
+                  "Selección de variables a considerar",
+                  "Análisis de dimensiones",
+                  "Análisis de precio",
+                  "Análisis de precio por m2",
+                  "Análisis de saturación o falta de giros (COMERCIAL, EQUIPAMIENTO Y SERVICIOS)"
+                ]
+              },
+              {
+                "titulo": "Mercado meta",
+                "items": [
+                  "Variables de segmentación",
+                  "Etapas de vida",
+                  "Análisis de clusters",
+                  "Perfil de tribus de consumo"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "producto",
+            "titulo": "2.2 Producto y concepto",
+            "entregable": "Documento PDF",
+            "grupos": [
+              {
+                "titulo": "Producto nuclear",
+                "items": [
+                  "Tabla de mezcla de productos (POR GIRO)",
+                  "Resumen de tabla de áreas"
+                ]
+              },
+              {
+                "titulo": "Concepto",
+                "items": [
+                  "Propuesta de valor",
+                  "Look and Feel (concepto arquitectónico)",
+                  "Guías de diseño",
+                  "Benchmark"
+                ]
+              },
+              {
+                "titulo": "Producto ampliado (anclajes)",
+                "items": [
+                  "Propuesta de anclajes (COMERCIO, EQUIPAMIENTO Y SERVICIOS) de acuerdo al perfil del comprador",
+                  "Tabla de áreas de anclajes",
+                  "Look and Feel de anclajes"
+                ]
+              }
+            ]
+          }
+        ],
+        "especificaciones": [
+          "Mezcla óptima para el desarrollo tomando en cuenta áreas, precios, dimensiones y funcionalidad.",
+          "Equipamiento, amenidades y diferenciadores enfocados en el usuario final.",
+          "Concepto del proyecto enfocado en los gustos y necesidades del mercado meta.",
+          "Esquemático arquitectónico del proyecto."
+        ],
+        "inicio": 1,
+        "proyecto": 0
+      },
+      {
+        "id": "modelo-financiero",
+        "variante": "general",
+        "semanas": 4,
+        "inversion": 60000,
+        "alcances": [
+          {
+            "id": "modelo",
+            "titulo": "Metodología del análisis y modelo financiero",
+            "grupos": [
+              {
+                "titulo": "A · Proforma estática",
+                "items": [
+                  "Proforma inicial sin flujos que revela el potencial del negocio.",
+                  "Volúmenes de venta, costos directos e indirectos.",
+                  "Análisis del valor del terreno y del margen de utilidad sin considerar el factor tiempo.",
+                  "Primera aproximación financiera para validar el negocio."
+                ]
+              },
+              {
+                "titulo": "B · Modelo financiero",
+                "items": [
+                  "Modelado del proyecto en el tiempo con los datos de la proforma estática.",
+                  "Absorciones y costeo paramétrico que arrojen flujos conforme a un programa de obra.",
+                  "Factores de financiamiento: créditos bancarios, mezzanine e inversión de capital.",
+                  "Comportamiento financiero del proyecto basado en tiempos de ejecución."
+                ]
+              },
+              {
+                "titulo": "C · Indicadores financieros",
+                "items": [
+                  "Proyección de precios.",
+                  "TIR, ROI, múltiplo y payback.",
+                  "Flujos de efectivo y retornos de capital.",
+                  "Escenarios financieros para definir estrategias de negocio."
+                ]
+              },
+              {
+                "titulo": "D · Modelo de negocio",
+                "items": [
+                  "Estructura de negocio con la participación de los inversionistas y su retorno de capital.",
+                  "Uso y fuentes de capital y su comportamiento en el tiempo.",
+                  "Esquemas de participación y reparto de utilidades.",
+                  "Estructura de capital y fuentes de apalancamiento."
+                ]
+              }
+            ]
+          }
+        ],
+        "especificaciones": [
+          "Proforma estática.",
+          "Modelo financiero con flujos del proyecto en el tiempo.",
+          "Indicadores financieros: TIR, ROI, payback y flujos de efectivo.",
+          "Definición de estructura de negocio."
+        ],
+        "inicio": 1,
+        "proyecto": 0
+      },
+      {
+        "id": "definicion-producto",
+        "variante": "comercial",
+        "semanas": 5,
+        "inversion": 90000,
+        "alcances": [
+          {
+            "id": "analisis",
+            "titulo": "2.1 Análisis y mercado meta",
+            "entregable": "Documento PDF",
+            "grupos": [
+              {
+                "titulo": "Análisis estratégico",
+                "items": [
+                  "Selección de variables a considerar",
+                  "Análisis de dimensiones",
+                  "Análisis de precio",
+                  "Análisis de precio por m2",
+                  "Análisis de saturación o falta de giros (COMERCIAL, EQUIPAMIENTO Y SERVICIOS)"
+                ]
+              },
+              {
+                "titulo": "Mercado meta",
+                "items": [
+                  "Variables de segmentación",
+                  "Etapas de vida",
+                  "Análisis de clusters",
+                  "Perfil de tribus de consumo"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "producto",
+            "titulo": "2.2 Producto y concepto",
+            "entregable": "Documento PDF",
+            "grupos": [
+              {
+                "titulo": "Producto nuclear",
+                "items": [
+                  "Tabla de mezcla de productos (POR GIRO)",
+                  "Resumen de tabla de áreas"
+                ]
+              },
+              {
+                "titulo": "Concepto",
+                "items": [
+                  "Propuesta de valor",
+                  "Look and Feel (concepto arquitectónico)",
+                  "Guías de diseño",
+                  "Benchmark"
+                ]
+              },
+              {
+                "titulo": "Producto ampliado (anclajes)",
+                "items": [
+                  "Propuesta de anclajes (COMERCIO, EQUIPAMIENTO Y SERVICIOS) de acuerdo al perfil del comprador",
+                  "Tabla de áreas de anclajes",
+                  "Look and Feel de anclajes"
+                ]
+              }
+            ]
+          }
+        ],
+        "especificaciones": [
+          "Mezcla óptima para el desarrollo tomando en cuenta áreas, precios, dimensiones y funcionalidad.",
+          "Equipamiento, amenidades y diferenciadores enfocados en el usuario final.",
+          "Concepto del proyecto enfocado en los gustos y necesidades del mercado meta.",
+          "Esquemático arquitectónico del proyecto."
+        ],
+        "inicio": 1,
+        "proyecto": 1
+      },
+      {
+        "id": "concepto-creativo",
+        "variante": "general",
+        "semanas": 6,
+        "inversion": 90000,
+        "alcances": [
+          {
+            "id": "marca",
+            "titulo": "Branding e identidad",
+            "entregable": "Manual de marca",
+            "nota": "Incluye 3 rondas de cambios.",
+            "grupos": [
+              {
+                "titulo": "Black · Concepto",
+                "items": [
+                  "Pitch central (concepto).",
+                  "Naming.",
+                  "Tagline.",
+                  "Frases de expectativa y lanzamiento."
+                ]
+              },
+              {
+                "titulo": "Gray · Identidad visual",
+                "items": [
+                  "Logotipo.",
+                  "Emblema.",
+                  "Paleta de colores.",
+                  "Tipografías.",
+                  "Visuales de campaña.",
+                  "Propuesta gráfica de papelería, publicitaria y digital.",
+                  "Mock-ups de materiales de experiencia de compra."
+                ]
+              },
+              {
+                "titulo": "White · Manual de marca",
+                "items": [
+                  "Manual de marca y comunicación del proyecto.",
+                  "Métricas gráficas.",
+                  "Catálogo de fotografías de stock.",
+                  "Imágenes liberadas de stock."
+                ]
+              }
+            ]
+          }
+        ],
+        "especificaciones": [
+          "Concepto creativo central (pitch).",
+          "Naming.",
+          "Tagline.",
+          "Logotipo.",
+          "Ejemplos de campaña.",
+          "Manual de marca."
+        ],
+        "inicio": 1,
+        "proyecto": 2
+      }
+    ],
+    "cronograma": {
+      "meses": [
+        {
+          "nombre": "Noviembre",
+          "semanas": 4
+        },
+        {
+          "nombre": "Diciembre",
+          "semanas": 4
+        },
+        {
+          "nombre": "Enero",
+          "semanas": 2
+        }
+      ],
+      "filas": [
+        {
+          "n": 1,
+          "nombre": "DISTRITO JURIQUILLA · Definición de Producto",
+          "desde": 3,
+          "hasta": 7,
+          "tipo": "trabajo"
+        },
+        {
+          "n": 1,
+          "nombre": "Presentación DISTRITO JURIQUILLA · Definición de Producto",
+          "desde": 8,
+          "hasta": 8,
+          "tipo": "hito"
+        },
+        {
+          "n": 2,
+          "nombre": "DISTRITO JURIQUILLA · Modelo Financiero",
+          "desde": 3,
+          "hasta": 6,
+          "tipo": "trabajo"
+        },
+        {
+          "n": 2,
+          "nombre": "Presentación DISTRITO JURIQUILLA · Modelo Financiero",
+          "desde": 7,
+          "hasta": 7,
+          "tipo": "hito"
+        },
+        {
+          "n": 3,
+          "nombre": "ASTURIAS · Definición de Producto",
+          "desde": 3,
+          "hasta": 7,
+          "tipo": "trabajo"
+        },
+        {
+          "n": 3,
+          "nombre": "Presentación ASTURIAS · Definición de Producto",
+          "desde": 8,
+          "hasta": 8,
+          "tipo": "hito"
+        },
+        {
+          "n": 4,
+          "nombre": "MP TEQUIS · Concepto Creativo Central",
+          "desde": 3,
+          "hasta": 8,
+          "tipo": "trabajo"
+        },
+        {
+          "n": 4,
+          "nombre": "Presentación MP TEQUIS · Concepto Creativo Central",
+          "desde": 9,
+          "hasta": 9,
+          "tipo": "hito"
+        }
+      ],
+      "nota": "Los tiempos son estimados y pueden cambiar. 4S Real Estate vigila la ruta crítica y notifica por escrito cualquier cambio que afecte los entregables."
+    },
+    "pagos": [
+      {
+        "servicio": "DISTRITO JURIQUILLA · Definición de Producto",
+        "concepto": "Mensualidad 1 de 3",
+        "fecha": "Noviembre",
+        "monto": 30000
+      },
+      {
+        "servicio": "DISTRITO JURIQUILLA · Modelo Financiero",
+        "concepto": "Mensualidad 1 de 2",
+        "fecha": "Noviembre",
+        "monto": 30000
+      },
+      {
+        "servicio": "ASTURIAS · Definición de Producto",
+        "concepto": "Mensualidad 1 de 3",
+        "fecha": "Noviembre",
+        "monto": 30000
+      },
+      {
+        "servicio": "MP TEQUIS · Concepto Creativo Central",
+        "concepto": "Mensualidad 1 de 3",
+        "fecha": "Noviembre",
+        "monto": 30000
+      },
+      {
+        "servicio": "DISTRITO JURIQUILLA · Definición de Producto",
+        "concepto": "Mensualidad 2 de 3",
+        "fecha": "Diciembre",
+        "monto": 30000
+      },
+      {
+        "servicio": "DISTRITO JURIQUILLA · Modelo Financiero",
+        "concepto": "Mensualidad 2 de 2",
+        "fecha": "Diciembre",
+        "monto": 30000
+      },
+      {
+        "servicio": "ASTURIAS · Definición de Producto",
+        "concepto": "Mensualidad 2 de 3",
+        "fecha": "Diciembre",
+        "monto": 30000
+      },
+      {
+        "servicio": "MP TEQUIS · Concepto Creativo Central",
+        "concepto": "Mensualidad 2 de 3",
+        "fecha": "Diciembre",
+        "monto": 30000
+      },
+      {
+        "servicio": "DISTRITO JURIQUILLA · Definición de Producto",
+        "concepto": "Mensualidad 3 de 3",
+        "fecha": "Enero",
+        "monto": 30000
+      },
+      {
+        "servicio": "ASTURIAS · Definición de Producto",
+        "concepto": "Mensualidad 3 de 3",
+        "fecha": "Enero",
+        "monto": 30000
+      },
+      {
+        "servicio": "MP TEQUIS · Concepto Creativo Central",
+        "concepto": "Mensualidad 3 de 3",
+        "fecha": "Enero",
+        "monto": 30000
+      }
+    ],
+    "notaPagos": "Todos los costos están en MXN. No incluyen impuestos en caso de aplicar.",
+    "socio": {
+      "nombre": "Carlos del Valle",
+      "puesto": "Socio Regional Bajío",
+      "foto": "assets/socios/carlos-del-valle.jpg",
+      "email": "carlos.delvalle@4srealestate.com",
+      "telefono": "81 1289 7831",
+      "whatsapp": "528112897831"
+    },
+    "_form": {
+      "mesInicio": 10,
+      "anio": 2026,
+      "semanaInicio": 4,
+      "esquemaPago": "mensual",
+      "inicios": {
+        "definicion-producto": 1,
+        "modelo-financiero": 1,
+        "concepto-creativo": 1
+      }
+    }
+  };
+  </script>
+
+  <script src="core/4s-base.js"></script>
+  <script src="core/render.js"></script>
+</body>
+</html>
